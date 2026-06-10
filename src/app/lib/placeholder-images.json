@@ -1,0 +1,17 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "hero-dashboard",
+      "description": "A futuristic data analytics dashboard with glowing charts and indigo highlights",
+      "imageUrl": "https://picsum.photos/seed/autostat1/1200/800",
+      "imageHint": "data dashboard"
+    },
+    {
+      "id": "stat-analysis",
+      "description": "Visual representation of statistical distribution and analysis",
+      "imageUrl": "https://picsum.photos/seed/autostat2/800/600",
+      "imageHint": "statistics chart"
+    }
+  ]
+}

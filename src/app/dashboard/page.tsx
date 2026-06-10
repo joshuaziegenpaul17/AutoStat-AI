@@ -39,7 +39,7 @@ export default function Dashboard() {
     setInsights(null);
     setAuditResults(null);
     setAnalysisError(null);
-    toast({ title: "Dataset Processed", description: `Successfully analyzed ${data.rows.length} records.` });
+    toast({ title: "Dataset Ingested", description: `Successfully processed ${data.rows.length} records.` });
   };
 
   const descriptiveResults = useMemo(() => {
@@ -64,7 +64,7 @@ export default function Dashboard() {
     const cacheKey = `${currentDataset.rows.length}-${currentDataset.headers.join('-')}`;
     if (insightsCache.current[cacheKey]) {
       setInsights(insightsCache.current[cacheKey]);
-      toast({ title: "Analysis Loaded", description: "Retrieved cached executive summary." });
+      toast({ title: "Insights Loaded", description: "Retrieved cached executive analysis." });
       return;
     }
     
@@ -129,9 +129,9 @@ export default function Dashboard() {
 
   const statusTicker = [
     "SYSTEM STATUS: OPERATIONAL",
-    "ENCRYPTION: ACTIVE",
+    "ENCRYPTION: AES-256 ACTIVE",
     "DATA INTEGRITY: VERIFIED",
-    "ANALYTICS ENGINE: READY",
+    "ANALYTICAL ENGINE: READY",
     "SESSION: SECURE",
     "COMPLIANCE: ACTIVE",
     "REPORTING: ONLINE"
@@ -191,7 +191,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-4">
                   <Badge className="bg-white/5 border-white/10 text-white font-mono text-xs px-4 py-2 rounded-lg">
                     <Database className="h-3.5 w-3.5 mr-2 text-indigo-500" />
-                    DATASET: ANALYTICS_WORKSPACE
+                    DATASET: ACTIVE_WORKFLOW
                   </Badge>
                 </div>
               </div>
@@ -287,7 +287,7 @@ export default function Dashboard() {
                   </div>
                   <h3 className="text-2xl font-bold">Forecast Projections</h3>
                   <p className="text-white/50 leading-relaxed font-medium">
-                    The analytical engine is processing sequential patterns. Future projections will be integrated into the Executive Summary below.
+                    The analytical engine is processing sequential patterns. Future projections will be integrated into the Executive Analysis below.
                   </p>
                 </div>
               </Card>
@@ -312,7 +312,7 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <CardTitle className="text-2xl font-bold tracking-tight">Executive Summary</CardTitle>
-                        <CardDescription className="text-white/40 font-medium uppercase text-[10px] tracking-widest mt-1">Automated insight generation</CardDescription>
+                        <CardDescription className="text-white/40 font-medium uppercase text-[10px] tracking-widest mt-1">Automated Insight Generation</CardDescription>
                       </div>
                     </div>
                     <Button 
@@ -321,7 +321,7 @@ export default function Dashboard() {
                       className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-10 font-bold uppercase tracking-widest text-xs shadow-lg shadow-indigo-600/20 w-full md:w-auto"
                     >
                       {isAnalyzing ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                      {isAnalyzing ? "Processing..." : insights ? "Refresh Analysis" : "Generate Executive Insights"}
+                      {isAnalyzing ? "Processing..." : insights ? "Refresh Analysis" : "Generate AI Insights"}
                     </Button>
                   </CardHeader>
                   <CardContent className="p-10">
@@ -372,7 +372,7 @@ export default function Dashboard() {
                               </Card>
                               <Card className="bg-white/5 border-white/10 rounded-2xl overflow-hidden group hover:bg-white/[0.07] transition-colors">
                                 <CardContent className="p-8">
-                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Opportunities</h5>
+                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Business Opportunities</h5>
                                   <ul className="space-y-4">
                                     {insights.businessOpportunities.map((o: string, i: number) => (
                                       <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -423,13 +423,13 @@ export default function Dashboard() {
                         </div>
                         <div className="space-y-2">
                           <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Analysis Required</p>
-                          <p className="text-white/40 font-medium max-w-md mx-auto">Initialize the analytical engine to unlock AI-powered insights and executive recommendations.</p>
+                          <p className="text-white/40 font-medium max-w-md mx-auto">Generate analysis to unlock AI-powered insights and executive recommendations.</p>
                         </div>
                         <Button 
                           onClick={runAiAnalysis} 
                           className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-12 font-bold uppercase tracking-widest text-xs"
                         >
-                          Initialize Analysis
+                          Generate Analysis
                         </Button>
                       </div>
                     )}
@@ -439,7 +439,7 @@ export default function Dashboard() {
                       <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6">
                         <div className="flex items-center gap-3">
                           <ShieldCheck className="h-5 w-5 text-indigo-500" />
-                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Analysis Engine v2.5 Verified</span>
+                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Analytics Engine v2.5 Verified</span>
                         </div>
                         <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">TIMESTAMP: {new Date().toLocaleTimeString()}</p>
                       </div>

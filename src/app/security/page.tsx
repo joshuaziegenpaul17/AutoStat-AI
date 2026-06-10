@@ -5,7 +5,7 @@ import React from 'react';
 import { 
   ShieldCheck, Lock, Eye, Trash2, Key, 
   FileCheck, Shield, Clock, FileText, Activity,
-  ArrowLeft
+  ArrowLeft, BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -59,7 +59,7 @@ export default function SecurityPage() {
           </Link>
           <div className="h-6 w-px bg-white/10" />
           <nav className="flex items-center gap-8 text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
-            <Link href="/dashboard" className="hover:text-white flex items-center gap-2">Dashboard</Link>
+            <Link href="/dashboard" className="hover:text-white flex items-center gap-2">Workspace</Link>
             <Link href="/security" className="text-indigo-500 flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> Security</Link>
             <Link href="/resources" className="hover:text-white flex items-center gap-2">Resources</Link>
           </nav>
@@ -101,7 +101,7 @@ export default function SecurityPage() {
         <section className="space-y-12">
           <div className="flex items-center gap-4 mb-10">
             <Shield className="h-8 w-8 text-indigo-500" />
-            <h2 className="text-3xl font-black uppercase tracking-tighter">Trust & Audit Log</h2>
+            <h2 className="text-3xl font-black uppercase tracking-tighter">Trust & Audit Summary</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -116,7 +116,7 @@ export default function SecurityPage() {
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-3xl p-8 space-y-4">
               <div className="flex items-center gap-3 text-indigo-400">
                 <Activity className="h-4 w-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Data Processed</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest">Secure Data Processing</span>
               </div>
               <p className="text-4xl font-black">Encrypted</p>
               <p className="text-xs text-white/40 font-medium">TLS 1.3 Transmission Security</p>
@@ -126,15 +126,15 @@ export default function SecurityPage() {
                 <FileText className="h-4 w-4" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Compliance</span>
               </div>
-              <p className="text-4xl font-black">Standard</p>
+              <p className="text-4xl font-black">Verified</p>
               <p className="text-xs text-white/40 font-medium">Industry Best Practices</p>
             </Card>
           </div>
           
           <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden">
             <div className="p-8 border-b border-white/5 flex justify-between items-center">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-white/60">Session Activity Summary</h4>
-              <Badge variant="outline" className="text-indigo-400 border-indigo-400/20">Alpha v2.5.0</Badge>
+              <h4 className="text-xs font-bold uppercase tracking-widest text-white/60">Analytical Session Summary</h4>
+              <Badge variant="outline" className="text-indigo-400 border-indigo-400/20">v2.5.0 STABLE</Badge>
             </div>
             <div className="p-8 space-y-6">
               <div className="flex justify-between items-center">
@@ -143,8 +143,8 @@ export default function SecurityPage() {
               </div>
               <Separator className="bg-white/5" />
               <div className="flex justify-between items-center">
-                <span className="text-sm text-white/40">Report Generation History</span>
-                <span className="text-sm font-mono">3 Generated Sessions</span>
+                <span className="text-sm text-white/40">Analytics Report History</span>
+                <span className="text-sm font-mono">Active Session Data</span>
               </div>
               <Separator className="bg-white/5" />
               <div className="flex justify-between items-center">
@@ -170,5 +170,3 @@ export default function SecurityPage() {
     </div>
   );
 }
-
-import { BarChart3 } from 'lucide-react';

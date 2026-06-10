@@ -26,7 +26,7 @@ export default function LandingPage() {
             <span className="text-lg font-bold tracking-tight text-white">AutoStat AI</span>
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-white/60">
-            <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
+            <Link href="/dashboard" className="hover:text-white transition-colors">Workspace</Link>
             <Link href="/security" className="hover:text-white transition-colors">Security</Link>
             <Link href="/resources" className="hover:text-white transition-colors">Documentation</Link>
           </nav>
@@ -52,12 +52,12 @@ export default function LandingPage() {
               <span className="text-indigo-500">Analytics</span>
             </h1>
             <p className="text-lg md:text-xl text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-              Transform raw data into professional executive insights instantly. AutoStat AI provides comprehensive statistical profiling, predictive modeling, and automated narratives for your enterprise datasets.
+              Transform raw data into professional executive insights instantly. AutoStat AI provides automated statistical analysis, forecasting, and business intelligence for enterprise datasets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">
                 <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-12 h-16 text-lg font-bold group shadow-xl shadow-indigo-600/20">
-                  Initialize Analysis <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  Open Workspace <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -85,16 +85,16 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold mb-4 tracking-tight">Data Profiling</h3>
               <p className="text-white/40 leading-relaxed font-medium">
-                Comprehensive ingestion of CSV and Excel spreadsheets. Our pipeline handles automated cleaning, normalization, and quality diagnostics.
+                Comprehensive ingestion of CSV and Excel spreadsheets. Our pipeline handles automated cleaning, normalization, and quality assessment.
               </p>
             </div>
             <div className="p-12 rounded-[2.5rem] bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all group backdrop-blur-sm">
               <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 flex items-center justify-center mb-10 border border-indigo-600/30 group-hover:scale-110 transition-transform">
                 <LineChart className="text-indigo-500 h-7 w-7" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 tracking-tight">Statistical Modeling</h3>
+              <h3 className="text-2xl font-bold mb-4 tracking-tight">Statistical Analysis</h3>
               <p className="text-white/40 leading-relaxed font-medium">
-                Automated calculation of descriptive statistics, correlation matrices, and predictive trends using industry-standard mathematical models.
+                Automated calculation of descriptive statistics, correlation matrices, and predictive analytics using industry-standard mathematical models.
               </p>
             </div>
             <div className="p-12 rounded-[2.5rem] bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all group backdrop-blur-sm">
@@ -103,7 +103,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold mb-4 tracking-tight">Executive Reporting</h3>
               <p className="text-white/40 leading-relaxed font-medium">
-                Access professional-grade analytical findings designed for stakeholders. Includes AI-powered summaries, visualizations, and actionable insights.
+                Access professional-grade business insights designed for stakeholders. Includes AI-powered summaries, visualizations, and actionable recommendations.
               </p>
             </div>
           </div>

@@ -1,3 +1,4 @@
+
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
@@ -28,7 +29,7 @@ export const aiInsightsPrompt = ai.definePrompt({
 1. **Executive Synthesis**: Provide an authoritative summary for C-suite.
 2. **Correlation Logic**: Identify non-obvious relationships.
 3. **Risk & Anomaly Detection**: Flag outliers from the summary.
-4. **Opportunity Mapping**: Translate findings into growth areas.
+4. **Opportunity Mapping**: Translate findings into actionable growth areas.
 
 ### DATA CONTEXT:
 COLUMN HEADERS: {{{columnNamesString}}}

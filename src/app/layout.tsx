@@ -3,8 +3,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AutoStat AI - Intelligent Statistical Analysis',
-  description: 'Automated statistical analysis, visualizations, and AI narratives for your datasets.',
+  title: 'AutoStat AI - Professional Statistical Analysis',
+  description: 'Automated statistical profiling, predictive forecasting, and AI-powered executive insights for enterprise datasets.',
 };
 
 export default function RootLayout({

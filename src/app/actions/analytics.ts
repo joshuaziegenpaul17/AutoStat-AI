@@ -21,7 +21,7 @@ export async function runAuditAction(previewData: string, columnHeaders: string[
     console.error("[Action:DataQualityAudit] Error:", error);
     return { 
       success: false, 
-      error: "The quality analytical engine encountered a technical error." 
+      error: "The analytical engine encountered a technical error." 
     };
   }
 }

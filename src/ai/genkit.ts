@@ -3,7 +3,7 @@ import { googleAI } from '@genkit-ai/google-genai';
 
 /**
  * Genkit initialization with the latest Gemini 2.5 Flash model.
- * Using 'googleai/gemini-2.5-flash' for high-performance strategic synthesis.
+ * This model is optimized for high-performance strategic synthesis and complex data narrative generation.
  */
 export const ai = genkit({
   plugins: [

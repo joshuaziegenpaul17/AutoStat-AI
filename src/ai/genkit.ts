@@ -3,8 +3,8 @@ import { googleAI } from '@genkit-ai/google-genai';
 
 /**
  * Genkit initialization with the Google AI plugin.
- * We explicitly check for both common environment variable names for the API key.
- * Using 'googleai/gemini-1.5-flash' as the standard identifier.
+ * Standardizing on 'googleai/gemini-1.5-flash' for maximum compatibility.
+ * Explicitly checking for all common API key environment variables.
  */
 export const ai = genkit({
   plugins: [

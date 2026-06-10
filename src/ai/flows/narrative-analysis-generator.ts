@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A robust Genkit flow for generating structured statistical narratives.
+ * @fileOverview A robust Genkit flow for generating structured statistical narratives including forecasting.
  * Includes automated retries for transient 503/429 errors and graceful fallbacks.
  *
  * - narrativeAnalysisGenerator - Main entry point for generating narratives.
@@ -28,6 +28,11 @@ const NarrativeAnalysisGeneratorOutputSchema = z.object({
   executiveSummary: z.string().describe('A high-level overview of the findings.'),
   keyInsights: z.array(z.string()).describe('List of critical observations from the data.'),
   dataTrends: z.string().describe('Interpretation of identified patterns and trends.'),
+  forecasting: z.object({
+    projection: z.string().describe('A logical projection of where the data might head.'),
+    confidence: z.string().describe('Estimated confidence level in the forecast.'),
+    risks: z.array(z.string()).describe('Potential risks or variables that could disrupt the forecast.'),
+  }).describe('Predictive analysis and future projections based on current data patterns.'),
   recommendations: z.array(z.string()).describe('Actionable next steps based on the analysis.'),
 });
 export type NarrativeAnalysisGeneratorOutput = z.infer<typeof NarrativeAnalysisGeneratorOutputSchema>;
@@ -39,7 +44,7 @@ const narrativeAnalysisPrompt = ai.definePrompt({
   name: 'narrativeAnalysisPrompt',
   input: {schema: NarrativeAnalysisGeneratorInputSchema},
   output: {schema: NarrativeAnalysisGeneratorOutputSchema},
-  prompt: `You are an expert statistical analyst. Your task is to provide a professional, structured textual interpretation of the provided results.
+  prompt: `You are an expert statistical analyst and business strategist. Your task is to provide a professional, structured textual interpretation of the provided statistical results.
 
 Statistical Analysis Results:
 {{{analysisResults}}}
@@ -49,7 +54,14 @@ Additional Context:
 {{{context}}}
 {{/if}}
 
-Provide your interpretation in a structured format with an executive summary, specific key insights, trend analysis, and clear recommendations.`,
+Provide your interpretation in a structured format with:
+1. An executive summary.
+2. Specific key insights.
+3. Detailed trend analysis.
+4. A data-driven forecast (projection, confidence, and risks).
+5. Clear, actionable recommendations.
+
+Focus on identifying business impact and potential future outcomes based on the numerical distributions.`,
 });
 
 /**
@@ -99,6 +111,11 @@ const narrativeAnalysisGeneratorFlow = ai.defineFlow(
           "Automated textual interpretation is temporarily limited."
         ],
         dataTrends: "Trend interpretation is temporarily unavailable while platform services recover.",
+        forecasting: {
+          projection: "Current system load prevents real-time predictive modeling.",
+          confidence: "Low (System Latency)",
+          risks: ["Upstream service availability", "High query volume"]
+        },
         recommendations: [
           "Review the numerical descriptive statistics cards for variance and distribution shifts.",
           "Try regenerating the insights in a few minutes."

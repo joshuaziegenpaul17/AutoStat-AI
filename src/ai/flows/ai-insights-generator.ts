@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent with enhanced high-availability retries.
+ * @fileOverview Strategic Insights AI agent with optimized retries for Server Action safety.
  */
 
 import { ai } from '@/ai/genkit';
@@ -14,10 +14,9 @@ const InsightsFlowInputSchema = z.object({
 });
 
 /**
- * Executes the AI prompt with aggressive exponential backoff for 429/503 errors.
- * Base delay increased to 10s to better respect free tier quotas.
+ * Executes AI prompt with safe backoff to avoid Server Action timeouts (Next.js limits).
  */
-async function generateWithRetry(input: any, retries = 5, delay = 10000) {
+async function generateWithRetry(input: any, retries = 3, delay = 2000) {
   try {
     const { output } = await aiInsightsPrompt(input);
     if (!output) throw new Error("Analytical engine produced no data.");
@@ -32,17 +31,17 @@ async function generateWithRetry(input: any, retries = 5, delay = 10000) {
       msg.toLowerCase().includes("quota");
 
     if (retries > 0 && isRetryable) {
-      const jitter = Math.random() * 3000;
+      const jitter = Math.random() * 1000;
       const finalDelay = delay + jitter;
-      console.warn(`[Insights Flow] Rate limit (429/Busy). Retrying attempt ${6 - retries} in ${Math.round(finalDelay)}ms...`);
+      console.warn(`[Insights Flow] Rate limit detected. Retrying in ${Math.round(finalDelay)}ms...`);
       await new Promise(res => setTimeout(res, finalDelay));
-      return generateWithRetry(input, retries - 1, delay * 1.5);
+      return generateWithRetry(input, retries - 1, delay * 2);
     }
     throw error;
   }
 }
 
-const aiInsightsGeneratorFlow = ai.defineFlow(
+export const aiInsightsGeneratorFlow = ai.defineFlow(
   {
     name: 'aiInsightsGeneratorFlow',
     inputSchema: InsightsFlowInputSchema,
@@ -59,9 +58,6 @@ const aiInsightsGeneratorFlow = ai.defineFlow(
   }
 );
 
-/**
- * Public async wrapper for the insights flow.
- */
 export async function generateAiInsights(input: z.infer<typeof InsightsFlowInputSchema>) {
   return aiInsightsGeneratorFlow(input);
 }

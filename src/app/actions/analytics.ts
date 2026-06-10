@@ -17,7 +17,7 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
     console.error("[Action:Audit] Failure:", error);
     return { 
       success: false, 
-      error: String(error?.message || "Structural audit failed") 
+      error: String(error?.message || "Structural audit encountered a network difficulty.") 
     };
   }
 }
@@ -35,7 +35,7 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
     const result = await generateAiInsights(input);
     
     if (!result) {
-      throw new Error("AI engine returned no result.");
+      throw new Error("AI engine returned an empty synthesis.");
     }
 
     return { 
@@ -45,7 +45,7 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
   } catch (error: any) {
     console.error("[Action:Insights] Error:", error);
     
-    let errorMessage = String(error?.message || "Synthesis encountered a system error.");
+    let errorMessage = String(error?.message || "Synthesis encountered a system difficulty.");
     if (errorMessage.includes("429") || errorMessage.toLowerCase().includes("rate limit")) {
       errorMessage = "Rate Limit Exceeded: The AI engine is busy. Please wait a moment.";
     }

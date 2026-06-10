@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview Data quality auditing AI agent with enhanced high-availability retries.
+ * @fileOverview Data quality auditing AI agent with optimized retries.
  */
 
 import { ai } from '@/ai/genkit';
@@ -12,36 +12,24 @@ const QualityFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-/**
- * Executes the AI prompt with aggressive exponential backoff for 429/503 errors.
- * Base delay increased to 10s to better respect free tier quotas.
- */
-async function generateWithRetry(input: any, retries = 5, delay = 10000) {
+async function generateWithRetry(input: any, retries = 3, delay = 2000) {
   try {
     const { output } = await dataQualityPrompt(input);
     if (!output) throw new Error("Data quality diagnostic failed.");
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
-    const isRetryable = 
-      msg.includes("429") || 
-      msg.includes("503") || 
-      msg.toLowerCase().includes("limit") || 
-      msg.toLowerCase().includes("busy") ||
-      msg.toLowerCase().includes("quota");
+    const isRetryable = msg.includes("429") || msg.includes("503") || msg.toLowerCase().includes("limit");
 
     if (retries > 0 && isRetryable) {
-      const jitter = Math.random() * 3000;
-      const finalDelay = delay + jitter;
-      console.warn(`[Quality Flow] Rate limit (429/Busy). Retrying attempt ${6 - retries} in ${Math.round(finalDelay)}ms...`);
-      await new Promise(res => setTimeout(res, finalDelay));
-      return generateWithRetry(input, retries - 1, delay * 1.5);
+      await new Promise(res => setTimeout(res, delay + Math.random() * 1000));
+      return generateWithRetry(input, retries - 1, delay * 2);
     }
     throw error;
   }
 }
 
-const dataQualitySuggesterFlow = ai.defineFlow(
+export const dataQualitySuggesterFlow = ai.defineFlow(
   {
     name: 'dataQualitySuggesterFlow',
     inputSchema: QualityFlowInputSchema,
@@ -57,9 +45,6 @@ const dataQualitySuggesterFlow = ai.defineFlow(
   }
 );
 
-/**
- * Public async wrapper for the data quality flow.
- */
 export async function suggestDataQualityImprovements(input: { datasetPreview: string, columnNames: string[] }) {
   return dataQualitySuggesterFlow(input);
 }

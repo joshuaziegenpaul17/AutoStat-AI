@@ -2,9 +2,8 @@ import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/google-genai';
 
 /**
- * Genkit initialization with the Google AI plugin.
- * Standardizing on 'googleai/gemini-1.5-flash' for maximum compatibility.
- * Explicitly checking for all common API key environment variables.
+ * Genkit initialization with the latest Gemini 2.5 Flash model.
+ * Using 'googleai/gemini-2.5-flash' for high-performance strategic synthesis.
  */
 export const ai = genkit({
   plugins: [
@@ -12,5 +11,5 @@ export const ai = genkit({
       apiKey: process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY,
     }),
   ],
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-2.5-flash',
 });

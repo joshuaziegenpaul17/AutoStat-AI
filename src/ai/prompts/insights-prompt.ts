@@ -21,7 +21,7 @@ export const InsightsOutputSchema = z.object({
 
 export const aiInsightsPrompt = ai.definePrompt({
   name: 'aiInsightsPrompt',
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-2.5-flash',
   input: { schema: InsightsInputSchema },
   output: { schema: InsightsOutputSchema },
   prompt: `You are an elite enterprise data analyst and strategic consultant. Analyze the provided dataset snapshot and statistical summary to generate deep business intelligence.

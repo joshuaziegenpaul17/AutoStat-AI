@@ -19,6 +19,7 @@ export const ForecastOutputSchema = z.object({
 
 export const predictiveForecastPrompt = ai.definePrompt({
   name: 'predictiveForecastPrompt',
+  model: 'googleai/gemini-2.5-flash',
   input: { schema: ForecastInputSchema },
   output: { schema: ForecastOutputSchema },
   prompt: `You are an expert econometric modeler. Analyze the historical sequence and project future state.

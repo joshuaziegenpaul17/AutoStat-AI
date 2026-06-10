@@ -56,7 +56,7 @@ export default function Dashboard() {
   const runAiAnalysis = async () => {
     if (!currentDataset) return;
     
-    console.log("[AutoStat AI] Initiating AI Synthesis Request...");
+    console.log("[AutoStat Trace] runAiAnalysis triggered");
     setIsAnalyzing(true);
     setAnalysisError(null);
     
@@ -65,10 +65,10 @@ export default function Dashboard() {
       return `Column: ${col}\n- Mean: ${stats.mean.toFixed(2)}\n- Median: ${stats.median.toFixed(2)}\n- StdDev: ${stats.stdDev.toFixed(2)}\n- Outliers: ${stats.outliers.length}`;
     }).join('\n\n');
 
-    const sample = getCsvSample(currentDataset, 30); // Smaller sample for faster processing
+    const sample = getCsvSample(currentDataset, 20); // Small sample for stability
     
+    console.log("[AutoStat Trace] Calling runInsightsAction and runAuditAction");
     try {
-      console.log("[AutoStat AI] Sending telemetry to GenAI flows...");
       const [insightsRes, auditRes] = await Promise.all([
         runInsightsAction({
           datasetPreview: sample,
@@ -78,17 +78,19 @@ export default function Dashboard() {
         runAuditAction(sample, currentDataset.headers)
       ]);
 
+      console.log("[AutoStat Trace] runInsightsAction Response:", insightsRes);
+      console.log("[AutoStat Trace] runAuditAction Response:", auditRes);
+
       if (insightsRes.success) {
-        console.log("[AutoStat AI] Synthesis Response Received:", insightsRes.data);
+        console.log("[AutoStat Trace] Insights Synthesis Successful");
         setInsights(insightsRes.data);
       } else {
-        console.error("[AutoStat AI] Synthesis Error:", insightsRes.error);
+        console.warn("[AutoStat Trace] Insights Synthesis Error returned:", insightsRes.error);
         setAnalysisError(insightsRes.error || "Failed to generate strategic insights.");
         toast({ variant: "destructive", title: "Insights Error", description: insightsRes.error });
       }
 
       if (auditRes.success) {
-        console.log("[AutoStat AI] Audit Response Received:", auditRes.data);
         setAuditResults(auditRes.data);
       }
       
@@ -96,7 +98,7 @@ export default function Dashboard() {
         toast({ title: "Analysis Complete", description: "Strategic synthesis and audit mission successful." });
       }
     } catch (err: any) {
-      console.error("[AutoStat AI] Critical Engine Failure:", err);
+      console.error("[AutoStat Trace] UNCAUGHT EXCEPTION in runAiAnalysis:", err);
       setAnalysisError(err.message || "An unexpected error occurred during analysis.");
       toast({ variant: "destructive", title: "Analysis Failed", description: "Engine overload. Please retry." });
     } finally {

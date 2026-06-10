@@ -12,24 +12,26 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
     }
     return { success: true, data: result };
   } catch (error: any) {
-    console.error("[Action:Audit] Failed:", error);
+    console.error("[Action:Audit] Critical Failure:", error);
     return { success: false, error: error?.message || "Structural audit failed" };
   }
 }
 
 export async function runInsightsAction(input: { datasetPreview: string, statsSummary: string, columnNames: string[] }) {
   try {
-    console.log("[Action:Insights] Processing strategic synthesis request...");
+    console.log("[Action:Insights] Dispatching strategic synthesis request to AI flow...");
     const result = await aiInsightsGeneratorFlow(input);
     
-    // Check if the flow returned a fallback error object
+    // Check if the flow returned a fallback error object due to persistent Gemini timeouts
     if (result.confidenceScore === 0 && result.potentialRisks.includes("API_LATENCY_EXCEEDED")) {
-      return { success: false, error: "The AI engine is currently experiencing high latency. Please wait 15 seconds and try again." };
+      console.warn("[Action:Insights] Flow returned a latent-state fallback.");
+      return { success: false, error: "The AI engine is experiencing high latency. Please wait 15 seconds and click 'Regenerate Insights'." };
     }
     
+    console.log("[Action:Insights] Flow returned successful data payload.");
     return { success: true, data: result };
   } catch (error: any) {
-    console.error("[Action:Insights] Failed:", error);
-    return { success: false, error: error?.message || "Insights synthesis failed" };
+    console.error("[Action:Insights] Critical Exception:", error);
+    return { success: false, error: error?.message || "Insights synthesis encountered a system error." };
   }
 }

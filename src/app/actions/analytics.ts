@@ -35,7 +35,7 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
     if (errorMessage.includes("403")) {
       errorMessage = "Permission Denied (403): Your API Key may be invalid or lacks permissions for this model.";
     } else if (errorMessage.includes("404")) {
-      errorMessage = `Model Connection Error (404): The Gemini service endpoint was not found. This usually means the model ID or region is incorrect. (Raw: ${errorMessage})`;
+      errorMessage = `Model Connection Error (404): The Gemini service endpoint was not found. (Raw: ${errorMessage})`;
     } else if (errorMessage.includes("503") || errorMessage.includes("504")) {
       errorMessage = "Service Overload (503/504): The AI engine is under high demand. Please retry in a moment.";
     } else if (errorMessage.includes("429")) {

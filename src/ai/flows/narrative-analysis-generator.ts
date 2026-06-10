@@ -1,56 +1,14 @@
 'use server';
 /**
- * @fileOverview Predictive narrative analysis AI agent.
+ * @fileOverview Predictive temporal analysis AI agent with high-availability retries.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { predictiveForecastPrompt, ForecastInputSchema, ForecastOutputSchema } from '../prompts/predictive-forecast-prompt';
 
-const NarrativeAnalysisGeneratorInputSchema = z.object({
-  analysisResults: z.string().describe('The raw or summarized statistical analysis results as a string.'),
-  context: z.string().optional().describe('Optional additional context.'),
-});
-export type NarrativeAnalysisGeneratorInput = z.infer<typeof NarrativeAnalysisGeneratorInputSchema>;
-
-const NarrativeAnalysisGeneratorOutputSchema = z.object({
-  executiveSummary: z.string().describe('A high-level overview of the findings.'),
-  keyInsights: z.array(z.string()).describe('List of critical observations.'),
-  dataTrends: z.string().describe('Interpretation of identified patterns.'),
-  forecasting: z.object({
-    projection: z.string().describe('A detailed projection.'),
-    confidence: z.string().describe('Confidence level (e.g., High, Medium, Low).'),
-    risks: z.array(z.string()).describe('Potential risks.'),
-    timeframe: z.string().describe('The estimated period.'),
-  }).describe('Predictive analysis.'),
-  recommendations: z.array(z.string()).describe('Actionable next steps.'),
-});
-export type NarrativeAnalysisGeneratorOutput = z.infer<typeof NarrativeAnalysisGeneratorOutputSchema>;
-
-const narrativeAnalysisPrompt = ai.definePrompt({
-  name: 'narrativeAnalysisPrompt',
-  input: { schema: NarrativeAnalysisGeneratorInputSchema },
-  output: { schema: NarrativeAnalysisGeneratorOutputSchema },
-  prompt: `You are an expert statistical analyst and forecaster. Provide a structured interpretation of these statistical results and a forward-looking forecast.
-
-Statistical Analysis Results:
-{{{analysisResults}}}
-
-{{#if context}}
-Additional Context:
-{{{context}}}
-{{/if}}
-
-Include:
-1. Executive Summary.
-2. Key Insights.
-3. Trend analysis.
-4. Data-driven forecast: Projection, confidence level, risks, and timeframe.
-5. Actionable recommendations.`,
-});
-
-async function generateWithRetry(input: NarrativeAnalysisGeneratorInput, retries = 3, delay = 2000): Promise<NarrativeAnalysisGeneratorOutput> {
+async function generateWithRetry(input: any, retries = 3, delay = 2000): Promise<any> {
   try {
-    const { output } = await narrativeAnalysisPrompt(input);
+    const { output } = await predictiveForecastPrompt(input);
     if (!output) throw new Error("Model returned empty output.");
     return output;
   } catch (error: any) {
@@ -58,40 +16,37 @@ async function generateWithRetry(input: NarrativeAnalysisGeneratorInput, retries
     const isTransient = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE") || msg.includes("high demand") || msg.includes("deadline");
 
     if (retries > 0 && isTransient) {
-      console.warn(`[Forecast Retry] AI engine busy. Retrying in ${delay}ms... (${retries} attempts left)`);
+      console.warn(`[Forecast Retry] AI engine busy. Retrying in ${delay}ms...`);
       await new Promise(res => setTimeout(res, delay));
-      return generateWithRetry(input, retries - 1, delay * 1.5);
+      return generateWithRetry(input, retries - 1, delay * 2);
     }
     throw error;
   }
 }
 
-export async function narrativeAnalysisGenerator(input: NarrativeAnalysisGeneratorInput): Promise<NarrativeAnalysisGeneratorOutput> {
+export async function narrativeAnalysisGenerator(input: { timeSeriesData: string, targetColumn: string, horizon: number }) {
   return narrativeAnalysisGeneratorFlow(input);
 }
 
-const narrativeAnalysisGeneratorFlow = ai.defineFlow(
+export const narrativeAnalysisGeneratorFlow = ai.defineFlow(
   {
     name: 'narrativeAnalysisGeneratorFlow',
-    inputSchema: NarrativeAnalysisGeneratorInputSchema,
-    outputSchema: NarrativeAnalysisGeneratorOutputSchema,
+    inputSchema: ForecastInputSchema,
+    outputSchema: ForecastOutputSchema,
   },
   async (input) => {
     try {
       return await generateWithRetry(input);
     } catch (err) {
-      console.error("[Genkit Critical] Permanent failure in narrative generation.", err);
+      console.error("[Forecast Critical] Failure in narrative generation.", err);
       return {
-        executiveSummary: "The AI analysis engine is currently experiencing high demand. Please trigger a manual retry.",
-        keyInsights: ["Numerical metrics processed locally.", "Structural charts remain active."],
-        dataTrends: "Trend interpretation temporarily unavailable.",
-        forecasting: {
-          projection: "Current platform load prevents real-time predictive modeling.",
-          confidence: "Low",
-          risks: ["Service availability"],
-          timeframe: "Immediate"
-        },
-        recommendations: ["Review descriptive statistics cards.", "Retry forecasting in a few moments."]
+        executiveSummary: "Forecasting engine is currently in standby mode.",
+        keyInsights: ["Numerical metrics processed locally."],
+        trajectoryTrend: 'stable',
+        predictedMetrics: [],
+        strategicRiskVectors: ["Service capacity reached."],
+        confidence: 'Low',
+        recommendations: ["Retry the temporal forecast shortly."]
       };
     }
   }

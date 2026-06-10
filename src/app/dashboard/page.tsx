@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState } from 'react';
@@ -13,8 +12,6 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { DatasetUpload } from '@/components/dashboard/DatasetUpload';
 import { StatVisuals } from '@/components/dashboard/StatVisuals';
 import { calculateDescriptiveStats, DescriptiveStats } from '@/lib/stats-engine';
-import { NarrativeAnalysisGeneratorOutput } from '@/ai/flows/narrative-analysis-generator';
-import { DataQualitySuggesterOutput } from '@/ai/flows/data-quality-suggester';
 import { ParsedData, getCsvSample } from '@/lib/data-parser';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,14 +19,14 @@ import { runAuditAction, runForecastAction } from '@/app/actions/analytics';
 
 export default function Dashboard() {
   const [currentDataset, setCurrentDataset] = useState<ParsedData | null>(null);
-  const [aiSuggestions, setAiSuggestions] = useState<DataQualitySuggesterOutput | null>(null);
+  const [aiSuggestions, setAiSuggestions] = useState<any>(null);
   const [isAuditing, setIsAuditing] = useState(false);
   const [isGeneratingNarrative, setIsGeneratingNarrative] = useState(false);
-  const [narrative, setNarrative] = useState<NarrativeAnalysisGeneratorOutput | null>(null);
+  const [narrative, setNarrative] = useState<any>(null);
   const [descriptiveResults, setDescriptiveResults] = useState<Record<string, DescriptiveStats>>({});
   const { toast } = useToast();
 
-  const handleUpload = (data: ParsedData, suggestions: DataQualitySuggesterOutput | null) => {
+  const handleUpload = (data: ParsedData, suggestions: any) => {
     setCurrentDataset(data);
     setAiSuggestions(suggestions);
     
@@ -50,10 +47,10 @@ export default function Dashboard() {
     setIsAuditing(true);
     try {
       const sampleCsv = getCsvSample(currentDataset, 60);
-      const res = await runAuditAction(sampleCsv);
+      const res = await runAuditAction(sampleCsv, currentDataset.headers);
       if (res.success) {
-        setAiSuggestions(res.data as DataQualitySuggesterOutput);
-        toast({ title: "Audit Complete", description: "Diagnostics successfully synthesized." });
+        setAiSuggestions(res.data);
+        toast({ title: "Audit Complete", description: "Structural diagnostics successfully synthesized." });
       } else {
         throw new Error(res.error);
       }
@@ -72,11 +69,14 @@ export default function Dashboard() {
     if (!currentDataset) return;
     setIsGeneratingNarrative(true);
     try {
-      const statsSummary = JSON.stringify(descriptiveResults);
-      const res = await runForecastAction(statsSummary, `Modeling for ${currentDataset.rows.length} points.`);
+      const numericColumns = Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number');
+      const targetColumn = numericColumns[0] || currentDataset.headers[0];
+      const sampleCsv = getCsvSample(currentDataset, 80);
+      
+      const res = await runForecastAction(sampleCsv, targetColumn, 6);
       
       if (res.success) {
-        setNarrative(res.data as NarrativeAnalysisGeneratorOutput);
+        setNarrative(res.data);
         toast({ title: "Forecast Built", description: "Predictive temporal model synthesized." });
       } else {
         throw new Error(res.error);
@@ -106,57 +106,37 @@ MISSION ID:   ${missionId}
 TIMESTAMP:    ${timestamp}
 STATUS:       ANALYSIS COMPLETE
 VECTORS:      ${currentDataset.rows.length}
-DIMENSIONS:   ${currentDataset.headers.length}
 --------------------------------------------------------------------------------
 
 [DATA SOURCE PARAMETERS]
 Headers:      ${currentDataset.headers.join(', ')}
-Types:        ${Object.entries(currentDataset.columnTypes).map(([k, v]) => `${k}:${v}`).join(', ')}
 
 [STATISTICAL DESCRIPTIVES]
 ${Object.entries(descriptiveResults).map(([col, stats]) => `
 --- FIELD: ${col} ---
 Mean:         ${stats.mean.toFixed(4)}
 Std Dev:      ${stats.stdDev.toFixed(4)}
-Median:       ${stats.median}
 Range:        [${stats.min} - ${stats.max}]
-Count:        ${stats.count}
 `).join('\n')}
 
 [STRUCTURAL AUDIT DIAGNOSTICS]
 ${aiSuggestions ? `
+Score:        ${aiSuggestions.qualityScore}/100
 Summary:      ${aiSuggestions.summary}
 Issues:       ${aiSuggestions.suggestions.length} detected
-${aiSuggestions.suggestions.map((s, i) => `
-${i + 1}. [${s.issueType}]
-   Description: ${s.description}
-   Suggestion:  ${s.suggestion}
-   Affected:    ${s.affectedColumns.join(', ')}
+${aiSuggestions.suggestions.map((s: any, i: number) => `
+${i + 1}. [${s.issueType}] ${s.description}
+   Suggestion: ${s.suggestion}
 `).join('')}
-` : 'Audit not performed or pending initialization.'}
+` : 'Audit pending initialization.'}
 
-[PREDICTIVE SYNTHESIS & FORECASTING]
+[PREDICTIVE SYNTHESIS]
 ${narrative ? `
-Executive Summary:
-${narrative.executiveSummary}
-
-Key Analytical Insights:
-${narrative.keyInsights.map((insight, i) => `${i + 1}. ${insight}`).join('\n')}
-
-Temporal Forecast:
-- Projection:  ${narrative.forecasting.projection}
-- Confidence:  ${narrative.forecasting.confidence}
-- Timeframe:   ${narrative.forecasting.timeframe}
-
-Risks & Dependencies:
-${narrative.forecasting.risks.map(risk => `- ${risk}`).join('\n')}
-
-Actionable Recommendations:
-${narrative.recommendations.map(rec => `- ${rec}`).join('\n')}
-` : 'Forecast not initialized for this mission.'}
-
---------------------------------------------------------------------------------
-                         END OF MISSION LOG EXPORT
+Summary:      ${narrative.executiveSummary}
+Trend:        ${narrative.trajectoryTrend.toUpperCase()}
+Confidence:   ${narrative.confidence}
+Risks:        ${narrative.strategicRiskVectors.join(', ')}
+` : 'Forecast not initialized.'}
 ================================================================================
 `;
 
@@ -169,11 +149,6 @@ ${narrative.recommendations.map(rec => `- ${rec}`).join('\n')}
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
-    toast({
-      title: "Mission Log Exported",
-      description: "Structured analytical report downloaded successfully."
-    });
   };
 
   const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
@@ -297,17 +272,20 @@ ${narrative.recommendations.map(rec => `- ${rec}`).join('\n')}
                     {aiSuggestions ? (
                       <div className="space-y-12">
                         <div className="p-12 rounded-[3rem] bg-primary/5 border border-primary/20">
-                           <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-6">Diagnostic Conclusion</h4>
+                           <div className="flex items-center justify-between mb-6">
+                              <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Diagnostic Conclusion</h4>
+                              <Badge className="bg-primary text-black font-black">{aiSuggestions.qualityScore}/100 SCORE</Badge>
+                           </div>
                            <p className="text-2xl text-white/90 leading-tight font-black italic">"{aiSuggestions.summary}"</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                          {aiSuggestions.suggestions.map((s, idx) => (
+                          {aiSuggestions.suggestions.map((s: any, idx: number) => (
                             <div key={idx} className="p-10 rounded-[3rem] bg-zinc-950/40 border border-white/5 hover:border-primary/40 transition-all">
                               <Badge variant="outline" className="text-[9px] border-primary/40 text-primary font-black px-5 py-2 uppercase mb-8 bg-primary/5">{s.issueType}</Badge>
                               <h5 className="text-lg font-black text-white mb-6">{s.description}</h5>
                               <p className="text-sm text-white/40 leading-relaxed mb-8">{s.suggestion}</p>
                               <div className="pt-6 border-t border-white/5 flex flex-wrap gap-2">
-                                {s.affectedColumns.map(col => <Badge key={col} className="bg-white/5 text-white/30 text-[8px] border-none">{col}</Badge>)}
+                                {s.affectedColumns.map((col: string) => <Badge key={col} className="bg-white/5 text-white/30 text-[8px] border-none">{col}</Badge>)}
                               </div>
                             </div>
                           ))}
@@ -388,14 +366,14 @@ ${narrative.recommendations.map(rec => `- ${rec}`).join('\n')}
                         <div className="p-14 rounded-[4rem] bg-gradient-to-br from-primary/30 via-zinc-950 to-zinc-950 border-2 border-primary shadow-[0_0_80px_-20px_rgba(139,92,246,0.3)]">
                            <div className="flex items-center justify-between mb-12">
                              <Badge className="bg-primary text-primary-foreground font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest">
-                               {narrative.forecasting.confidence.toUpperCase()} CONFIDENCE
+                               {narrative.confidence.toUpperCase()} CONFIDENCE
                              </Badge>
                            </div>
                            <h2 className="text-5xl md:text-6xl font-headline font-black text-white mb-12 leading-[0.95] tracking-tighter">
-                             {narrative.forecasting.projection}
+                             {narrative.trajectoryTrend.toUpperCase()} TRAJECTORY
                            </h2>
                            <div className="pt-12 border-t border-primary/20">
-                              <h5 className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">HORIZON: {narrative.forecasting.timeframe}</h5>
+                              <h5 className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">SYNTHESIZED {narrative.predictedMetrics.length} POINTS</h5>
                            </div>
                         </div>
 
@@ -409,13 +387,25 @@ ${narrative.recommendations.map(rec => `- ${rec}`).join('\n')}
                             </div>
                             <div className="space-y-8">
                                <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-4 px-4">
-                                 <Lightbulb className="h-6 w-6" /> Key Maneuvers
+                                 <Lightbulb className="h-6 w-6" /> Strategic Insights
                                </h4>
                                <div className="space-y-5">
-                                 {narrative.keyInsights.map((insight, i) => (
+                                 {narrative.keyInsights.map((insight: string, i: number) => (
                                    <div key={i} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 text-base text-white/70 font-bold flex gap-6">
                                      <span className="text-primary font-black text-xl leading-none">{i+1}</span>
                                      <span className="leading-snug">{insight}</span>
+                                   </div>
+                                 ))}
+                               </div>
+                            </div>
+                            <div className="space-y-8">
+                               <h4 className="text-[11px] font-black text-destructive uppercase tracking-[0.4em] flex items-center gap-4 px-4">
+                                 <ShieldAlert className="h-6 w-6" /> Risk Vectors
+                               </h4>
+                               <div className="space-y-3">
+                                 {narrative.strategicRiskVectors.map((risk: string, i: number) => (
+                                   <div key={i} className="bg-destructive/5 p-6 rounded-2xl border border-destructive/10 text-sm text-destructive/70 font-bold">
+                                     {risk}
                                    </div>
                                  ))}
                                </div>

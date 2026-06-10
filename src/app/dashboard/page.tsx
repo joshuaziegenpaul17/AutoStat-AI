@@ -6,8 +6,8 @@ import {
   BarChart3, LayoutDashboard, Sparkles, ShieldCheck, 
   Zap, BrainCircuit, Loader2, RefreshCw,
   AlertTriangle, Target, Activity, Database, 
-  FileDown, Share2, TrendingUp, Presentation,
-  ChevronRight, Info, HelpCircle
+  TrendingUp, Presentation,
+  HelpCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,7 @@ export default function Dashboard() {
     setInsights(null);
     setAuditResults(null);
     setAnalysisError(null);
-    toast({ title: "Dataset Uploaded", description: `Successfully processed ${data.rows.length} records.` });
+    toast({ title: "Dataset Processed", description: `Successfully analyzed ${data.rows.length} records.` });
   };
 
   const descriptiveResults = useMemo(() => {
@@ -64,7 +64,7 @@ export default function Dashboard() {
     const cacheKey = `${currentDataset.rows.length}-${currentDataset.headers.join('-')}`;
     if (insightsCache.current[cacheKey]) {
       setInsights(insightsCache.current[cacheKey]);
-      toast({ title: "Insights Loaded", description: "Retrieved cached executive summary." });
+      toast({ title: "Analysis Loaded", description: "Retrieved cached executive summary." });
       return;
     }
     
@@ -103,9 +103,9 @@ export default function Dashboard() {
       if (insightsRes.success) {
         setInsights(insightsRes.data);
         insightsCache.current[cacheKey] = insightsRes.data;
-        toast({ title: "Analysis Complete", description: "Executive summary generated successfully." });
+        toast({ title: "Analysis Complete", description: "Executive insights generated successfully." });
       } else {
-        setAnalysisError(insightsRes.error || "Analysis failed to initialize.");
+        setAnalysisError(insightsRes.error || "Analytical engine failed to initialize.");
       }
 
       if (!auditResults) {
@@ -115,7 +115,7 @@ export default function Dashboard() {
         }
       }
     } catch (err: any) {
-      setAnalysisError("A server-side error occurred during analysis.");
+      setAnalysisError("An error occurred during analytical processing.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -128,12 +128,12 @@ export default function Dashboard() {
   }, [currentDataset, auditResults]);
 
   const statusTicker = [
-    "SYSTEM STATUS: SECURE",
+    "SYSTEM STATUS: OPERATIONAL",
     "ENCRYPTION: ACTIVE",
     "DATA INTEGRITY: VERIFIED",
-    "ANALYSIS ENGINE: READY",
-    "SESSION: PROTECTED",
-    "COMPLIANCE: STANDBY",
+    "ANALYTICS ENGINE: READY",
+    "SESSION: SECURE",
+    "COMPLIANCE: ACTIVE",
     "REPORTING: ONLINE"
   ];
 
@@ -161,14 +161,14 @@ export default function Dashboard() {
           </Link>
           <div className="h-6 w-px bg-white/10" />
           <nav className="flex items-center gap-8 text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
-            <Link href="/dashboard" className="text-indigo-500 flex items-center gap-2"><LayoutDashboard className="h-3.5 w-3.5" /> Dashboard</Link>
+            <Link href="/dashboard" className="text-indigo-500 flex items-center gap-2"><LayoutDashboard className="h-3.5 w-3.5" /> Workspace</Link>
             <Link href="/security" className="hover:text-white flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> Security</Link>
             <Link href="/resources" className="hover:text-white flex items-center gap-2"><HelpCircle className="h-3.5 w-3.5" /> Resources</Link>
           </nav>
         </div>
         <div className="flex items-center gap-6">
           <Badge variant="outline" className="border-indigo-500/20 text-indigo-400 bg-indigo-500/5 text-[10px] font-bold px-4 py-1.5 uppercase tracking-widest">
-            {isAnalyzing ? 'STATUS: ANALYZING...' : 'STATUS: ONLINE'}
+            {isAnalyzing ? 'PROCESSING...' : 'STATUS: ONLINE'}
           </Badge>
         </div>
       </header>
@@ -191,14 +191,14 @@ export default function Dashboard() {
                 <div className="flex items-center gap-4">
                   <Badge className="bg-white/5 border-white/10 text-white font-mono text-xs px-4 py-2 rounded-lg">
                     <Database className="h-3.5 w-3.5 mr-2 text-indigo-500" />
-                    FILE: {currentDataset.rows.length > 0 ? 'Data_Workspace.csv' : 'Empty'}
+                    DATASET: ANALYTICS_WORKSPACE
                   </Badge>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { label: 'Data Health', value: `${dataHealthScore}%`, icon: ShieldCheck, color: 'text-indigo-400' },
+                  { label: 'Data Quality', value: `${dataHealthScore}%`, icon: ShieldCheck, color: 'text-indigo-400' },
                   { label: 'Numeric Fields', value: numericColumns.length, icon: Zap, color: 'text-emerald-400' },
                   { label: 'Total Records', value: currentDataset.rows.length.toLocaleString(), icon: Activity, color: 'text-blue-400' },
                   { label: 'Quality Risks', value: auditResults?.issuesIdentified?.length || 0, icon: AlertTriangle, color: 'text-yellow-400' },
@@ -274,20 +274,20 @@ export default function Dashboard() {
               </Tabs>
             </section>
 
-            {/* 3. Predictive Horizons / Trends */}
+            {/* 3. Predictive Analysis */}
             <section className="space-y-10">
               <div>
-                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Forecasting Section</h2>
-                <p className="text-white/40 font-medium">Trajectory modeling and temporal projections based on historical data sequences.</p>
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Predictive Analysis</h2>
+                <p className="text-white/40 font-medium">Trend modeling and projections based on historical data sequences.</p>
               </div>
               <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-[2.5rem] p-12 text-center">
                 <div className="max-w-2xl mx-auto space-y-6">
                   <div className="p-4 rounded-full bg-indigo-500/10 w-fit mx-auto border border-indigo-500/20">
                     <TrendingUp className="h-8 w-8 text-indigo-500" />
                   </div>
-                  <h3 className="text-2xl font-bold">Temporal Prediction Engine</h3>
+                  <h3 className="text-2xl font-bold">Forecast Projections</h3>
                   <p className="text-white/50 leading-relaxed font-medium">
-                    Our statistical forecasting models are processing the sequential velocity of your numeric fields. Final projections will be integrated into the AI Executive Summary below.
+                    The analytical engine is processing sequential patterns. Future projections will be integrated into the Executive Summary below.
                   </p>
                 </div>
               </Card>
@@ -298,8 +298,8 @@ export default function Dashboard() {
             {/* 4. AI Executive Summary */}
             <section id="ai-summary" className="space-y-10">
               <div>
-                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">AI Executive Summary</h2>
-                <p className="text-white/40 font-medium">Professional automated narrative synthesis for stakeholders and leadership.</p>
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Executive Analysis</h2>
+                <p className="text-white/40 font-medium">Automated narrative synthesis and strategic recommendations for stakeholders.</p>
               </div>
 
               <div className="relative group">
@@ -311,7 +311,7 @@ export default function Dashboard() {
                         <BrainCircuit className="h-8 w-8 text-indigo-500" />
                       </div>
                       <div>
-                        <CardTitle className="text-2xl font-bold tracking-tight">Report Summary</CardTitle>
+                        <CardTitle className="text-2xl font-bold tracking-tight">Executive Summary</CardTitle>
                         <CardDescription className="text-white/40 font-medium uppercase text-[10px] tracking-widest mt-1">Automated insight generation</CardDescription>
                       </div>
                     </div>
@@ -321,17 +321,17 @@ export default function Dashboard() {
                       className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-10 font-bold uppercase tracking-widest text-xs shadow-lg shadow-indigo-600/20 w-full md:w-auto"
                     >
                       {isAnalyzing ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                      {isAnalyzing ? "Analyzing Data..." : insights ? "Refresh Analysis" : "Generate Executive Summary"}
+                      {isAnalyzing ? "Processing..." : insights ? "Refresh Analysis" : "Generate Executive Insights"}
                     </Button>
                   </CardHeader>
                   <CardContent className="p-10">
                     {analysisError && (
-                      <Alert variant="destructive" className="mb-8 bg-red-500/10 border-red-500/20 text-red-400">
+                      <Alert className="mb-8 bg-red-500/10 border-red-500/20 text-red-400">
                         <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>Analysis Difficulty</AlertTitle>
+                        <AlertTitle>Analytical Error</AlertTitle>
                         <AlertDescription>
                           {analysisError}
-                          <Button variant="link" size="sm" onClick={runAiAnalysis} className="text-red-400 font-bold ml-2 underline">Retry Analysis</Button>
+                          <Button variant="link" size="sm" onClick={runAiAnalysis} className="text-red-400 font-bold ml-2 underline">Retry</Button>
                         </AlertDescription>
                       </Alert>
                     )}
@@ -395,7 +395,7 @@ export default function Dashboard() {
                               <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Model Precision Score</p>
                             </Card>
                             <Card className="bg-red-500/5 border-red-500/20 rounded-2xl p-8">
-                              <h5 className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-6 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Noted Risks</h5>
+                              <h5 className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-6 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Quality Risks</h5>
                               <ul className="space-y-3">
                                 {insights.potentialRisks.map((r: string, i: number) => (
                                   <li key={i} className="text-xs text-red-200/60 leading-relaxed font-medium">- {r}</li>
@@ -406,7 +406,7 @@ export default function Dashboard() {
                         </div>
                         
                         <div className="pt-10 border-t border-white/5">
-                          <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-8">Recommendations & Next Steps</h4>
+                          <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-8">Recommendations</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {insights.recommendations.map((rec: string, i: number) => (
                               <Card key={i} className="bg-white/5 border-white/10 p-6 rounded-xl">
@@ -422,8 +422,8 @@ export default function Dashboard() {
                           <Presentation className="h-16 w-16 text-white/20" />
                         </div>
                         <div className="space-y-2">
-                          <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Action Required</p>
-                          <p className="text-white/40 font-medium max-w-md mx-auto">Generate analysis to unlock AI-powered insights and executive recommendations.</p>
+                          <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Analysis Required</p>
+                          <p className="text-white/40 font-medium max-w-md mx-auto">Initialize the analytical engine to unlock AI-powered insights and executive recommendations.</p>
                         </div>
                         <Button 
                           onClick={runAiAnalysis} 
@@ -439,42 +439,12 @@ export default function Dashboard() {
                       <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6">
                         <div className="flex items-center gap-3">
                           <ShieldCheck className="h-5 w-5 text-indigo-500" />
-                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Report Verified by Analysis Engine v2.0</span>
+                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Analysis Engine v2.5 Verified</span>
                         </div>
                         <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">TIMESTAMP: {new Date().toLocaleTimeString()}</p>
                       </div>
                     </CardFooter>
                   )}
-                </Card>
-              </div>
-            </section>
-
-            {/* 5. Export & Share Section */}
-            <section className="space-y-10 pt-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className="bg-white/5 border-white/10 rounded-[2rem] p-10 group hover:border-indigo-500/30 transition-all">
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="space-y-2">
-                      <h4 className="text-xl font-bold">Analytics Report Export</h4>
-                      <p className="text-sm text-white/40 font-medium">Download a professional PDF report including all charts and executive summaries.</p>
-                    </div>
-                    <FileDown className="h-8 w-8 text-white/20 group-hover:text-indigo-500 transition-colors" />
-                  </div>
-                  <Button variant="outline" className="w-full border-white/10 hover:bg-white/10 h-14 rounded-xl font-bold uppercase tracking-widest text-xs">
-                    Export PDF Report
-                  </Button>
-                </Card>
-                <Card className="bg-white/5 border-white/10 rounded-[2rem] p-10 group hover:border-emerald-500/30 transition-all">
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="space-y-2">
-                      <h4 className="text-xl font-bold">Workspace Sharing</h4>
-                      <p className="text-sm text-white/40 font-medium">Generate a secure access link to share this analytical workspace with stakeholders.</p>
-                    </div>
-                    <Share2 className="h-8 w-8 text-white/20 group-hover:text-emerald-500 transition-colors" />
-                  </div>
-                  <Button variant="outline" className="w-full border-white/10 hover:bg-white/10 h-14 rounded-xl font-bold uppercase tracking-widest text-xs">
-                    Share Workspace
-                  </Button>
                 </Card>
               </div>
             </section>

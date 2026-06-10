@@ -1,17 +1,17 @@
 
 import Link from 'next/link';
-import { BarChart3, ArrowRight, ShieldCheck, Database, Globe, LineChart, FileText } from 'lucide-react';
+import { BarChart3, ArrowRight, ShieldCheck, Database, LineChart, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function LandingPage() {
   const statusItems = [
     "ENCRYPTION: AES-256 ACTIVE",
     "DATA PRIVACY: SECURE",
-    "STATISTICAL ENGINE: STANDBY",
+    "ANALYTICS ENGINE: STANDBY",
     "ENTERPRISE ANALYTICS ONLINE",
     "SESSION: PROTECTED",
-    "AUDIT LOGGING: ENABLED",
-    "COMPLIANCE PROTOCOLS: ACTIVE"
+    "COMPLIANCE PROTOCOLS: ACTIVE",
+    "DATA INTEGRITY: VERIFIED"
   ];
 
   return (
@@ -32,7 +32,7 @@ export default function LandingPage() {
           </nav>
           <Link href="/dashboard">
             <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 font-bold">
-              Open Dashboard
+              Open Workspace
             </Button>
           </Link>
         </div>
@@ -45,19 +45,19 @@ export default function LandingPage() {
           <div className="container mx-auto px-6 text-center max-w-4xl relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-xs font-bold mb-8 uppercase tracking-widest">
               <ShieldCheck className="h-3 w-3" />
-              <span>Enterprise Data Analytics Platform</span>
+              <span>Enterprise Analytics Platform</span>
             </div>
             <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter uppercase">
               Automated <br />
               <span className="text-indigo-500">Analytics</span>
             </h1>
             <p className="text-lg md:text-xl text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-              Transform raw data into professional executive reports instantly. AutoStat AI provides comprehensive statistical profiling, predictive modeling, and automated narratives for your enterprise datasets.
+              Transform raw data into professional executive insights instantly. AutoStat AI provides comprehensive statistical profiling, predictive modeling, and automated narratives for your enterprise datasets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">
                 <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-12 h-16 text-lg font-bold group shadow-xl shadow-indigo-600/20">
-                  Launch Analysis <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  Initialize Analysis <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -103,7 +103,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold mb-4 tracking-tight">Executive Reporting</h3>
               <p className="text-white/40 leading-relaxed font-medium">
-                Download professional-grade reports designed for stakeholders. Includes AI-powered summaries, visualizations, and actionable recommendations.
+                Access professional-grade analytical findings designed for stakeholders. Includes AI-powered summaries, visualizations, and actionable insights.
               </p>
             </div>
           </div>

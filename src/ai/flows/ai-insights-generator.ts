@@ -1,6 +1,7 @@
+
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent with optimized retries for Server Action safety.
+ * @fileOverview Strategic Analysis AI agent with optimized retries for Server Action safety.
  */
 
 import { ai } from '@/ai/genkit';
@@ -20,7 +21,7 @@ const InsightsFlowInputSchema = z.object({
 async function generateWithRetry(input: any, retries = 3, delay = 5000) {
   try {
     const { output } = await aiInsightsPrompt(input);
-    if (!output) throw new Error("Analytical engine produced no data.");
+    if (!output) throw new Error("Analytical engine produced no insights.");
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
@@ -34,7 +35,7 @@ async function generateWithRetry(input: any, retries = 3, delay = 5000) {
     if (retries > 0 && isRetryable) {
       const jitter = Math.random() * 2000;
       const finalDelay = delay + jitter;
-      console.warn(`[Insights Flow] Rate limit detected. Retrying in ${Math.round(finalDelay)}ms... (${retries} retries left)`);
+      console.warn(`[Analysis Flow] Capacity detected. Retrying in ${Math.round(finalDelay)}ms... (${retries} retries left)`);
       await new Promise(res => setTimeout(res, finalDelay));
       return generateWithRetry(input, retries - 1, delay * 2);
     }

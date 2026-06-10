@@ -15,7 +15,7 @@ const InsightsFlowInputSchema = z.object({
 
 async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 4, delay = 6000): Promise<any> {
   try {
-    console.log(`[AI Synthesis] Dispatching request. Retries remaining: ${retries}`);
+    console.log(`[AI Synthesis] Dispatching request to Gemini 2.5 Flash. Retries remaining: ${retries}`);
     
     const promptInput = {
       datasetPreview: input.datasetPreview,
@@ -25,14 +25,23 @@ async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>,
 
     const response = await aiInsightsPrompt(promptInput);
     
+    console.log("RAW GEMINI RESPONSE", JSON.stringify(response, null, 2));
+
     if (!response || !response.output) {
+      console.error("[AI Synthesis] EMPTY OUTPUT FROM GEMINI");
       throw new Error("Empty analytical output received from engine.");
     }
 
+    console.log("PARSED RESPONSE", JSON.stringify(response.output, null, 2));
     return response.output;
   } catch (error: any) {
     const errorMsg = error?.message || "Unknown Engine Error";
     console.error(`[AI Synthesis Error] ${errorMsg}`);
+
+    // Log Zod issues if they exist
+    if (error.name === 'ZodError') {
+      console.error("[SCHEMA VALIDATION FAILURE]", JSON.stringify(error.errors, null, 2));
+    }
 
     const isRateLimit = errorMsg.includes("429") || errorMsg.includes("quota") || errorMsg.toLowerCase().includes("rate limit");
     const isRetryable = isRateLimit || 
@@ -42,7 +51,6 @@ async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>,
                         errorMsg.includes("deadline");
 
     if (retries > 0 && isRetryable) {
-      // Exponential backoff with jitter
       const jitter = Math.random() * 2000;
       const waitTime = (isRateLimit ? delay * 2 : delay) + jitter;
       
@@ -66,6 +74,8 @@ export const aiInsightsGeneratorFlow = ai.defineFlow(
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {
-    return await generateWithRetry(input);
+    const result = await generateWithRetry(input);
+    console.log("RETURNED TO CLIENT", JSON.stringify(result, null, 2));
+    return result;
   }
 );

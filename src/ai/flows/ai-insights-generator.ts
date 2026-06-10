@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent with enhanced telemetry and resilient exponential backoff.
+ * @fileOverview Strategic Insights AI agent with optimized telemetry and sensible retry limits.
  */
 
 import { ai } from '@/ai/genkit';
@@ -13,9 +13,9 @@ const InsightsFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 5, delay = 5000): Promise<any> {
+async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 2, delay = 2000): Promise<any> {
   try {
-    console.log(`[AI Synthesis] Dispatching request to Gemini. Columns: ${input.columnNames.length}. Retries remaining: ${retries}`);
+    console.log(`[AI Synthesis] Dispatching request. Retries remaining: ${retries}`);
     
     const promptInput = {
       datasetPreview: input.datasetPreview,
@@ -26,10 +26,9 @@ async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>,
     const response = await aiInsightsPrompt(promptInput);
     
     if (!response || !response.output) {
-      throw new Error("Gemini returned a null or empty output object.");
+      throw new Error("Empty analytical output received from engine.");
     }
 
-    console.log(`[AI Synthesis] Synthesis successful. Confidence: ${response.output.confidenceScore}%`);
     return response.output;
   } catch (error: any) {
     const errorMsg = error?.message || "Unknown Engine Error";
@@ -38,12 +37,10 @@ async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>,
     const isRetryable = errorMsg.includes("503") || 
                         errorMsg.includes("429") || 
                         errorMsg.includes("UNAVAILABLE") || 
-                        errorMsg.includes("OVERLOADED") ||
-                        errorMsg.includes("RESOURCE_EXHAUSTED") ||
                         errorMsg.includes("quota");
 
     if (retries > 0 && isRetryable) {
-      console.warn(`[AI Synthesis] Rate limit or transient error detected. Retrying in ${delay}ms...`);
+      console.warn(`[AI Synthesis] Retrying in ${delay}ms...`);
       await new Promise(res => setTimeout(res, delay));
       return generateWithRetry(input, retries - 1, delay * 2);
     }

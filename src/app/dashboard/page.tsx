@@ -94,27 +94,27 @@ export default function Dashboard() {
   const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#020617] data-grid mesh-gradient">
-      <header className="h-20 glass border-b border-white/10 flex items-center justify-between px-10 sticky top-0 z-50">
+    <div className="flex flex-col min-h-screen bg-background data-grid mesh-gradient">
+      <header className="h-20 glass border-b border-white/5 flex items-center justify-between px-10 sticky top-0 z-50">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center glow-primary">
-              <BarChart3 className="h-6 w-6 text-black" />
+              <BarChart3 className="h-6 w-6 text-primary-foreground" />
             </div>
             <span className="font-headline font-black text-xl tracking-tight text-white">AutoStat<span className="text-primary italic">AI</span></span>
           </Link>
-          <div className="h-8 w-px bg-white/10 hidden md:block" />
+          <div className="h-8 w-px bg-white/5 hidden md:block" />
           <nav className="hidden md:flex items-center gap-6">
             <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/5 text-[10px] font-black text-white/40 uppercase tracking-widest">
-              <LayoutGrid className="h-3 w-3" /> Mission Workspace
+              <LayoutGrid className="h-3 w-3" /> Operations Room
             </div>
           </nav>
         </div>
         <div className="flex items-center gap-6">
           <Badge variant="outline" className="border-primary/40 text-primary text-[10px] px-4 py-1.5 font-black uppercase tracking-[0.2em] bg-primary/5">
-            ENGINE STATUS: OPTIMAL
+            NODE STATUS: ACTIVE
           </Badge>
-          <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/10" />
+          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-white/5" />
         </div>
       </header>
 
@@ -125,7 +125,7 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="max-w-[1800px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 bg-slate-950/80 p-10 rounded-[3.5rem] border border-white/10 shadow-2xl backdrop-blur-3xl">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 glass p-10 rounded-[3.5rem] border border-white/5 shadow-2xl">
               <div className="flex items-center gap-8">
                 <div className="w-16 h-16 rounded-[1.5rem] bg-primary/10 flex items-center justify-center border border-primary/20 glow-primary">
                   <Database className="h-8 w-8 text-primary" />
@@ -133,22 +133,22 @@ export default function Dashboard() {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <h2 className="text-3xl font-black text-white tracking-tighter">
-                      Mission Alpha: {currentDataset.rows.length.toLocaleString()} Records
+                      Mission: {currentDataset.rows.length.toLocaleString()} Vectors
                     </h2>
-                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px] font-black uppercase px-2 py-0.5">Verified</Badge>
+                    <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/30 text-[9px] font-black uppercase px-2 py-0.5">Verified Ingestion</Badge>
                   </div>
                   <div className="flex items-center gap-6">
-                    <p className="text-[10px] text-primary/60 font-black uppercase tracking-[0.4em]">Multi-Vector Stream Stable</p>
-                    <div className="h-1 w-1 rounded-full bg-white/20" />
-                    <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.4em]">Latency: 14ms</p>
+                    <p className="text-[10px] text-primary/60 font-black uppercase tracking-[0.4em]">Signal Integrity: High</p>
+                    <div className="h-1 w-1 rounded-full bg-white/10" />
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.4em]">Cluster: Alpha-9</p>
                   </div>
                 </div>
               </div>
               <div className="flex gap-4 w-full lg:w-auto">
-                <Button variant="outline" size="lg" className="flex-1 lg:flex-none rounded-2xl h-16 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black px-8" onClick={() => setCurrentDataset(null)}>
+                <Button variant="outline" size="lg" className="flex-1 lg:flex-none rounded-2xl h-16 border-white/5 bg-white/5 hover:bg-white/10 text-white font-black px-8" onClick={() => setCurrentDataset(null)}>
                   <RefreshCw className="h-5 w-5 mr-3" /> SWAP MISSION
                 </Button>
-                <Button size="lg" className="flex-1 lg:flex-none bg-primary hover:bg-primary/90 text-black rounded-2xl h-16 px-12 font-black shadow-2xl shadow-primary/30">
+                <Button size="lg" className="flex-1 lg:flex-none bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl h-16 px-12 font-black shadow-2xl shadow-primary/30">
                   EXPORT LOG
                 </Button>
               </div>
@@ -158,17 +158,14 @@ export default function Dashboard() {
               <div className="2xl:col-span-8 space-y-12">
                 <Tabs defaultValue="visuals" className="w-full">
                   <div className="flex items-center justify-between mb-8">
-                    <TabsList className="bg-slate-950/80 border border-white/10 p-1.5 rounded-[2rem]">
-                      <TabsTrigger value="visuals" className="rounded-[1.5rem] px-12 py-4 data-[state=active]:bg-primary data-[state=active]:text-black font-black text-[10px] uppercase tracking-[0.2em] transition-all">
-                        Telemetry View
+                    <TabsList className="bg-zinc-950/80 border border-white/5 p-1.5 rounded-[2rem]">
+                      <TabsTrigger value="visuals" className="rounded-[1.5rem] px-12 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black text-[10px] uppercase tracking-[0.2em] transition-all">
+                        Visual Discovery
                       </TabsTrigger>
-                      <TabsTrigger value="table" className="rounded-[1.5rem] px-12 py-4 data-[state=active]:bg-primary data-[state=active]:text-black font-black text-[10px] uppercase tracking-[0.2em] transition-all">
+                      <TabsTrigger value="table" className="rounded-[1.5rem] px-12 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black text-[10px] uppercase tracking-[0.2em] transition-all">
                         Grid Explorer
                       </TabsTrigger>
                     </TabsList>
-                    <div className="flex items-center gap-3 text-white/30 text-[10px] font-black uppercase tracking-widest">
-                      <ChevronRight className="h-4 w-4 text-primary" /> Visual Synthesis Active
-                    </div>
                   </div>
                   
                   <TabsContent value="visuals" className="mt-0 outline-none">
@@ -179,7 +176,7 @@ export default function Dashboard() {
                     <Card className="glass border-none overflow-hidden rounded-[3.5rem] shadow-2xl">
                       <div className="overflow-x-auto max-h-[750px] scrollbar-hide">
                         <table className="w-full text-left text-[11px]">
-                          <thead className="bg-slate-950/95 sticky top-0 z-10 text-primary font-black uppercase tracking-[0.3em] border-b border-white/10">
+                          <thead className="bg-zinc-950 sticky top-0 z-10 text-primary font-black uppercase tracking-[0.3em] border-b border-white/5">
                             <tr>
                               {currentDataset.headers.map(h => <th key={h} className="px-10 py-7">{h}</th>)}
                             </tr>
@@ -188,7 +185,7 @@ export default function Dashboard() {
                             {currentDataset.rows.slice(0, 100).map((row, i) => (
                               <tr key={i} className="hover:bg-primary/[0.03] transition-colors group">
                                 {currentDataset.headers.map(h => (
-                                  <td key={h} className="px-10 py-6 font-mono text-white/40 group-hover:text-white/80">{row[h]}</td>
+                                  <td key={h} className="px-10 py-6 font-mono text-white/30 group-hover:text-white/70">{row[h]}</td>
                                 ))}
                               </tr>
                             ))}
@@ -199,33 +196,29 @@ export default function Dashboard() {
                   </TabsContent>
                 </Tabs>
 
-                <Card className="glass border-primary/20 rounded-[3.5rem] shadow-2xl overflow-hidden relative group">
-                  <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none relative">
-                    <SearchCode className="h-40 w-40 text-primary" />
-                  </div>
+                <Card className="glass border-none rounded-[3.5rem] shadow-2xl overflow-hidden relative group">
                   <CardHeader className="pb-10 pt-12 px-12">
                     <CardTitle className="text-3xl flex items-center gap-4 text-white font-black tracking-tighter">
                       <SearchCode className="h-9 w-9 text-primary glow-text" />
-                      Structural Diagnostics
+                      Structural Audit
                     </CardTitle>
-                    <CardDescription className="text-[10px] uppercase tracking-[0.4em] font-black text-primary/60 mt-2">Automated quality validation & risk detection</CardDescription>
+                    <CardDescription className="text-[10px] uppercase tracking-[0.4em] font-black text-primary/60 mt-2">Anomaly detection & quality metrics</CardDescription>
                   </CardHeader>
                   <CardContent className="px-12 pb-16">
                     {aiSuggestions ? (
                       <div className="space-y-12">
-                        <div className="p-12 rounded-[3rem] bg-primary/5 border border-primary/20 relative overflow-hidden group/audit">
-                           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover/audit:opacity-100 transition-opacity" />
-                           <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-6">Diagnostics Conclusion</h4>
-                           <p className="text-2xl text-white/90 leading-tight font-black italic relative z-10">"{aiSuggestions.summary}"</p>
+                        <div className="p-12 rounded-[3rem] bg-primary/5 border border-primary/20">
+                           <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-6">Diagnostic Conclusion</h4>
+                           <p className="text-2xl text-white/90 leading-tight font-black italic">"{aiSuggestions.summary}"</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                           {aiSuggestions.suggestions.map((s, idx) => (
-                            <div key={idx} className="p-10 rounded-[3rem] bg-slate-950/40 border border-white/5 hover:border-primary/40 transition-all group/item">
+                            <div key={idx} className="p-10 rounded-[3rem] bg-zinc-950/40 border border-white/5 hover:border-primary/40 transition-all">
                               <Badge variant="outline" className="text-[9px] border-primary/40 text-primary font-black px-5 py-2 uppercase mb-8 bg-primary/5">{s.issueType}</Badge>
-                              <h5 className="text-lg font-black text-white mb-6 group-hover/item:text-primary transition-colors">{s.description}</h5>
+                              <h5 className="text-lg font-black text-white mb-6">{s.description}</h5>
                               <p className="text-sm text-white/40 leading-relaxed mb-8">{s.suggestion}</p>
                               <div className="pt-6 border-t border-white/5 flex flex-wrap gap-2">
-                                {s.affectedColumns.map(col => <Badge key={col} className="bg-white/5 text-white/40 text-[8px] border-none">{col}</Badge>)}
+                                {s.affectedColumns.map(col => <Badge key={col} className="bg-white/5 text-white/30 text-[8px] border-none">{col}</Badge>)}
                               </div>
                             </div>
                           ))}
@@ -237,11 +230,11 @@ export default function Dashboard() {
                       </div>
                     ) : (
                       <div className="py-32 text-center">
-                        <ShieldAlert className="h-20 w-20 text-white/10 mx-auto mb-10" />
-                        <h4 className="text-4xl font-black text-white mb-6 tracking-tighter">Audit Pipeline Pending</h4>
-                        <p className="text-white/30 text-lg mb-12 max-w-md mx-auto">Validate structural integrity and identify mission-critical anomalies.</p>
-                        <Button onClick={runAudit} disabled={isAuditing} className="bg-primary hover:bg-primary/90 text-black rounded-full px-20 h-20 font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20">
-                          {isAuditing ? 'VALIDATING...' : 'INITIATE DIAGNOSTIC'}
+                        <ShieldAlert className="h-20 w-20 text-white/5 mx-auto mb-10" />
+                        <h4 className="text-4xl font-black text-white mb-6 tracking-tighter">Audit Required</h4>
+                        <p className="text-white/20 text-lg mb-12 max-w-md mx-auto">Analyze structural integrity for mission-critical discoveries.</p>
+                        <Button onClick={runAudit} disabled={isAuditing} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-20 h-20 font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20">
+                          {isAuditing ? 'PROCESSING...' : 'INITIATE AUDIT'}
                         </Button>
                       </div>
                     )}
@@ -254,12 +247,12 @@ export default function Dashboard() {
                   <CardHeader className="p-0 mb-12">
                     <CardTitle className="text-2xl text-white font-black flex items-center gap-4 tracking-tighter">
                       <Target className="h-7 w-7 text-primary glow-text" />
-                      Core Vectors
+                      Vector Averages
                     </CardTitle>
                   </CardHeader>
                   <div className="space-y-8">
                     {numericColumns.slice(0, 4).map(col => (
-                      <div key={col} className="bg-slate-950/60 p-8 rounded-[2.5rem] border border-white/5 hover:border-primary/20 transition-all">
+                      <div key={col} className="bg-zinc-950/60 p-8 rounded-[2.5rem] border border-white/5 hover:border-primary/20 transition-all">
                         <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-6">{col}</h4>
                         <div className="grid grid-cols-2 gap-8">
                            <div>
@@ -277,68 +270,61 @@ export default function Dashboard() {
                 </Card>
 
                 <Card className="glass border-primary/40 rounded-[3.5rem] overflow-hidden shadow-2xl relative min-h-[850px] flex flex-col group">
-                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                  <CardHeader className="pb-8 pt-16 px-12 relative z-10">
+                  <CardHeader className="pb-8 pt-16 px-12">
                     <CardTitle className="text-4xl flex items-center gap-5 text-white font-black tracking-tighter glow-text">
                       <Sparkles className="h-12 w-12 text-primary" />
-                      HERO FORECAST
+                      PREDICTIVE
                     </CardTitle>
                     <Badge variant="outline" className="mt-6 border-primary/50 text-primary font-black uppercase px-6 py-3 text-[10px] tracking-widest bg-primary/5">
-                      Predictive Synthesis Active
+                      Synthesis Active
                     </Badge>
                   </CardHeader>
-                  <CardContent className="px-12 pb-16 flex-grow flex flex-col relative z-10">
+                  <CardContent className="px-12 pb-16 flex-grow flex flex-col">
                     {!narrative ? (
                       <div className="flex-grow flex flex-col items-center justify-center text-center py-20">
-                        <TrendingUp className="h-24 w-24 text-white/10 mb-12" />
-                        <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Initiate Synthesis</h3>
-                        <p className="text-white/30 text-lg mb-16 max-w-xs mx-auto">Generate deep-temporal projections based on current data vectors.</p>
+                        <TrendingUp className="h-24 w-24 text-white/5 mb-12" />
+                        <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Initiate Forecast</h3>
+                        <p className="text-white/20 text-lg mb-16 max-w-xs mx-auto">Construct high-temporal projections from current distributions.</p>
                         <Button 
                           onClick={generateNarrative} 
                           disabled={isGeneratingNarrative}
-                          className="w-full bg-primary hover:bg-primary/90 text-black rounded-[3rem] h-28 font-black text-xl uppercase shadow-2xl shadow-primary/40 transition-all hover:scale-[1.02]"
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-[3rem] h-28 font-black text-xl uppercase shadow-2xl shadow-primary/40 transition-all hover:scale-[1.02]"
                         >
                           {isGeneratingNarrative ? <RefreshCw className="h-10 w-10 mr-4 animate-spin" /> : <Zap className="h-10 w-10 mr-4" />}
-                          {isGeneratingNarrative ? 'SYNTHESIZING...' : 'RUN FORECAST'}
+                          {isGeneratingNarrative ? 'MODELING...' : 'RUN FORECAST'}
                         </Button>
                       </div>
                     ) : (
                       <div className="animate-in fade-in slide-in-from-top-12 duration-1000 space-y-16">
-                        <div className="p-14 rounded-[4rem] bg-gradient-to-br from-primary/30 via-slate-950 to-slate-950 border-2 border-primary shadow-[0_0_80px_-20px_rgba(16,185,129,0.4)] relative overflow-hidden group/forecast">
-                           <div className="absolute top-0 right-0 p-10 opacity-10">
-                             <TrendingUp className="h-40 w-40 text-primary" />
-                           </div>
+                        <div className="p-14 rounded-[4rem] bg-gradient-to-br from-primary/30 via-zinc-950 to-zinc-950 border-2 border-primary shadow-[0_0_80px_-20px_rgba(139,92,246,0.3)]">
                            <div className="flex items-center justify-between mb-12">
-                             <Badge className="bg-primary text-black font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest">
+                             <Badge className="bg-primary text-primary-foreground font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest">
                                {narrative.forecasting.confidence.toUpperCase()} CONFIDENCE
                              </Badge>
                            </div>
-                           <h2 className="text-5xl md:text-6xl font-headline font-black text-white mb-12 leading-[0.95] tracking-tighter relative z-10">
+                           <h2 className="text-5xl md:text-6xl font-headline font-black text-white mb-12 leading-[0.95] tracking-tighter">
                              {narrative.forecasting.projection}
                            </h2>
                            <div className="pt-12 border-t border-primary/20">
-                              <div className="flex justify-between items-center">
-                                <h5 className="text-[11px] font-black text-white/50 uppercase tracking-[0.3em]">TIME HORIZON: {narrative.forecasting.timeframe}</h5>
-                                <Badge variant="outline" className="border-white/10 text-white/40 uppercase font-black text-[9px]">Calculated v3.5</Badge>
-                              </div>
+                              <h5 className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">HORIZON: {narrative.forecasting.timeframe}</h5>
                            </div>
                         </div>
 
                         <ScrollArea className="h-[450px] pr-8 scrollbar-hide">
                           <div className="space-y-12 pb-12">
-                            <div className="bg-slate-950/80 p-12 rounded-[3.5rem] border border-white/10 shadow-xl">
+                            <div className="bg-zinc-950/80 p-12 rounded-[3.5rem] border border-white/5 shadow-xl">
                                <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-4 mb-8">
                                  <ClipboardCheck className="h-6 w-6" /> Executive Log
                                </h4>
-                               <p className="text-xl leading-relaxed text-white/70 font-bold italic">"{narrative.executiveSummary}"</p>
+                               <p className="text-xl leading-relaxed text-white/60 font-bold italic">"{narrative.executiveSummary}"</p>
                             </div>
                             <div className="space-y-8">
                                <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-4 px-4">
-                                 <Lightbulb className="h-6 w-6" /> Strategic Maneuvers
+                                 <Lightbulb className="h-6 w-6" /> Key Maneuvers
                                </h4>
                                <div className="space-y-5">
                                  {narrative.keyInsights.map((insight, i) => (
-                                   <div key={i} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 text-base text-white/80 font-bold flex gap-6 hover:bg-white/10 transition-colors">
+                                   <div key={i} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 text-base text-white/70 font-bold flex gap-6">
                                      <span className="text-primary font-black text-xl leading-none">{i+1}</span>
                                      <span className="leading-snug">{insight}</span>
                                    </div>
@@ -350,10 +336,10 @@ export default function Dashboard() {
 
                         <Button 
                           variant="ghost" 
-                          className="w-full text-[11px] uppercase font-black text-white/10 hover:text-primary py-10 rounded-[3.5rem] border border-dashed border-white/10" 
+                          className="w-full text-[11px] uppercase font-black text-white/10 hover:text-primary py-10 rounded-[3.5rem] border border-dashed border-white/5" 
                           onClick={() => setNarrative(null)}
                         >
-                          RESET MISSION PARAMETERS
+                          RESET MISSION
                         </Button>
                       </div>
                     )}

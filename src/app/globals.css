@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 4%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 142 71% 45%;
-    --primary-foreground: 222 47% 4%;
-    --secondary: 217 33% 12%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 12%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 142 76% 36%;
-    --accent-foreground: 210 40% 98%;
+    --background: 240 10% 2%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 2%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 250 89% 65%;
+    --primary-foreground: 240 10% 2%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 12%;
-    --input: 217 33% 12%;
-    --ring: 142 71% 45%;
-    --radius: 1.5rem;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 250 89% 65%;
+    --radius: 1.25rem;
   }
 }
 
@@ -42,27 +42,27 @@
 
 @layer components {
   .glass {
-    @apply bg-slate-950/40 backdrop-blur-3xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+    @apply bg-black/40 backdrop-blur-3xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,1)];
   }
   .glass-card {
-    @apply bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-inner hover:border-primary/20 transition-all duration-500;
+    @apply bg-zinc-900/40 backdrop-blur-xl border border-white/5 shadow-inner hover:border-primary/20 transition-all duration-500;
   }
   .data-grid {
     background-image: 
-      linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+      linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
   }
   .mesh-gradient {
     background-image: 
-      radial-gradient(at 0% 0%, hsla(142, 71%, 45%, 0.05) 0, transparent 50%),
-      radial-gradient(at 50% 0%, hsla(217, 33%, 12%, 0.1) 0, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(142, 71%, 45%, 0.05) 0, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(250, 89%, 65%, 0.08) 0, transparent 50%),
+      radial-gradient(at 50% 0%, hsla(240, 10%, 4%, 0.1) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(262, 83%, 58%, 0.08) 0, transparent 50%);
   }
   .glow-primary {
-    box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 50px -10px rgba(139, 92, 246, 0.4);
   }
   .glow-text {
-    text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
   }
 }

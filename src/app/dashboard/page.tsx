@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { 
   BarChart3, Database, RefreshCw, ShieldAlert, TrendingUp, Lightbulb, ClipboardCheck, Target, Sparkles, SearchCode, Zap, ChevronRight, LayoutGrid
 } from 'lucide-react';
@@ -199,7 +200,7 @@ export default function Dashboard() {
                 </Tabs>
 
                 <Card className="glass border-primary/20 rounded-[3.5rem] shadow-2xl overflow-hidden relative group">
-                  <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                  <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none relative">
                     <SearchCode className="h-40 w-40 text-primary" />
                   </div>
                   <CardHeader className="pb-10 pt-12 px-12">

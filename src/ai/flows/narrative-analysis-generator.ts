@@ -11,7 +11,6 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-// Input Schema
 const NarrativeAnalysisGeneratorInputSchema = z.object({
   analysisResults: z
     .string()
@@ -23,7 +22,6 @@ const NarrativeAnalysisGeneratorInputSchema = z.object({
 });
 export type NarrativeAnalysisGeneratorInput = z.infer<typeof NarrativeAnalysisGeneratorInputSchema>;
 
-// Output Schema
 const NarrativeAnalysisGeneratorOutputSchema = z.object({
   executiveSummary: z.string().describe('A high-level overview of the findings.'),
   keyInsights: z.array(z.string()).describe('List of critical observations from the data.'),
@@ -38,14 +36,11 @@ const NarrativeAnalysisGeneratorOutputSchema = z.object({
 });
 export type NarrativeAnalysisGeneratorOutput = z.infer<typeof NarrativeAnalysisGeneratorOutputSchema>;
 
-/**
- * Prompt definition with structured output guidance.
- */
 const narrativeAnalysisPrompt = ai.definePrompt({
   name: 'narrativeAnalysisPrompt',
   input: {schema: NarrativeAnalysisGeneratorInputSchema},
   output: {schema: NarrativeAnalysisGeneratorOutputSchema},
-  prompt: `You are an expert statistical analyst and business strategist. Your task is to provide a professional, structured textual interpretation of the provided statistical results.
+  prompt: `You are an expert statistical analyst and business strategist. Provide a structured interpretation of these statistical results.
 
 Statistical Analysis Results:
 {{{analysisResults}}}
@@ -55,23 +50,14 @@ Additional Context:
 {{{context}}}
 {{/if}}
 
-Provide your interpretation in a structured format with:
-1. An executive summary.
-2. Specific key insights.
+Include:
+1. Executive Summary.
+2. Key Insights.
 3. Detailed trend analysis.
-4. A data-driven forecast:
-   - Provide a detailed 'projection' explaining the likely future state of these metrics.
-   - Assign a 'confidence' level and explain why (based on the standard deviation/variance in the data).
-   - Identify 'risks' that could alter this trajectory.
-   - Define a logical 'timeframe'.
-5. Clear, actionable recommendations.
-
-Focus on identifying business impact and potential future outcomes based on the numerical distributions.`,
+4. Data-driven forecast: Projection, confidence level, risks, and timeframe.
+5. Actionable recommendations.`,
 });
 
-/**
- * Internal helper to handle transient errors with exponential backoff.
- */
 async function generateWithRetry(input: NarrativeAnalysisGeneratorInput, retries = 3, delay = 1000): Promise<NarrativeAnalysisGeneratorOutput> {
   try {
     const {output} = await narrativeAnalysisPrompt(input);
@@ -82,7 +68,7 @@ async function generateWithRetry(input: NarrativeAnalysisGeneratorInput, retries
     const isTransient = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE") || msg.includes("high demand");
 
     if (retries > 0 && isTransient) {
-      console.warn(`[Genkit Retry] Narrative engine busy. Retrying in ${delay}ms... (${retries} attempts left)`);
+      console.warn(`[Genkit Retry] Forecast engine busy. Retrying in ${delay}ms... (${retries} attempts left)`);
       await new Promise(res => setTimeout(res, delay));
       return generateWithRetry(input, retries - 1, delay * 2);
     }
@@ -90,9 +76,6 @@ async function generateWithRetry(input: NarrativeAnalysisGeneratorInput, retries
   }
 }
 
-/**
- * The main Genkit flow with integrated retry logic and a safe fallback.
- */
 export async function narrativeAnalysisGenerator(input: NarrativeAnalysisGeneratorInput): Promise<NarrativeAnalysisGeneratorOutput> {
   return narrativeAnalysisGeneratorFlow(input);
 }
@@ -108,23 +91,22 @@ const narrativeAnalysisGeneratorFlow = ai.defineFlow(
       return await generateWithRetry(input);
     } catch (err) {
       console.error("[Genkit Critical] Permanent failure in narrative generation.", err);
-      // Fallback response to keep the UI functional
       return {
-        executiveSummary: "The AI analysis engine is currently experiencing high demand.",
+        executiveSummary: "The AI analysis engine is currently experiencing high demand. Automated textual synthesis is temporarily limited.",
         keyInsights: [
-          "Statistical calculations were processed successfully and are visible in the tables/charts.",
-          "Automated textual interpretation is temporarily limited."
+          "Numerical metrics were processed successfully and are visible in the tables.",
+          "Structural charts remain fully interactive."
         ],
         dataTrends: "Trend interpretation is temporarily unavailable while platform services recover.",
         forecasting: {
-          projection: "Current system load prevents real-time predictive modeling.",
+          projection: "Current platform load prevents real-time predictive modeling.",
           confidence: "Low (System Latency)",
-          risks: ["Upstream service availability", "High query volume"],
+          risks: ["Upstream service availability"],
           timeframe: "Immediate"
         },
         recommendations: [
-          "Review the numerical descriptive statistics cards for variance and distribution shifts.",
-          "Try regenerating the insights in a few minutes."
+          "Review the descriptive statistics cards for variance shifts.",
+          "Retry the forecast in a few moments."
         ]
       };
     }

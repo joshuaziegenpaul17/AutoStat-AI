@@ -86,12 +86,12 @@ const dataQualitySuggesterFlow = ai.defineFlow(
     } catch (err) {
       console.error("[Audit Critical] Permanent failure in audit generation.", err);
       return {
-        summary: "The automated audit engine is currently experiencing high load. Core metrics are still functional.",
+        summary: "The automated audit engine is currently experiencing high load. Structural diagnostics were deferred.",
         suggestions: [
           {
             issueType: 'Other',
-            description: 'Automated diagnostic pipeline is in safe-mode.',
-            suggestion: 'Please use the manual re-scan trigger in the dashboard or review descriptive statistics for null counts.',
+            description: 'Automated diagnostic pipeline is currently in standby mode.',
+            suggestion: 'Please try running a manual re-scan in a few moments.',
             affectedColumns: ['All Columns']
           }
         ]

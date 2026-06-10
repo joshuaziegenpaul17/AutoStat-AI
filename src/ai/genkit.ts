@@ -1,12 +1,12 @@
 import { genkit } from 'genkit';
-import { googleAI, gemini15Flash } from '@genkit-ai/google-genai';
+import { googleAI } from '@genkit-ai/google-genai';
 
 /**
  * Genkit initialization with the latest stable Google AI plugin.
  * We use gemini-1.5-flash as the default model for high-speed strategic analysis.
- * Using the exported model object ensures the correct model ID is used.
+ * Using a string identifier ensures compatibility across different Genkit SDK versions.
  */
 export const ai = genkit({
   plugins: [googleAI()],
-  model: gemini15Flash,
+  model: 'googleai/gemini-1.5-flash',
 });

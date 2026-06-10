@@ -35,8 +35,8 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
       errorMessage = "Permission Denied: Verify your Gemini API Key.";
     } else if (errorMessage.includes("404")) {
       errorMessage = "Endpoint Not Found: The AI model is currently unavailable in your region.";
-    } else if (errorMessage.includes("429")) {
-      errorMessage = "Rate Limit Exceeded: Please wait a moment before retrying.";
+    } else if (errorMessage.includes("429") || errorMessage.toLowerCase().includes("rate limit") || errorMessage.toLowerCase().includes("quota")) {
+      errorMessage = "Rate Limit Exceeded: The AI engine is experiencing high demand. Automatic retries attempted, please wait a moment before trying again.";
     }
     
     return { success: false, error: errorMessage };

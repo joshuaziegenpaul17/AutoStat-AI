@@ -13,7 +13,7 @@ const InsightsFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 3, delay = 3000): Promise<any> {
+async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 4, delay = 6000): Promise<any> {
   try {
     console.log(`[AI Synthesis] Dispatching request. Retries remaining: ${retries}`);
     
@@ -34,16 +34,19 @@ async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>,
     const errorMsg = error?.message || "Unknown Engine Error";
     console.error(`[AI Synthesis Error] ${errorMsg}`);
 
-    const isRateLimit = errorMsg.includes("429") || errorMsg.includes("quota") || errorMsg.includes("Rate limit");
+    const isRateLimit = errorMsg.includes("429") || errorMsg.includes("quota") || errorMsg.toLowerCase().includes("rate limit");
     const isRetryable = isRateLimit || 
                         errorMsg.includes("503") || 
                         errorMsg.includes("UNAVAILABLE") || 
-                        errorMsg.includes("high demand");
+                        errorMsg.includes("high demand") ||
+                        errorMsg.includes("deadline");
 
     if (retries > 0 && isRetryable) {
-      // For rate limits, we wait longer
-      const waitTime = isRateLimit ? delay * 1.5 : delay;
-      console.warn(`[AI Synthesis] Retryable error detected. Waiting ${waitTime}ms...`);
+      // Exponential backoff with jitter
+      const jitter = Math.random() * 2000;
+      const waitTime = (isRateLimit ? delay * 2 : delay) + jitter;
+      
+      console.warn(`[AI Synthesis] ${isRateLimit ? 'Rate limit' : 'Transient error'} detected. Waiting ${Math.round(waitTime)}ms before retry...`);
       await new Promise(res => setTimeout(res, waitTime));
       return generateWithRetry(input, retries - 1, delay * 2);
     }

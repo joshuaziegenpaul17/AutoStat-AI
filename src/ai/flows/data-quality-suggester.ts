@@ -12,7 +12,7 @@ const QualityFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-async function generateWithRetry(input: z.infer<typeof QualityFlowInputSchema>, retries = 2, delay = 3000): Promise<any> {
+async function generateWithRetry(input: z.infer<typeof QualityFlowInputSchema>, retries = 3, delay = 5000): Promise<any> {
   try {
     const promptInput = {
       datasetPreview: input.datasetPreview,
@@ -24,11 +24,13 @@ async function generateWithRetry(input: z.infer<typeof QualityFlowInputSchema>, 
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
-    const isRateLimit = msg.includes("429") || msg.includes("quota");
-    const isRetryable = isRateLimit || msg.includes("503") || msg.includes("UNAVAILABLE");
+    const isRateLimit = msg.includes("429") || msg.includes("quota") || msg.toLowerCase().includes("rate limit");
+    const isRetryable = isRateLimit || msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("deadline");
 
     if (retries > 0 && isRetryable) {
-      const waitTime = isRateLimit ? delay * 2 : delay;
+      const jitter = Math.random() * 1500;
+      const waitTime = (isRateLimit ? delay * 2.5 : delay) + jitter;
+      console.warn(`[Audit Retry] ${isRateLimit ? 'Rate limit' : 'Busy'}. Waiting ${Math.round(waitTime)}ms...`);
       await new Promise(res => setTimeout(res, waitTime));
       return generateWithRetry(input, retries - 1, delay * 2);
     }

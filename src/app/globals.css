@@ -32,28 +32,37 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-black;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline tracking-tight;
+    @apply font-headline tracking-tighter;
   }
 }
 
 @layer components {
   .glass {
-    @apply bg-slate-950/60 backdrop-blur-2xl border border-white/10 shadow-2xl;
+    @apply bg-slate-950/40 backdrop-blur-3xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
   }
   .glass-card {
-    @apply bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-inner;
+    @apply bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-inner hover:border-primary/20 transition-all duration-500;
   }
   .data-grid {
     background-image: 
-      linear-gradient(rgba(16, 185, 129, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
-    background-size: 50px 50px;
+      linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
-  .glow-primary-sm {
-    box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.2);
+  .mesh-gradient {
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(142, 71%, 45%, 0.05) 0, transparent 50%),
+      radial-gradient(at 50% 0%, hsla(217, 33%, 12%, 0.1) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(142, 71%, 45%, 0.05) 0, transparent 50%);
+  }
+  .glow-primary {
+    box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.3);
+  }
+  .glow-text {
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
   }
 }

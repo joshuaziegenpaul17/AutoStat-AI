@@ -13,24 +13,27 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { DatasetUpload } from '@/components/dashboard/DatasetUpload';
 import { StatVisuals } from '@/components/dashboard/StatVisuals';
-import { calculateDescriptiveStats, calculatePearsonCorrelation, DescriptiveStats } from '@/lib/stats-engine';
+import { calculateDescriptiveStats, DescriptiveStats } from '@/lib/stats-engine';
 import { ParsedData, getCsvSample } from '@/lib/data-parser';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { runAuditAction, runInsightsAction } from '@/app/actions/analytics';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export default function Dashboard() {
   const [currentDataset, setCurrentDataset] = useState<ParsedData | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [insights, setInsights] = useState<any>(null);
   const [auditResults, setAuditResults] = useState<any>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleUpload = (data: ParsedData) => {
     setCurrentDataset(data);
     setInsights(null);
     setAuditResults(null);
+    setAnalysisError(null);
     toast({ title: "Dataset Uploaded", description: `Successfully ingested ${data.rows.length} records.` });
   };
 
@@ -52,16 +55,20 @@ export default function Dashboard() {
 
   const runAiAnalysis = async () => {
     if (!currentDataset) return;
+    
+    console.log("[AutoStat AI] Initiating AI Synthesis Request...");
     setIsAnalyzing(true);
+    setAnalysisError(null);
     
     // Prepare statistical summary for the AI
     const statsSummary = Object.entries(descriptiveResults).map(([col, stats]) => {
       return `Column: ${col}\n- Mean: ${stats.mean.toFixed(2)}\n- Median: ${stats.median.toFixed(2)}\n- StdDev: ${stats.stdDev.toFixed(2)}\n- Outliers: ${stats.outliers.length}`;
     }).join('\n\n');
 
-    const sample = getCsvSample(currentDataset, 50);
+    const sample = getCsvSample(currentDataset, 30); // Smaller sample for faster processing
     
     try {
+      console.log("[AutoStat AI] Sending telemetry to GenAI flows...");
       const [insightsRes, auditRes] = await Promise.all([
         runInsightsAction({
           datasetPreview: sample,
@@ -72,17 +79,25 @@ export default function Dashboard() {
       ]);
 
       if (insightsRes.success) {
+        console.log("[AutoStat AI] Synthesis Response Received:", insightsRes.data);
         setInsights(insightsRes.data);
       } else {
+        console.error("[AutoStat AI] Synthesis Error:", insightsRes.error);
+        setAnalysisError(insightsRes.error || "Failed to generate strategic insights.");
         toast({ variant: "destructive", title: "Insights Error", description: insightsRes.error });
       }
 
-      if (auditRes.success) setAuditResults(auditRes.data);
+      if (auditRes.success) {
+        console.log("[AutoStat AI] Audit Response Received:", auditRes.data);
+        setAuditResults(auditRes.data);
+      }
       
       if (insightsRes.success || auditRes.success) {
         toast({ title: "Analysis Complete", description: "Strategic synthesis and audit mission successful." });
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error("[AutoStat AI] Critical Engine Failure:", err);
+      setAnalysisError(err.message || "An unexpected error occurred during analysis.");
       toast({ variant: "destructive", title: "Analysis Failed", description: "Engine overload. Please retry." });
     } finally {
       setIsAnalyzing(false);
@@ -181,6 +196,14 @@ END OF MISSION LOG
                   </Button>
                 </CardHeader>
                 <CardContent className="p-10">
+                  {analysisError && (
+                    <Alert variant="destructive" className="mb-8 bg-red-500/10 border-red-500/20 text-red-400">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertTitle>Synthesis Failure</AlertTitle>
+                      <AlertDescription>{analysisError}</AlertDescription>
+                    </Alert>
+                  )}
+
                   {isAnalyzing ? (
                     <div className="space-y-8 py-10">
                       <div className="flex items-center gap-4">

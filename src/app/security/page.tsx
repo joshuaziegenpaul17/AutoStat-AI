@@ -4,8 +4,8 @@
 import React from 'react';
 import { 
   ShieldCheck, Lock, Eye, Trash2, Key, 
-  FileCheck, Shield, Clock, FileText, Activity,
-  ArrowLeft, BarChart3
+  Info, Shield, Clock, FileText, Activity,
+  ArrowLeft, BarChart3, Database, Tag
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -17,33 +17,33 @@ export default function SecurityPage() {
   const securityFeatures = [
     {
       title: "Data Privacy",
-      desc: "Uploaded files are processed in a secure environment and never shared with unauthorized third parties.",
-      icon: Eye
+      desc: "Uploaded datasets are processed securely and are only used to generate analytics, forecasts, and AI-powered insights.",
+      icon: ShieldCheck
     },
     {
       title: "Encryption",
-      desc: "All communication is protected via industry-standard HTTPS/TLS encryption for secure data transfer.",
+      desc: "All communication between users and the platform is protected using HTTPS/TLS encryption.",
       icon: Lock
     },
     {
       title: "Data Protection",
-      desc: "Comprehensive input validation and sanitization prevent malicious activity and ensure data integrity.",
-      icon: ShieldCheck
+      desc: "Input validation and secure processing techniques help maintain data integrity and reduce security risks.",
+      icon: Shield
     },
     {
       title: "Privacy Controls",
-      desc: "Users maintain full control over their data, with options to delete datasets and clear analysis history instantly.",
+      desc: "Users can remove uploaded datasets and generated reports at any time.",
       icon: Trash2
     },
     {
-      title: "Access Control",
-      desc: "Session-based protection and secure API interactions ensure only authorized users access generated reports.",
+      title: "Access Security",
+      desc: "Secure application architecture and authenticated API interactions help protect user data and generated analytics.",
       icon: Key
     },
     {
-      title: "Audit Compliance",
-      desc: "Detailed logging of analytical sessions allows for transparent tracking of report generation and data activity.",
-      icon: FileCheck
+      title: "Platform Transparency",
+      desc: "AutoStat AI is a portfolio and analytics platform designed to demonstrate modern statistical analysis, forecasting, and AI-assisted reporting capabilities.",
+      icon: Info
     }
   ];
 
@@ -78,7 +78,7 @@ export default function SecurityPage() {
           </Badge>
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Security & <span className="text-indigo-500">Privacy</span></h1>
           <p className="text-white/40 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
-            Our platform is built on enterprise-grade security protocols to ensure your datasets remain private, secure, and under your absolute control.
+            AutoStat AI is designed with security, privacy, and reliability in mind. Uploaded datasets are processed using modern cloud infrastructure and secure communication protocols.
           </p>
         </section>
 
@@ -97,60 +97,64 @@ export default function SecurityPage() {
 
         <Separator className="bg-white/5" />
 
-        {/* Trust Center / Audit Section */}
+        {/* Platform Status Section */}
         <section className="space-y-12">
           <div className="flex items-center gap-4 mb-10">
-            <Shield className="h-8 w-8 text-indigo-500" />
-            <h2 className="text-3xl font-black uppercase tracking-tighter">Trust & Audit Summary</h2>
+            <Activity className="h-8 w-8 text-indigo-500" />
+            <h2 className="text-3xl font-black uppercase tracking-tighter">Platform Status</h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-3xl p-8 space-y-4">
-              <div className="flex items-center gap-3 text-indigo-400">
-                <Clock className="h-4 w-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">System Uptime</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <Tag className="h-3.5 w-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Version</span>
               </div>
-              <p className="text-4xl font-black">99.9%</p>
-              <p className="text-xs text-white/40 font-medium">Verified platform availability</p>
+              <p className="text-xl font-black">v2.5.0 Stable</p>
             </Card>
-            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-3xl p-8 space-y-4">
-              <div className="flex items-center gap-3 text-indigo-400">
-                <Activity className="h-4 w-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Secure Data Processing</span>
+            
+            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <Lock className="h-3.5 w-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Security</span>
               </div>
-              <p className="text-4xl font-black">Encrypted</p>
-              <p className="text-xs text-white/40 font-medium">TLS 1.3 Transmission Security</p>
+              <p className="text-xl font-black">HTTPS/TLS</p>
             </Card>
-            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-3xl p-8 space-y-4">
-              <div className="flex items-center gap-3 text-indigo-400">
-                <FileText className="h-4 w-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Compliance</span>
+
+            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <Activity className="h-3.5 w-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Analytics Engine</span>
               </div>
-              <p className="text-4xl font-black">Verified</p>
-              <p className="text-xs text-white/40 font-medium">Industry Best Practices</p>
+              <p className="text-xl font-black">Operational</p>
+            </Card>
+
+            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <Clock className="h-3.5 w-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Last Analysis</span>
+              </div>
+              <p className="text-xl font-black">Current Session</p>
+            </Card>
+
+            <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <Database className="h-3.5 w-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Dataset Status</span>
+              </div>
+              <p className="text-xl font-black">User Managed</p>
             </Card>
           </div>
           
-          <Card className="bg-white/5 border-white/10 rounded-3xl overflow-hidden">
-            <div className="p-8 border-b border-white/5 flex justify-between items-center">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-white/60">Analytical Session Summary</h4>
-              <Badge variant="outline" className="text-indigo-400 border-indigo-400/20">v2.5.0 STABLE</Badge>
-            </div>
-            <div className="p-8 space-y-6">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-white/40">Last Analysis Performed</span>
-                <span className="text-sm font-mono">{new Date().toLocaleTimeString()} Today</span>
+          <Card className="bg-white/5 border-white/10 rounded-[2.5rem] overflow-hidden">
+            <div className="p-10 space-y-6">
+              <div className="flex items-center gap-4 mb-4">
+                <Info className="h-6 w-6 text-indigo-500" />
+                <h4 className="text-lg font-bold">Platform Transparency</h4>
               </div>
-              <Separator className="bg-white/5" />
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-white/40">Analytics Report History</span>
-                <span className="text-sm font-mono">Active Session Data</span>
-              </div>
-              <Separator className="bg-white/5" />
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-white/40">Dataset Activity Status</span>
-                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Securely Cleared</Badge>
-              </div>
+              <p className="text-white/50 leading-relaxed font-medium">
+                AutoStat AI is a professional-grade analytics platform designed to demonstrate modern statistical analysis, predictive forecasting, and automated AI reporting. Our commitment to privacy ensures that your datasets are handled with the highest standards of integrity, enabling sophisticated business intelligence without compromising security.
+              </p>
             </div>
           </Card>
         </section>
@@ -163,7 +167,7 @@ export default function SecurityPage() {
             <span className="font-bold text-xl tracking-tighter uppercase italic">AutoStat AI</span>
           </div>
           <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-            TRUST CENTER • PRIVACY FIRST ANALYTICS
+            TRUST CENTER • PRIVACY FIRST ANALYTICS • SECURE PROCESSING
           </p>
         </div>
       </footer>

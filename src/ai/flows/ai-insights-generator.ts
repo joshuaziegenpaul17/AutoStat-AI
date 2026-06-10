@@ -1,6 +1,7 @@
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent with optimized telemetry and robust 429 handling.
+ * @fileOverview Strategic Insights AI agent.
+ * Only async functions are exported to comply with Next.js Server Action rules.
  */
 
 import { ai } from '@/ai/genkit';
@@ -13,56 +14,28 @@ const InsightsFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-/**
- * Generates insights with a defensive retry strategy.
- * Reduced total duration to fit within standard Server Action timeouts.
- */
-async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 3, delay = 4000): Promise<any> {
-  try {
-    const promptInput = {
-      datasetPreview: input.datasetPreview,
-      statsSummary: input.statsSummary,
-      columnNamesString: input.columnNames.join(", ")
-    };
-
-    const response = await aiInsightsPrompt(promptInput);
-    
-    if (!response || !response.output) {
-      throw new Error("Empty analytical output received from engine.");
-    }
-
-    return response.output;
-  } catch (error: any) {
-    const errorMsg = error?.message || "Unknown Engine Error";
-    console.error(`[AI Synthesis Error] ${errorMsg}`);
-
-    const isRateLimit = errorMsg.includes("429") || errorMsg.includes("quota") || errorMsg.toLowerCase().includes("rate limit");
-    const isRetryable = isRateLimit || 
-                        errorMsg.includes("503") || 
-                        errorMsg.includes("UNAVAILABLE") || 
-                        errorMsg.includes("deadline");
-
-    if (retries > 0 && isRetryable) {
-      const waitTime = isRateLimit ? delay * 1.5 : delay;
-      await new Promise(res => setTimeout(res, waitTime));
-      return generateWithRetry(input, retries - 1, delay * 2);
-    }
-    
-    throw error;
-  }
-}
-
-export async function generateAiInsights(input: z.infer<typeof InsightsFlowInputSchema>) {
-  return aiInsightsGeneratorFlow(input);
-}
-
-export const aiInsightsGeneratorFlow = ai.defineFlow(
+const aiInsightsGeneratorFlow = ai.defineFlow(
   {
     name: 'aiInsightsGeneratorFlow',
     inputSchema: InsightsFlowInputSchema,
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {
-    return await generateWithRetry(input);
+    const promptInput = {
+      datasetPreview: input.datasetPreview,
+      statsSummary: input.statsSummary,
+      columnNamesString: input.columnNames.join(", ")
+    };
+
+    const { output } = await aiInsightsPrompt(promptInput);
+    if (!output) throw new Error("Analytical engine failed to produce output.");
+    return output;
   }
 );
+
+/**
+ * Public async wrapper for the insights flow.
+ */
+export async function generateAiInsights(input: z.infer<typeof InsightsFlowInputSchema>) {
+  return aiInsightsGeneratorFlow(input);
+}

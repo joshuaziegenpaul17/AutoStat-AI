@@ -1,154 +1,104 @@
 import Link from 'next/link';
-import { ArrowRight, BarChart3, Zap, Globe, Cpu, Database, LayoutDashboard, Layers, MousePointer2, BrainCircuit } from 'lucide-react';
+import { BarChart3, ArrowRight, ShieldCheck, Zap, Database, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
-  const heroImage = PlaceHolderImages.find(img => img.id === 'data-hero');
-
   return (
-    <div className="flex flex-col min-h-screen mesh-gradient data-grid overflow-x-hidden bg-background">
-      <header className="sticky top-0 z-50 glass border-b border-white/5 h-20">
-        <div className="container mx-auto px-8 h-full flex items-center justify-between">
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center transition-transform group-hover:rotate-12">
-              <BarChart3 className="text-primary-foreground h-6 w-6" />
+    <div className="flex flex-col min-h-screen bg-zinc-950 text-white selection:bg-indigo-500/30 overflow-x-hidden">
+      {/* Navigation */}
+      <header className="fixed top-0 w-full z-50 glass border-b border-white/5 h-16">
+        <div className="container mx-auto px-6 h-full flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+              <BarChart3 className="text-white h-5 w-5" />
             </div>
-            <span className="text-2xl font-headline font-bold tracking-tight text-white">
-              AutoStat<span className="text-primary italic">AI</span>
-            </span>
+            <span className="text-lg font-bold tracking-tight">AutoStat AI</span>
           </div>
-          
-          <nav className="hidden lg:flex items-center gap-10">
-            {['Capabilities', 'Intelligence', 'Enterprise', 'Docs'].map((item) => (
-              <a 
-                key={item}
-                href={`#${item.toLowerCase()}`} 
-                className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-primary transition-colors"
-              >
-                {item}
-              </a>
-            ))}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-white/60">
+            <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <a href="#analysis" className="hover:text-white transition-colors">Analysis</a>
+            <a href="#security" className="hover:text-white transition-colors">Security</a>
           </nav>
-
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-black rounded-full px-8 h-12 shadow-lg shadow-primary/20 transition-all hover:scale-105">
-                LAUNCH WORKBENCH
-              </Button>
-            </Link>
-          </div>
+          <Link href="/dashboard">
+            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6">
+              Get Started
+            </Button>
+          </Link>
         </div>
       </header>
 
-      <main className="flex-grow">
-        <section className="relative pt-32 pb-40">
-          <div className="container mx-auto px-8 text-center max-w-6xl relative z-10">
-            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full glass border-primary/20 text-primary text-[10px] font-black mb-12 tracking-[0.3em] animate-pulse">
-              <Cpu className="h-3.5 w-3.5" />
-              <span>STATISTICAL ENGINE v4.0 PLATINUM</span>
+      <main className="flex-grow pt-16">
+        {/* Hero Section */}
+        <section className="relative py-24 md:py-40">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none" />
+          <div className="container mx-auto px-6 text-center max-w-4xl relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-xs font-bold mb-8">
+              <Zap className="h-3 w-3" />
+              <span>Next-Gen Statistical Engine v2.0</span>
             </div>
-            
-            <h1 className="text-7xl md:text-9xl font-headline font-black mb-10 leading-[0.85] tracking-tighter text-white">
-              Intelligence <br />
-              <span className="text-primary italic glow-text">Without Limits.</span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight tracking-tight">
+              Statistical Intelligence <br />
+              <span className="text-indigo-500">Built for Modern Teams.</span>
             </h1>
-            
-            <p className="text-xl md:text-2xl text-white/50 mb-16 max-w-3xl mx-auto leading-relaxed font-medium">
-              A high-fidelity analytical architecture designed to synthesize raw datasets into strategic intelligence. Professional-grade modeling for modern decision-makers.
+            <p className="text-lg md:text-xl text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed">
+              Upload datasets and generate professional statistical reports instantly. AutoStat AI transforms raw CSV data into structured strategic intelligence.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">
-                <Button size="lg" className="bg-primary hover:bg-primary/80 text-primary-foreground rounded-full px-16 py-10 text-xl font-black transition-all hover:translate-y-[-4px] shadow-2xl shadow-primary/30">
-                  Enter Workspace <ArrowRight className="ml-3 h-6 w-6" />
+                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-12 h-14 text-lg font-bold group">
+                  Upload CSV <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-            </div>
-          </div>
-
-          <div className="container mx-auto px-8 mt-32 relative">
-            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[120%] h-[800px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-            
-            <div className="relative glass rounded-[4rem] p-6 border-white/10 overflow-hidden shadow-[0_0_100px_-20px_rgba(139,92,246,0.2)] group">
-              <img 
-                src={heroImage?.imageUrl || "https://picsum.photos/seed/datavis/1200/600"} 
-                alt="Analytical Dashboard" 
-                className="rounded-[3rem] w-full border border-white/5 opacity-80 grayscale-[30%] transition-all duration-1000 group-hover:scale-[1.01] group-hover:grayscale-0"
-                data-ai-hint={heroImage?.imageHint || "data visualization"}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent flex flex-col justify-end p-16">
-                 <div className="flex items-center gap-6">
-                    <div className="glass px-8 py-4 rounded-[2rem] border-primary/30 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-8">
-                      <LayoutDashboard className="text-primary h-6 w-6" />
-                      <span className="font-black text-sm uppercase tracking-widest text-white">Interface Active</span>
-                    </div>
-                    <div className="glass px-8 py-4 rounded-[2rem] border-white/10 flex items-center gap-4 backdrop-blur-md">
-                      <Layers className="text-white/40 h-6 w-6" />
-                      <span className="font-bold text-sm text-white/40">Multi-Vector Processing</span>
-                    </div>
-                 </div>
-              </div>
+              <Button size="lg" variant="outline" className="rounded-full px-12 h-14 text-lg font-bold border-white/10 hover:bg-white/5">
+                View Demo
+              </Button>
             </div>
           </div>
         </section>
 
-        <section id="capabilities" className="py-40 relative">
-          <div className="container mx-auto px-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {[
-                { 
-                  icon: BrainCircuit, 
-                  title: "Strategic Insights", 
-                  desc: "Neural distributions mapped to executive strategy. AI-driven synthesis for mission-critical decisions." 
-                },
-                { 
-                  icon: Database, 
-                  title: "Industrial Ingestion", 
-                  desc: "Unified support for complex Excel and CSV payloads. Automated schema alignment." 
-                },
-                { 
-                  icon: Zap, 
-                  title: "Structural Diagnostics", 
-                  desc: "Identify data-drift and structural anomalies before they impact your analytical integrity." 
-                }
-              ].map((feat, i) => (
-                <div key={i} className="glass-card p-12 rounded-[3rem] group relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <feat.icon className="h-32 w-32 text-primary" />
-                  </div>
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-10 border border-primary/20">
-                    <feat.icon className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-2xl font-black mb-6 text-white tracking-tight">{feat.title}</h3>
-                  <p className="text-white/40 text-lg leading-relaxed">{feat.desc}</p>
-                  <div className="mt-10 flex items-center gap-3 text-primary font-black text-xs uppercase tracking-widest cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-                    View Specs <MousePointer2 className="h-4 w-4" />
-                  </div>
-                </div>
-              ))}
+        {/* Features Grid */}
+        <section id="features" className="py-24 container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-10 rounded-3xl bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all group">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 flex items-center justify-center mb-8 border border-indigo-600/30 group-hover:scale-110 transition-transform">
+                <Database className="text-indigo-500 h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-4">Instant Ingestion</h3>
+              <p className="text-white/40 leading-relaxed">
+                Drag and drop your CSV or Excel files. Our pipeline automatically handles cleaning, type mapping, and normalization.
+              </p>
+            </div>
+            <div className="p-10 rounded-3xl bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all group">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 flex items-center justify-center mb-8 border border-indigo-600/30 group-hover:scale-110 transition-transform">
+                <BarChart3 className="text-indigo-500 h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-4">Deep Analytics</h3>
+              <p className="text-white/40 leading-relaxed">
+                Automated calculation of descriptive statistics, Pearson correlation, and distribution binnings.
+              </p>
+            </div>
+            <div className="p-10 rounded-3xl bg-white/5 border border-white/10 hover:border-indigo-500/50 transition-all group">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 flex items-center justify-center mb-8 border border-indigo-600/30 group-hover:scale-110 transition-transform">
+                <Globe className="text-indigo-500 h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-4">Universal Export</h3>
+              <p className="text-white/40 leading-relaxed">
+                Download structured Mission Logs or professional statistical reports in high-fidelity text formats.
+              </p>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="py-20 border-t border-white/5 glass">
-        <div className="container mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-12">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-              <BarChart3 className="text-primary h-6 w-6" />
-            </div>
-            <span className="text-2xl font-headline font-black tracking-tight text-white">AutoStat<span className="text-primary">AI</span></span>
+      <footer className="py-12 border-t border-white/5">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2 opacity-50">
+            <BarChart3 className="h-5 w-5" />
+            <span className="font-bold">AutoStat AI</span>
           </div>
-          
-          <div className="flex flex-col items-center md:items-end gap-4">
-            <p className="text-[11px] text-white/20 font-black uppercase tracking-[0.4em]">© 2024 AUTOSTAT SYSTEMS • DESIGNED FOR DISCOVERY</p>
-            <div className="flex gap-8">
-              {['Privacy', 'Network', 'Legal'].map(item => (
-                <a key={item} href="#" className="text-[10px] font-bold text-white/40 hover:text-primary transition-colors uppercase tracking-widest">{item}</a>
-              ))}
-            </div>
-          </div>
+          <p className="text-xs text-white/20 uppercase tracking-widest font-bold">
+            © 2024 AUTOSTAT SYSTEMS • ALL RIGHTS RESERVED
+          </p>
         </div>
       </footer>
     </div>

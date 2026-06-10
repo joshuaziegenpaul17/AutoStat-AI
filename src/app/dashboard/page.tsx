@@ -1,429 +1,206 @@
 "use client"
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { 
-  BarChart3, Database, RefreshCw, ShieldAlert, BrainCircuit, Lightbulb, ClipboardCheck, Target, Sparkles, LayoutGrid, Zap
-} from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { BarChart3, Database, FileText, Download, LayoutDashboard, ChevronLeft, Table, PieChart, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { DatasetUpload } from '@/components/dashboard/DatasetUpload';
 import { StatVisuals } from '@/components/dashboard/StatVisuals';
 import { calculateDescriptiveStats, DescriptiveStats } from '@/lib/stats-engine';
-import { ParsedData, getCsvSample } from '@/lib/data-parser';
+import { ParsedData } from '@/lib/data-parser';
 import { useToast } from '@/hooks/use-toast';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { runAuditAction, runInsightsAction } from '@/app/actions/analytics';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 export default function Dashboard() {
   const [currentDataset, setCurrentDataset] = useState<ParsedData | null>(null);
-  const [aiSuggestions, setAiSuggestions] = useState<any>(null);
-  const [isAuditing, setIsAuditing] = useState(false);
-  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
-  const [insights, setInsights] = useState<any>(null);
-  const [descriptiveResults, setDescriptiveResults] = useState<Record<string, DescriptiveStats>>({});
   const { toast } = useToast();
 
-  const handleUpload = (data: ParsedData, suggestions: any) => {
+  const handleUpload = (data: ParsedData) => {
     setCurrentDataset(data);
-    setAiSuggestions(suggestions);
-    
-    const numericCols = Object.keys(data.columnTypes).filter(h => data.columnTypes[h] === 'number');
+    toast({ title: "Dataset Uploaded", description: `Successfully ingested ${data.rows.length} records.` });
+  };
+
+  const descriptiveResults = useMemo(() => {
+    if (!currentDataset) return {};
     const results: Record<string, DescriptiveStats> = {};
+    const numericCols = Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number');
     numericCols.forEach(col => {
-      const vals = data.rows.map(r => r[col]).filter(v => typeof v === 'number');
+      const vals = currentDataset.rows.map(r => r[col]).filter(v => typeof v === 'number');
       if (vals.length > 0) {
         results[col] = calculateDescriptiveStats(vals);
       }
     });
-    setDescriptiveResults(results);
-    setInsights(null);
-  };
+    return results;
+  }, [currentDataset]);
 
-  const runAudit = async () => {
+  const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
+
+  const handleExport = () => {
     if (!currentDataset) return;
-    setIsAuditing(true);
-    try {
-      const sampleCsv = getCsvSample(currentDataset, 40);
-      const res = await runAuditAction(sampleCsv, currentDataset.headers);
-      if (res.success) {
-        setAiSuggestions(res.data);
-        toast({ title: "Audit Complete", description: "Structural diagnostics successfully synthesized." });
-      } else {
-        throw new Error(res.error);
-      }
-    } catch (err: any) {
-      toast({
-        title: "Audit Error",
-        description: err.message || "Service busy. Diagnostics deferred.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsAuditing(false);
-    }
-  };
+    const timestamp = new Date().toISOString();
+    const content = `
+AUTOSTAT AI - STATISTICAL REPORT
+Generated: ${timestamp}
+---------------------------------
+DATASET SUMMARY:
+Total Rows: ${currentDataset.rows.length}
+Total Columns: ${currentDataset.headers.length}
+Numeric Vectors: ${numericColumns.length}
 
-  const generateInsights = async () => {
-    if (!currentDataset) return;
-    setIsGeneratingInsights(true);
-    try {
-      // Use a smaller sample to prevent workstation timeouts
-      const sampleCsv = getCsvSample(currentDataset, 60);
-      const res = await runInsightsAction(sampleCsv, currentDataset.headers);
-      
-      if (res.success) {
-        setInsights(res.data);
-        toast({ title: "Synthesis Complete", description: "AI Strategic Insights have been generated." });
-      } else {
-        throw new Error(res.error);
-      }
-    } catch (err: any) {
-      toast({
-        title: "Synthesis Deferred",
-        description: err.message || "Platform capacity reached. Please try with a smaller dataset or retry shortly.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsGeneratingInsights(false);
-    }
-  };
-
-  const handleExportLog = () => {
-    if (!currentDataset) return;
-
-    const timestamp = new Date().toLocaleString();
-    const missionId = `MISSION-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    
-    let content = `
-================================================================================
-                              AUTOSTAT AI MISSION LOG
-================================================================================
-MISSION ID:   ${missionId}
-TIMESTAMP:    ${timestamp}
-STATUS:       ANALYSIS COMPLETE
-VECTORS:      ${currentDataset.rows.length}
---------------------------------------------------------------------------------
-
-[DATA SOURCE PARAMETERS]
-Headers:      ${currentDataset.headers.join(', ')}
-
-[STATISTICAL DESCRIPTIVES]
+STATISTICAL OVERVIEW:
 ${Object.entries(descriptiveResults).map(([col, stats]) => `
---- FIELD: ${col} ---
-Mean:         ${stats.mean.toFixed(4)}
-Std Dev:      ${stats.stdDev.toFixed(4)}
-Range:        [${stats.min} - ${stats.max}]
+[${col}]
+Mean: ${stats.mean.toFixed(4)}
+Median: ${stats.median.toFixed(4)}
+Std Dev: ${stats.stdDev.toFixed(4)}
+Range: ${stats.min} - ${stats.max}
 `).join('\n')}
 
-[STRUCTURAL AUDIT DIAGNOSTICS]
-${aiSuggestions ? `
-Score:        ${aiSuggestions.qualityScore}/100
-Summary:      ${aiSuggestions.summary}
-Issues:       ${aiSuggestions.suggestions.length} detected
-${aiSuggestions.suggestions.map((s: any, i: number) => `
-${i + 1}. [${s.issueType}] ${s.description}
-   Suggestion: ${s.suggestion}
-`).join('')}
-` : 'Audit pending initialization.'}
-
-[STRATEGIC AI INSIGHTS]
-${insights ? `
-Summary:      ${insights.executiveSummary}
-Confidence:   ${insights.confidenceScore}%
-Findings:     ${insights.keyFindings.join('\n- ')}
-Anomalies:    ${insights.dataAnomalies.join('\n- ')}
-` : 'Insights not initialized.'}
-================================================================================
-`;
-
+END OF REPORT
+    `;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `auto-stat-log-${missionId.toLowerCase()}.txt`;
-    document.body.appendChild(link);
+    link.download = `autostat-report-${Date.now()}.txt`;
     link.click();
-    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
-  const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
-
   return (
-    <div className="flex flex-col min-h-screen bg-background data-grid mesh-gradient">
-      <header className="h-20 glass border-b border-white/5 flex items-center justify-between px-10 sticky top-0 z-50">
-        <div className="flex items-center gap-10">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center glow-primary">
-              <BarChart3 className="h-6 w-6 text-primary-foreground" />
+    <div className="min-h-screen bg-zinc-950 text-white font-sans selection:bg-indigo-500/30">
+      {/* Navigation */}
+      <header className="h-16 border-b border-white/5 glass sticky top-0 z-50 px-6 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+              <BarChart3 className="text-white h-5 w-5" />
             </div>
-            <span className="font-headline font-black text-xl tracking-tight text-white">AutoStat<span className="text-primary italic">AI</span></span>
-          </Link>
-          <div className="h-8 w-px bg-white/5 hidden md:block" />
-          <nav className="hidden md:flex items-center gap-6">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/5 text-[10px] font-black text-white/40 uppercase tracking-widest">
-              <LayoutGrid className="h-3 w-3" /> Operations Room
-            </div>
+            <span className="text-lg font-bold tracking-tight">AutoStat AI</span>
+          </div>
+          <div className="h-4 w-px bg-white/10" />
+          <nav className="flex items-center gap-4 text-xs font-bold text-white/40 uppercase tracking-widest">
+            <LayoutDashboard className="h-3 w-3" /> Workspace
           </nav>
         </div>
-        <div className="flex items-center gap-6">
-          <Badge variant="outline" className="border-primary/40 text-primary text-[10px] px-4 py-1.5 font-black uppercase tracking-[0.2em] bg-primary/5">
-            NODE STATUS: ACTIVE
+        <div className="flex items-center gap-4">
+          <Badge variant="outline" className="border-indigo-500/20 text-indigo-400 bg-indigo-500/5 text-[10px] font-bold px-3 py-1">
+            ENGINE STATUS: ONLINE
           </Badge>
-          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-white/5" />
+          <div className="w-8 h-8 rounded-full bg-indigo-600/20 border border-indigo-600/30" />
         </div>
       </header>
 
-      <main className="flex-grow p-8 md:p-12">
+      <main className="p-8 max-w-[1600px] mx-auto">
         {!currentDataset ? (
           <div className="py-20 animate-in fade-in zoom-in-95 duration-700">
             <DatasetUpload onUpload={handleUpload} />
           </div>
         ) : (
-          <div className="max-w-[1800px] mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 glass p-10 rounded-[3.5rem] border border-white/5 shadow-2xl">
-              <div className="flex items-center gap-8">
-                <div className="w-16 h-16 rounded-[1.5rem] bg-primary/10 flex items-center justify-center border border-primary/20 glow-primary">
-                  <Database className="h-8 w-8 text-primary" />
-                </div>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Action Bar */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 border border-white/10 p-6 rounded-2xl">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="sm" onClick={() => setCurrentDataset(null)} className="text-white/40 hover:text-white hover:bg-white/5">
+                  <ChevronLeft className="h-4 w-4 mr-2" /> New Dataset
+                </Button>
+                <div className="h-6 w-px bg-white/10" />
                 <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-3xl font-black text-white tracking-tighter">
-                      Mission: {currentDataset.rows.length.toLocaleString()} Vectors
-                    </h2>
-                    <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/30 text-[9px] font-black uppercase px-2 py-0.5">Verified Ingestion</Badge>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <p className="text-[10px] text-primary/60 font-black uppercase tracking-[0.4em]">Signal Integrity: High</p>
-                    <div className="h-1 w-1 rounded-full bg-white/10" />
-                    <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.4em]">Cluster: Alpha-9</p>
-                  </div>
+                  <h1 className="text-xl font-bold text-white">Analysis: {currentDataset.rows.length.toLocaleString()} Records</h1>
+                  <p className="text-xs text-white/40 font-medium">{numericColumns.length} Numerical Vectors Mapped</p>
                 </div>
               </div>
-              <div className="flex gap-4 w-full lg:w-auto">
-                <Button variant="outline" size="lg" className="flex-1 lg:flex-none rounded-2xl h-16 border-white/5 bg-white/5 hover:bg-white/10 text-white font-black px-8" onClick={() => setCurrentDataset(null)}>
-                  <RefreshCw className="h-5 w-5 mr-3" /> SWAP MISSION
-                </Button>
-                <Button 
-                  size="lg" 
-                  onClick={handleExportLog}
-                  className="flex-1 lg:flex-none bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl h-16 px-12 font-black shadow-2xl shadow-primary/30"
-                >
-                  EXPORT LOG
+              <div className="flex items-center gap-3">
+                <Button variant="outline" onClick={handleExport} className="border-white/10 bg-white/5 hover:bg-white/10 text-white h-10 px-6 rounded-xl text-xs font-bold uppercase tracking-widest">
+                  <Download className="h-4 w-4 mr-2" /> Export Report
                 </Button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 2xl:grid-cols-12 gap-12">
-              <div className="2xl:col-span-8 space-y-12">
-                <Tabs defaultValue="visuals" className="w-full">
-                  <div className="flex items-center justify-between mb-8">
-                    <TabsList className="bg-zinc-950/80 border border-white/5 p-1.5 rounded-[2rem]">
-                      <TabsTrigger value="visuals" className="rounded-[1.5rem] px-12 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black text-[10px] uppercase tracking-[0.2em] transition-all">
-                        Visual Discovery
-                      </TabsTrigger>
-                      <TabsTrigger value="table" className="rounded-[1.5rem] px-12 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-black text-[10px] uppercase tracking-[0.2em] transition-all">
-                        Grid Explorer
-                      </TabsTrigger>
-                    </TabsList>
-                  </div>
-                  
-                  <TabsContent value="visuals" className="mt-0 outline-none">
-                    <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} />
-                  </TabsContent>
+            {/* Metrics Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[
+                { label: 'Total Rows', value: currentDataset.rows.length.toLocaleString(), icon: Database },
+                { label: 'Total Columns', value: currentDataset.headers.length, icon: Table },
+                { label: 'Numerical Features', value: numericColumns.length, icon: Activity },
+                { label: 'Missing Values', value: '0.0%', icon: PieChart },
+              ].map((stat, i) => (
+                <Card key={i} className="bg-white/5 border-white/10 shadow-none rounded-2xl">
+                  <CardContent className="p-6 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">{stat.label}</p>
+                      <p className="text-2xl font-bold text-white">{stat.value}</p>
+                    </div>
+                    <stat.icon className="h-8 w-8 text-indigo-500 opacity-50" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-                  <TabsContent value="table" className="mt-0 outline-none">
-                    <Card className="glass border-none overflow-hidden rounded-[3.5rem] shadow-2xl">
-                      <div className="overflow-x-auto max-h-[750px] scrollbar-hide">
-                        <table className="w-full text-left text-[11px]">
-                          <thead className="bg-zinc-950 sticky top-0 z-10 text-primary font-black uppercase tracking-[0.3em] border-b border-white/5">
-                            <tr>
-                              {currentDataset.headers.map(h => <th key={h} className="px-10 py-7">{h}</th>)}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-white/5">
-                            {currentDataset.rows.slice(0, 100).map((row, i) => (
-                              <tr key={i} className="hover:bg-primary/[0.03] transition-colors group">
-                                {currentDataset.headers.map(h => (
-                                  <td key={h} className="px-10 py-6 font-mono text-white/30 group-hover:text-white/70">{row[h]}</td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </Card>
-                  </TabsContent>
-                </Tabs>
+            <Tabs defaultValue="visuals" className="w-full">
+              <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl mb-8">
+                <TabsTrigger value="visuals" className="rounded-lg px-8 py-2 text-xs font-bold uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white">Visual Analysis</TabsTrigger>
+                <TabsTrigger value="stats" className="rounded-lg px-8 py-2 text-xs font-bold uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white">Descriptive Statistics</TabsTrigger>
+                <TabsTrigger value="table" className="rounded-lg px-8 py-2 text-xs font-bold uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white">Data Table</TabsTrigger>
+              </TabsList>
 
-                <Card className="glass border-none rounded-[3.5rem] shadow-2xl overflow-hidden relative group">
-                  <CardHeader className="pb-10 pt-12 px-12">
-                    <CardTitle className="text-3xl flex items-center gap-4 text-white font-black tracking-tighter">
-                      <ShieldAlert className="h-9 w-9 text-primary glow-text" />
-                      Structural Audit
-                    </CardTitle>
-                    <CardDescription className="text-[10px] uppercase tracking-[0.4em] font-black text-primary/60 mt-2">Anomaly detection & quality metrics</CardDescription>
-                  </CardHeader>
-                  <CardContent className="px-12 pb-16">
-                    {aiSuggestions ? (
-                      <div className="space-y-12">
-                        <div className="p-12 rounded-[3rem] bg-primary/5 border border-primary/20">
-                           <div className="flex items-center justify-between mb-6">
-                              <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Diagnostic Conclusion</h4>
-                              <Badge className="bg-primary text-black font-black">{aiSuggestions.qualityScore}/100 SCORE</Badge>
-                           </div>
-                           <p className="text-2xl text-white/90 leading-tight font-black italic">"{aiSuggestions.summary}"</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                          {aiSuggestions.suggestions.map((s: any, idx: number) => (
-                            <div key={idx} className="p-10 rounded-[3rem] bg-zinc-950/40 border border-white/5 hover:border-primary/40 transition-all">
-                              <Badge variant="outline" className="text-[9px] border-primary/40 text-primary font-black px-5 py-2 uppercase mb-8 bg-primary/5">{s.issueType}</Badge>
-                              <h5 className="text-lg font-black text-white mb-6">{s.description}</h5>
-                              <p className="text-sm text-white/40 leading-relaxed mb-8">{s.suggestion}</p>
-                              <div className="pt-6 border-t border-white/5 flex flex-wrap gap-2">
-                                {s.affectedColumns.map((col: string) => <Badge key={col} className="bg-white/5 text-white/30 text-[8px] border-none">{col}</Badge>)}
-                              </div>
+              <TabsContent value="visuals" className="mt-0 outline-none">
+                <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} />
+              </TabsContent>
+
+              <TabsContent value="stats" className="mt-0 outline-none">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {numericColumns.map(col => (
+                    <Card key={col} className="bg-white/5 border-white/10 shadow-none rounded-2xl overflow-hidden">
+                      <CardHeader className="border-b border-white/5 bg-white/[0.02] p-6">
+                        <CardTitle className="text-sm font-bold uppercase tracking-widest text-indigo-400">{col}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-2 gap-y-4">
+                          {[
+                            { label: 'Mean', value: descriptiveResults[col]?.mean.toFixed(2) },
+                            { label: 'Median', value: descriptiveResults[col]?.median.toFixed(2) },
+                            { label: 'Std Dev', value: descriptiveResults[col]?.stdDev.toFixed(2) },
+                            { label: 'Variance', value: descriptiveResults[col]?.variance.toFixed(2) },
+                            { label: 'Min', value: descriptiveResults[col]?.min },
+                            { label: 'Max', value: descriptiveResults[col]?.max },
+                          ].map((item, idx) => (
+                            <div key={idx}>
+                              <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">{item.label}</p>
+                              <p className="text-lg font-mono text-white">{item.value}</p>
                             </div>
                           ))}
                         </div>
-                        <Button variant="ghost" className="w-full text-[10px] font-black text-white/20 hover:text-primary py-10 border border-dashed border-white/10 rounded-3xl" onClick={runAudit} disabled={isAuditing}>
-                          {isAuditing ? <RefreshCw className="h-5 w-5 mr-4 animate-spin" /> : <RefreshCw className="h-5 w-5 mr-4" />}
-                          INITIATE HIGH-FIDELITY RE-SCAN
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="py-32 text-center">
-                        <ShieldAlert className="h-20 w-20 text-white/5 mx-auto mb-10" />
-                        <h4 className="text-4xl font-black text-white mb-6 tracking-tighter">Audit Required</h4>
-                        <p className="text-white/20 text-lg mb-12 max-w-md mx-auto">Analyze structural integrity for mission-critical discoveries.</p>
-                        <Button onClick={runAudit} disabled={isAuditing} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-20 h-20 font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20">
-                          {isAuditing ? 'PROCESSING...' : 'INITIATE AUDIT'}
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
 
-              <div className="2xl:col-span-4 space-y-12">
-                <Card className="glass border-none rounded-[3.5rem] shadow-2xl p-12">
-                  <CardHeader className="p-0 mb-12">
-                    <CardTitle className="text-2xl text-white font-black flex items-center gap-4 tracking-tighter">
-                      <Target className="h-7 w-7 text-primary glow-text" />
-                      Vector Averages
-                    </CardTitle>
-                  </CardHeader>
-                  <div className="space-y-8">
-                    {numericColumns.slice(0, 4).map(col => (
-                      <div key={col} className="bg-zinc-950/60 p-8 rounded-[2.5rem] border border-white/5 hover:border-primary/20 transition-all">
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-6">{col}</h4>
-                        <div className="grid grid-cols-2 gap-8">
-                           <div>
-                             <p className="text-[9px] text-white/20 uppercase font-black mb-1">Mean</p>
-                             <p className="text-2xl font-mono text-white tracking-tighter">{descriptiveResults[col]?.mean.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
-                           </div>
-                           <div>
-                             <p className="text-[9px] text-white/20 uppercase font-black mb-1">StdDev</p>
-                             <p className="text-2xl font-mono text-white tracking-tighter">{descriptiveResults[col]?.stdDev.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
-                           </div>
-                        </div>
-                      </div>
-                    ))}
+              <TabsContent value="table" className="mt-0 outline-none">
+                <Card className="bg-white/5 border-white/10 shadow-none rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto max-h-[600px]">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-white/[0.02] sticky top-0 text-white/40 font-bold uppercase tracking-widest text-[10px] border-b border-white/10">
+                        <tr>
+                          {currentDataset.headers.map(h => <th key={h} className="px-6 py-4">{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5 text-white/60">
+                        {currentDataset.rows.slice(0, 50).map((row, i) => (
+                          <tr key={i} className="hover:bg-white/[0.01] transition-colors">
+                            {currentDataset.headers.map(h => (
+                              <td key={h} className="px-6 py-4 whitespace-nowrap font-mono">{row[h]}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </Card>
-
-                <Card className="glass border-primary/40 rounded-[3.5rem] overflow-hidden shadow-2xl relative min-h-[850px] flex flex-col group">
-                  <CardHeader className="pb-8 pt-16 px-12">
-                    <CardTitle className="text-4xl flex items-center gap-5 text-white font-black tracking-tighter glow-text">
-                      <BrainCircuit className="h-12 w-12 text-primary" />
-                      AI INSIGHTS
-                    </CardTitle>
-                    <Badge variant="outline" className="mt-6 border-primary/50 text-primary font-black uppercase px-6 py-3 text-[10px] tracking-widest bg-primary/5">
-                      Synthesis Active
-                    </Badge>
-                  </CardHeader>
-                  <CardContent className="px-12 pb-16 flex-grow flex flex-col">
-                    {!insights ? (
-                      <div className="flex-grow flex flex-col items-center justify-center text-center py-20">
-                        <Zap className="h-24 w-24 text-white/5 mb-12" />
-                        <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Run Synthesis</h3>
-                        <p className="text-white/20 text-lg mb-16 max-w-xs mx-auto">Extract strategic executive intelligence from current data distributions.</p>
-                        <Button 
-                          onClick={generateInsights} 
-                          disabled={isGeneratingInsights}
-                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-[3rem] h-28 font-black text-xl uppercase shadow-2xl shadow-primary/40 transition-all hover:scale-[1.02]"
-                        >
-                          {isGeneratingInsights ? <RefreshCw className="h-10 w-10 mr-4 animate-spin" /> : <Sparkles className="h-10 w-10 mr-4" />}
-                          {isGeneratingInsights ? 'ANALYZING...' : 'RUN INSIGHTS'}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="animate-in fade-in slide-in-from-top-12 duration-1000 space-y-16">
-                        <div className="p-14 rounded-[4rem] bg-gradient-to-br from-primary/30 via-zinc-950 to-zinc-950 border-2 border-primary shadow-[0_0_80px_-20px_rgba(139,92,246,0.3)]">
-                           <div className="flex items-center justify-between mb-12">
-                             <Badge className="bg-primary text-primary-foreground font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest">
-                               {insights.confidenceScore}% CONFIDENCE
-                             </Badge>
-                           </div>
-                           <h2 className="text-4xl md:text-5xl font-headline font-black text-white mb-12 leading-[0.95] tracking-tighter uppercase">
-                             Strategic Synthesis
-                           </h2>
-                           <div className="pt-12 border-t border-primary/20">
-                              <h5 className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">INTELLIGENCE RATING: HIGH</h5>
-                           </div>
-                        </div>
-
-                        <ScrollArea className="h-[450px] pr-8 scrollbar-hide">
-                          <div className="space-y-12 pb-12">
-                            <div className="bg-zinc-950/80 p-12 rounded-[3.5rem] border border-white/5 shadow-xl">
-                               <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-4 mb-8">
-                                 <ClipboardCheck className="h-6 w-6" /> Executive Summary
-                               </h4>
-                               <p className="text-xl leading-relaxed text-white/60 font-bold italic">"{insights.executiveSummary}"</p>
-                            </div>
-                            <div className="space-y-8">
-                               <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-4 px-4">
-                                 <Lightbulb className="h-6 w-6" /> Key Findings
-                               </h4>
-                               <div className="space-y-5">
-                                 {insights.keyFindings.map((finding: string, i: number) => (
-                                   <div key={i} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 text-base text-white/70 font-bold flex gap-6">
-                                     <span className="text-primary font-black text-xl leading-none">{i+1}</span>
-                                     <span className="leading-snug">{finding}</span>
-                                   </div>
-                                 ))}
-                               </div>
-                            </div>
-                            <div className="space-y-8">
-                               <h4 className="text-[11px] font-black text-destructive uppercase tracking-[0.4em] flex items-center gap-4 px-4">
-                                 <ShieldAlert className="h-6 w-6" /> Data Anomalies
-                               </h4>
-                               <div className="space-y-3">
-                                 {insights.dataAnomalies.map((risk: string, i: number) => (
-                                   <div key={i} className="bg-destructive/5 p-6 rounded-2xl border border-destructive/10 text-sm text-destructive/70 font-bold">
-                                     {risk}
-                                   </div>
-                                 ))}
-                               </div>
-                            </div>
-                          </div>
-                        </ScrollArea>
-
-                        <Button 
-                          variant="ghost" 
-                          className="w-full text-[11px] uppercase font-black text-white/10 hover:text-primary py-10 rounded-[3.5rem] border border-dashed border-white/5" 
-                          onClick={() => setInsights(null)}
-                        >
-                          RESET MISSION
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </main>

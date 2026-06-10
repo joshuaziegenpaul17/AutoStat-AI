@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 240 10% 2%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 4%;
+    --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 2%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 250 89% 65%;
     --primary-foreground: 240 10% 2%;
-    --secondary: 240 4% 16%;
+    --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 262 83% 58%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 250 89% 65%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
     --ring: 250 89% 65%;
-    --radius: 1.25rem;
+    --radius: 0.75rem;
   }
 }
 
@@ -33,36 +33,14 @@
   }
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary selection:text-black;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-headline tracking-tighter;
   }
 }
 
 @layer components {
   .glass {
-    @apply bg-black/40 backdrop-blur-3xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,1)];
+    @apply bg-black/40 backdrop-blur-xl border border-white/5;
   }
-  .glass-card {
-    @apply bg-zinc-900/40 backdrop-blur-xl border border-white/5 shadow-inner hover:border-primary/20 transition-all duration-500;
-  }
-  .data-grid {
-    background-image: 
-      linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-  .mesh-gradient {
-    background-image: 
-      radial-gradient(at 0% 0%, hsla(250, 89%, 65%, 0.08) 0, transparent 50%),
-      radial-gradient(at 50% 0%, hsla(240, 10%, 4%, 0.1) 0, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(262, 83%, 58%, 0.08) 0, transparent 50%);
-  }
-  .glow-primary {
-    box-shadow: 0 0 50px -10px rgba(139, 92, 246, 0.4);
-  }
-  .glow-text {
-    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  .card-gradient {
+    background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%);
   }
 }

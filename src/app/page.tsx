@@ -1,6 +1,9 @@
+
 import Link from 'next/link';
+import Image from 'next/image';
 import { BarChart3, ArrowRight, ShieldCheck, Database, LineChart, FileText, PieChart, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
   const statusItems = [
@@ -12,6 +15,8 @@ export default function LandingPage() {
     "PRIVACY PROTOCOLS: ACTIVE",
     "DATA INTEGRITY: VERIFIED"
   ];
+
+  const heroImage = PlaceHolderImages.find(img => img.id === 'dashboard-hero');
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 text-white selection:bg-indigo-500/30 overflow-x-hidden">
@@ -141,12 +146,25 @@ export default function LandingPage() {
                   ))}
                 </div>
               </div>
-              <div className="relative">
-                <div className="absolute -inset-10 bg-indigo-600/20 blur-[100px] rounded-full" />
-                <div className="relative rounded-[3rem] border border-white/10 bg-zinc-900 p-8 shadow-2xl">
-                  <div className="aspect-video bg-indigo-600/10 rounded-2xl flex items-center justify-center border border-indigo-600/20">
-                    <BarChart3 className="h-24 w-24 text-indigo-500/40" />
-                  </div>
+              <div className="relative group">
+                <div className="absolute -inset-10 bg-indigo-600/20 blur-[100px] rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
+                <div className="relative rounded-[3rem] border border-white/10 bg-zinc-900 overflow-hidden shadow-2xl">
+                  {heroImage ? (
+                    <div className="aspect-video relative">
+                      <Image 
+                        src={heroImage.imageUrl} 
+                        alt={heroImage.description} 
+                        fill 
+                        className="object-cover"
+                        data-ai-hint={heroImage.imageHint}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent" />
+                    </div>
+                  ) : (
+                    <div className="aspect-video bg-indigo-600/10 rounded-2xl flex items-center justify-center border border-indigo-600/20">
+                      <BarChart3 className="h-24 w-24 text-indigo-500/40" />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

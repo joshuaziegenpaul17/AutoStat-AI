@@ -2,12 +2,13 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Upload, FileSpreadsheet, Loader2, BarChart3, LineChart, PieChart, ShieldCheck, AlertCircle, TrendingUp, Target, Activity, Database } from 'lucide-react';
+import Image from 'next/image';
+import { Upload, FileSpreadsheet, Loader2, BarChart3, ShieldCheck, AlertCircle, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { parseDataset, ParsedData } from '@/lib/data-parser';
-import { Badge } from '@/components/ui/badge';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface DatasetUploadProps {
   onUpload: (data: ParsedData) => void;
@@ -17,6 +18,8 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const heroImage = PlaceHolderImages.find(img => img.id === 'dashboard-hero');
 
   const handleFile = async (file: File) => {
     const allowedExtensions = ['.csv', '.xlsx', '.xls'];
@@ -111,65 +114,21 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
           <div className="flex-1 w-full max-w-[650px] relative perspective-1000">
             <div className="absolute -inset-10 bg-indigo-600/20 blur-[100px] rounded-full opacity-40 animate-pulse" />
             <div className="relative transform lg:rotate-y-[-10deg] lg:rotate-x-[5deg] transition-transform duration-1000 group-hover:rotate-0">
-              <div className="rounded-[3rem] border border-white/10 bg-zinc-950/80 backdrop-blur-3xl overflow-hidden p-1 shadow-2xl shadow-black/50">
-                <div className="bg-black/40 p-10 space-y-8 h-[550px]">
-                  {/* Mockup Header */}
-                  <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-3 h-3 rounded-full bg-red-500/30" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-500/30" />
-                      <div className="w-3 h-3 rounded-full bg-emerald-500/30" />
-                    </div>
-                    <Badge variant="outline" className="border-indigo-500/20 text-indigo-500 text-[9px] font-black tracking-widest uppercase">
-                      Operational Status
-                    </Badge>
+              <div className="rounded-[3rem] border border-white/10 bg-zinc-950/80 backdrop-blur-3xl overflow-hidden shadow-2xl shadow-black/50 aspect-[4/5] relative">
+                {heroImage ? (
+                  <Image 
+                    src={heroImage.imageUrl} 
+                    alt={heroImage.description} 
+                    fill 
+                    className="object-cover"
+                    data-ai-hint={heroImage.imageHint}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-indigo-600/10">
+                     <BarChart3 className="h-24 w-24 text-indigo-500/20" />
                   </div>
-
-                  {/* Mockup KPI Row */}
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="bg-white/5 border border-white/5 rounded-2xl p-5 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Forecast Accuracy</span>
-                        <Target className="h-3.5 w-3.5 text-indigo-500/40" />
-                      </div>
-                      <p className="text-2xl font-black text-white tracking-tighter">98.4%</p>
-                    </div>
-                    <div className="bg-white/5 border border-white/5 rounded-2xl p-5 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Data Quality</span>
-                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-500/40" />
-                      </div>
-                      <p className="text-2xl font-black text-white tracking-tighter">A+</p>
-                    </div>
-                  </div>
-
-                  {/* Mockup Chart Visualization */}
-                  <div className="bg-white/5 border border-white/5 rounded-3xl p-6 flex-1 h-full relative overflow-hidden">
-                    <div className="flex items-center justify-between mb-8">
-                      <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Correlation Analysis</span>
-                      <TrendingUp className="h-4 w-4 text-indigo-500" />
-                    </div>
-                    
-                    {/* Simulated Correlation Bars */}
-                    <div className="flex items-end gap-3 h-32 mb-10">
-                      {[60, 85, 45, 95, 70, 50, 80, 40].map((h, i) => (
-                        <div key={i} className="flex-1 bg-indigo-500/10 border-t-2 border-indigo-500/40 rounded-t-lg transition-all" style={{ height: `${h}%` }} />
-                      ))}
-                    </div>
-
-                    {/* AI Insight Overlay */}
-                    <div className="bg-indigo-600/10 border border-indigo-500/20 rounded-2xl p-5 backdrop-blur-md">
-                      <div className="flex items-center gap-3 mb-3">
-                        <Activity className="h-3.5 w-3.5 text-indigo-500" />
-                        <span className="text-[10px] font-black text-white uppercase tracking-widest">AI Insights</span>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="h-2 w-full rounded bg-white/10" />
-                        <div className="h-2 w-2/3 rounded bg-white/10" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-transparent to-transparent pointer-events-none" />
               </div>
             </div>
           </div>
@@ -182,7 +141,7 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
           { icon: FileSpreadsheet, title: 'Multi-Format', desc: 'Secure ingestion for CSV and Excel files.' },
           { icon: ShieldCheck, title: 'Privacy Focused', desc: 'Client-side processing environment.' },
           { icon: Database, title: 'Data Profiling', desc: 'Automatic feature distribution analysis.' },
-          { icon: Target, title: 'Predictive Analytics', desc: 'Trend modeling and trajectory forecasts.' }
+          { icon: BarChart3, title: 'Predictive Analytics', desc: 'Trend modeling and trajectory forecasts.' }
         ].map((feat, idx) => (
           <div key={idx} className="bg-white/5 rounded-[2.5rem] p-10 border border-white/5 group hover:bg-white/[0.08] transition-all duration-500">
             <div className="w-14 h-14 rounded-2xl bg-indigo-600/10 flex items-center justify-center mb-8 text-indigo-500 group-hover:scale-110 transition-transform border border-indigo-600/20">

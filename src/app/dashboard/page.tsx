@@ -5,7 +5,7 @@ import {
   BarChart3, Download, LayoutDashboard, ChevronLeft, 
   Sparkles, TrendingUp, ShieldCheck, 
   Zap, BrainCircuit, Share2, Info, Loader2, RefreshCw,
-  AlertTriangle, Target, Lightbulb, BarChart
+  AlertTriangle, Target, Lightbulb, BarChart, Activity
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -56,40 +56,34 @@ export default function Dashboard() {
   const runAiAnalysis = async () => {
     if (!currentDataset) return;
     
-    console.log("[AutoStat Trace] runAiAnalysis triggered");
     setIsAnalyzing(true);
     setAnalysisError(null);
     
-    // Prepare statistical summary for the AI
     const statsSummary = Object.entries(descriptiveResults).map(([col, stats]) => {
       return `Column: ${col}\n- Mean: ${stats.mean.toFixed(2)}\n- Median: ${stats.median.toFixed(2)}\n- StdDev: ${stats.stdDev.toFixed(2)}\n- Outliers: ${stats.outliers.length}`;
     }).join('\n\n');
 
-    const sample = getCsvSample(currentDataset, 20); // Small sample for stability
+    const sample = getCsvSample(currentDataset, 15); // Smaller sample for faster free tier processing
     
-    console.log("[AutoStat Trace] Calling runInsightsAction and runAuditAction");
     try {
-      const [insightsRes, auditRes] = await Promise.all([
-        runInsightsAction({
-          datasetPreview: sample,
-          statsSummary,
-          columnNames: currentDataset.headers
-        }),
-        runAuditAction(sample, currentDataset.headers)
-      ]);
-
-      console.log("[AutoStat Trace] runInsightsAction Response:", insightsRes);
-      console.log("[AutoStat Trace] runAuditAction Response:", auditRes);
+      // Execute with a slight stagger to avoid immediate simultaneous 429s
+      const insightsRes = await runInsightsAction({
+        datasetPreview: sample,
+        statsSummary,
+        columnNames: currentDataset.headers
+      });
 
       if (insightsRes.success) {
-        console.log("[AutoStat Trace] Insights Synthesis Successful");
         setInsights(insightsRes.data);
       } else {
-        console.warn("[AutoStat Trace] Insights Synthesis Error returned:", insightsRes.error);
         setAnalysisError(insightsRes.error || "Failed to generate strategic insights.");
         toast({ variant: "destructive", title: "Insights Error", description: insightsRes.error });
       }
 
+      // Staggered call for audit
+      await new Promise(r => setTimeout(r, 1000));
+      
+      const auditRes = await runAuditAction(sample, currentDataset.headers);
       if (auditRes.success) {
         setAuditResults(auditRes.data);
       }
@@ -98,7 +92,6 @@ export default function Dashboard() {
         toast({ title: "Analysis Complete", description: "Strategic synthesis and audit mission successful." });
       }
     } catch (err: any) {
-      console.error("[AutoStat Trace] UNCAUGHT EXCEPTION in runAiAnalysis:", err);
       setAnalysisError(err.message || "An unexpected error occurred during analysis.");
       toast({ variant: "destructive", title: "Analysis Failed", description: "Engine overload. Please retry." });
     } finally {
@@ -144,8 +137,31 @@ END OF MISSION LOG
     URL.revokeObjectURL(url);
   };
 
+  const tickerItems = [
+    "NEURAL SYNTHESIS ACTIVE",
+    "DATA VECTORS NORMALIZED",
+    "STATISTICAL INFERENCE COMPLETE",
+    "PREDICTIVE HORIZON MAPPED",
+    "ANOMALY DETECTION STABLE",
+    "ENTERPRISE TELEMETRY ONLINE",
+    "STRATEGIC INSIGHTS GENERATED",
+    "REAL-TIME DIAGNOSTICS ENGAGED"
+  ];
+
   return (
     <div className="min-h-screen bg-[#050507] text-white font-sans selection:bg-indigo-500/30">
+      {/* Top Marquee Bar */}
+      <div className="bg-indigo-600/10 border-b border-indigo-500/20 py-2 overflow-hidden whitespace-nowrap">
+        <div className="animate-marquee flex items-center gap-12">
+          {[...tickerItems, ...tickerItems].map((item, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Activity className="h-3 w-3 text-indigo-500" />
+              <span className="text-[10px] font-black text-indigo-400/60 tracking-[0.3em] uppercase">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <header className="h-20 glass border-b border-white/5 flex items-center justify-between px-10 sticky top-0 z-50">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -201,8 +217,11 @@ END OF MISSION LOG
                   {analysisError && (
                     <Alert variant="destructive" className="mb-8 bg-red-500/10 border-red-500/20 text-red-400">
                       <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>Synthesis Failure</AlertTitle>
-                      <AlertDescription>{analysisError}</AlertDescription>
+                      <AlertTitle>Synthesis Difficulty</AlertTitle>
+                      <AlertDescription>
+                        {analysisError}
+                        <Button variant="link" size="sm" onClick={runAiAnalysis} className="text-red-400 font-bold ml-2">Retry Mission</Button>
+                      </AlertDescription>
                     </Alert>
                   )}
 
@@ -210,7 +229,7 @@ END OF MISSION LOG
                     <div className="space-y-8 py-10">
                       <div className="flex items-center gap-4">
                         <Loader2 className="h-6 w-6 text-indigo-500 animate-spin" />
-                        <p className="text-indigo-400 font-bold uppercase tracking-widest text-xs animate-pulse">Engaging Analytical Engines...</p>
+                        <p className="text-indigo-400 font-bold uppercase tracking-widest text-xs animate-pulse">Engaging Analytical Engines (Retries Enabled)...</p>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <Skeleton className="h-40 rounded-2xl bg-white/5" />

@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent with enhanced retry resilience.
+ * @fileOverview Strategic Insights AI agent with enhanced high-availability retries.
  */
 
 import { ai } from '@/ai/genkit';
@@ -14,21 +14,29 @@ const InsightsFlowInputSchema = z.object({
 });
 
 /**
- * Executes the AI prompt with exponential backoff retries for 429/503 errors.
+ * Executes the AI prompt with aggressive exponential backoff for 429/503 errors.
+ * Base delay increased to 10s to better respect free tier quotas.
  */
-async function generateWithRetry(input: any, retries = 3, delay = 5000) {
+async function generateWithRetry(input: any, retries = 5, delay = 10000) {
   try {
     const { output } = await aiInsightsPrompt(input);
     if (!output) throw new Error("Analytical engine produced no data.");
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
-    const isRetryable = msg.includes("429") || msg.includes("503") || msg.includes("limit") || msg.includes("busy");
+    const isRetryable = 
+      msg.includes("429") || 
+      msg.includes("503") || 
+      msg.toLowerCase().includes("limit") || 
+      msg.toLowerCase().includes("busy") ||
+      msg.toLowerCase().includes("quota");
 
     if (retries > 0 && isRetryable) {
-      console.warn(`[Insights Flow] Rate limit or busy. Retrying in ${delay}ms...`);
-      await new Promise(res => setTimeout(res, delay));
-      return generateWithRetry(input, retries - 1, delay * 2);
+      const jitter = Math.random() * 3000;
+      const finalDelay = delay + jitter;
+      console.warn(`[Insights Flow] Rate limit (429/Busy). Retrying attempt ${6 - retries} in ${Math.round(finalDelay)}ms...`);
+      await new Promise(res => setTimeout(res, finalDelay));
+      return generateWithRetry(input, retries - 1, delay * 1.5);
     }
     throw error;
   }

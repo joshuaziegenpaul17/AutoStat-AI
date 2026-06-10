@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview Data quality auditing AI agent with optimized timeout management.
+ * @fileOverview Data quality auditing AI agent with optimized timeout management and retry logic.
  */
 
 import { ai } from '@/ai/genkit';
@@ -12,7 +12,7 @@ const QualityFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-async function generateWithRetry(input: z.infer<typeof QualityFlowInputSchema>, retries = 2, delay = 2000): Promise<any> {
+async function generateWithRetry(input: z.infer<typeof QualityFlowInputSchema>, retries = 2, delay = 3000): Promise<any> {
   try {
     const promptInput = {
       datasetPreview: input.datasetPreview,
@@ -24,10 +24,12 @@ async function generateWithRetry(input: z.infer<typeof QualityFlowInputSchema>, 
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
-    const isRetryable = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE");
+    const isRateLimit = msg.includes("429") || msg.includes("quota");
+    const isRetryable = isRateLimit || msg.includes("503") || msg.includes("UNAVAILABLE");
 
     if (retries > 0 && isRetryable) {
-      await new Promise(res => setTimeout(res, delay));
+      const waitTime = isRateLimit ? delay * 2 : delay;
+      await new Promise(res => setTimeout(res, waitTime));
       return generateWithRetry(input, retries - 1, delay * 2);
     }
     throw error;

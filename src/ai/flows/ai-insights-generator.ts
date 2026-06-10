@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent with optimized telemetry and sensible retry limits.
+ * @fileOverview Strategic Insights AI agent with optimized telemetry and robust 429 handling.
  */
 
 import { ai } from '@/ai/genkit';
@@ -13,7 +13,7 @@ const InsightsFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 2, delay = 2000): Promise<any> {
+async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 3, delay = 3000): Promise<any> {
   try {
     console.log(`[AI Synthesis] Dispatching request. Retries remaining: ${retries}`);
     
@@ -34,14 +34,17 @@ async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>,
     const errorMsg = error?.message || "Unknown Engine Error";
     console.error(`[AI Synthesis Error] ${errorMsg}`);
 
-    const isRetryable = errorMsg.includes("503") || 
-                        errorMsg.includes("429") || 
+    const isRateLimit = errorMsg.includes("429") || errorMsg.includes("quota") || errorMsg.includes("Rate limit");
+    const isRetryable = isRateLimit || 
+                        errorMsg.includes("503") || 
                         errorMsg.includes("UNAVAILABLE") || 
-                        errorMsg.includes("quota");
+                        errorMsg.includes("high demand");
 
     if (retries > 0 && isRetryable) {
-      console.warn(`[AI Synthesis] Retrying in ${delay}ms...`);
-      await new Promise(res => setTimeout(res, delay));
+      // For rate limits, we wait longer
+      const waitTime = isRateLimit ? delay * 1.5 : delay;
+      console.warn(`[AI Synthesis] Retryable error detected. Waiting ${waitTime}ms...`);
+      await new Promise(res => setTimeout(res, waitTime));
       return generateWithRetry(input, retries - 1, delay * 2);
     }
     

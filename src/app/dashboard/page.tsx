@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useRef } from 'react';
@@ -5,7 +6,7 @@ import {
   BarChart3, LayoutDashboard, Sparkles, ShieldCheck, 
   Zap, BrainCircuit, Loader2, RefreshCw,
   AlertTriangle, Target, Activity, Database, 
-  TrendingUp, Presentation,
+  Presentation,
   HelpCircle
 } from 'lucide-react';
 import Link from 'next/link';
@@ -41,21 +42,20 @@ export default function Dashboard() {
     toast({ title: "Dataset Ingested", description: `Successfully processed ${data.rows.length} records.` });
   };
 
+  const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
+  const categoricalColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'string') : [];
+
   const descriptiveResults = useMemo(() => {
     if (!currentDataset) return {};
     const results: Record<string, DescriptiveStats> = {};
-    const numericCols = Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number');
-    numericCols.forEach(col => {
+    numericColumns.forEach(col => {
       const vals = currentDataset.rows.map(r => r[col]).filter(v => typeof v === 'number');
       if (vals.length > 0) {
         results[col] = calculateDescriptiveStats(vals);
       }
     });
     return results;
-  }, [currentDataset]);
-
-  const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
-  const categoricalColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'string') : [];
+  }, [currentDataset, numericColumns]);
 
   const runAiAnalysis = async () => {
     if (!currentDataset || isAnalyzing) return;
@@ -224,34 +224,45 @@ export default function Dashboard() {
                 <p className="text-white/40 font-medium">Visual mapping and statistical distribution of identified feature sets.</p>
               </div>
 
-              <Tabs defaultValue="visuals" className="w-full">
+              <Tabs defaultValue={numericColumns.length > 0 ? "visuals" : "table"} className="w-full">
                 <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl mb-10 h-auto flex flex-wrap gap-2">
-                  <TabsTrigger value="visuals" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Visualizations</TabsTrigger>
-                  <TabsTrigger value="stats" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Descriptive Statistics</TabsTrigger>
+                  {numericColumns.length > 0 && (
+                    <TabsTrigger value="visuals" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Visualizations</TabsTrigger>
+                  )}
+                  {numericColumns.length > 0 && (
+                    <TabsTrigger value="stats" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Descriptive Statistics</TabsTrigger>
+                  )}
                   <TabsTrigger value="table" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Data Table</TabsTrigger>
                 </TabsList>
-                <TabsContent value="visuals" className="mt-0 outline-none">
-                  <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} categoricalColumns={categoricalColumns} />
-                </TabsContent>
-                <TabsContent value="stats" className="mt-0 outline-none">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {numericColumns.map(col => (
-                      <Card key={col} className="bg-white/5 border-white/10 rounded-[2rem] overflow-hidden">
-                        <CardHeader className="border-b border-white/5 p-8">
-                          <CardTitle className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-400">{col}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-8">
-                          <div className="grid grid-cols-2 gap-y-6">
-                            <div><p className="text-[10px] font-bold text-white/30 mb-1">Mean</p><p className="text-xl font-black">{descriptiveResults[col]?.mean.toFixed(2)}</p></div>
-                            <div><p className="text-[10px] font-bold text-white/30 mb-1">Median</p><p className="text-xl font-black">{descriptiveResults[col]?.median.toFixed(2)}</p></div>
-                            <div><p className="text-[10px] font-bold text-white/30 mb-1">Std Dev</p><p className="text-xl font-black">{descriptiveResults[col]?.stdDev.toFixed(2)}</p></div>
-                            <div><p className="text-[10px] font-bold text-white/30 mb-1">Range</p><p className="text-xl font-black">{(descriptiveResults[col]?.max - descriptiveResults[col]?.min).toFixed(2)}</p></div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
+                
+                {numericColumns.length > 0 && (
+                  <TabsContent value="visuals" className="mt-0 outline-none">
+                    <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} categoricalColumns={categoricalColumns} />
+                  </TabsContent>
+                )}
+                
+                {numericColumns.length > 0 && (
+                  <TabsContent value="stats" className="mt-0 outline-none">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {numericColumns.map(col => (
+                        <Card key={col} className="bg-white/5 border-white/10 rounded-[2rem] overflow-hidden">
+                          <CardHeader className="border-b border-white/5 p-8">
+                            <CardTitle className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-400">{col}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-8">
+                            <div className="grid grid-cols-2 gap-y-6">
+                              <div><p className="text-[10px] font-bold text-white/30 mb-1">Mean</p><p className="text-xl font-black">{descriptiveResults[col]?.mean.toFixed(2)}</p></div>
+                              <div><p className="text-[10px] font-bold text-white/30 mb-1">Median</p><p className="text-xl font-black">{descriptiveResults[col]?.median.toFixed(2)}</p></div>
+                              <div><p className="text-[10px] font-bold text-white/30 mb-1">Std Dev</p><p className="text-xl font-black">{descriptiveResults[col]?.stdDev.toFixed(2)}</p></div>
+                              <div><p className="text-[10px] font-bold text-white/30 mb-1">Range</p><p className="text-xl font-black">{(descriptiveResults[col]?.max - descriptiveResults[col]?.min).toFixed(2)}</p></div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                )}
+                
                 <TabsContent value="table" className="mt-0 outline-none">
                   <Card className="bg-white/5 border-white/10 rounded-[2rem] overflow-hidden">
                     <div className="overflow-x-auto max-h-[600px]">
@@ -273,28 +284,9 @@ export default function Dashboard() {
               </Tabs>
             </section>
 
-            {/* 3. Predictive Analysis */}
-            <section className="space-y-10">
-              <div>
-                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Predictive Analysis</h2>
-                <p className="text-white/40 font-medium">Trend modeling and projections based on historical data sequences.</p>
-              </div>
-              <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-[2.5rem] p-12 text-center">
-                <div className="max-w-2xl mx-auto space-y-6">
-                  <div className="p-4 rounded-full bg-indigo-500/10 w-fit mx-auto border border-indigo-500/20">
-                    <TrendingUp className="h-8 w-8 text-indigo-500" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Forecast Projections</h3>
-                  <p className="text-white/50 leading-relaxed font-medium">
-                    The analytical engine is processing sequential patterns. Future projections will be integrated into the Executive Analysis below.
-                  </p>
-                </div>
-              </Card>
-            </section>
-
             <Separator className="bg-white/5" />
 
-            {/* 4. AI Executive Summary */}
+            {/* 3. AI Executive Summary */}
             <section id="ai-summary" className="space-y-10">
               <div>
                 <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Executive Analysis</h2>

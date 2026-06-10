@@ -1,9 +1,8 @@
-
 "use client"
 
 import React, { useState } from 'react';
 import { 
-  BarChart3, Database, Brain, RefreshCw, Plus, ShieldAlert, FileText, TrendingUp, Filter, Lightbulb, ClipboardCheck, AlertCircle, ArrowUpRight, Target, Sparkles, ChevronRight, Activity, Zap, SearchCode
+  BarChart3, Database, Brain, RefreshCw, ShieldAlert, FileText, TrendingUp, Filter, Lightbulb, ClipboardCheck, AlertCircle, ArrowUpRight, Target, Sparkles, ChevronRight, Activity, Zap, SearchCode
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,17 +46,17 @@ export default function Dashboard() {
     if (!currentDataset) return;
     setIsAuditing(true);
     try {
-      const sampleCsv = getCsvSample(currentDataset, 50);
+      const sampleCsv = getCsvSample(currentDataset, 60);
       const result = await suggestDataQualityImprovements({ csvData: sampleCsv });
       setAiSuggestions(result);
       toast({
         title: "Audit Complete",
-        description: "Structural diagnostics have been mapped to your workspace.",
+        description: "Structural diagnostics successfully mapped.",
       });
     } catch (err) {
       toast({
         title: "Audit Engine Error",
-        description: "The diagnostic pipeline is currently overloaded. Please try again.",
+        description: "Diagnostic pipeline busy. Please try manual trigger in a moment.",
         variant: "destructive"
       });
     } finally {
@@ -72,18 +71,17 @@ export default function Dashboard() {
       const statsSummary = JSON.stringify(descriptiveResults);
       const result = await narrativeAnalysisGenerator({
         analysisResults: statsSummary,
-        context: `Analysis of ${currentDataset.rows.length} records across ${Object.keys(descriptiveResults).length} numeric variables.`
+        context: `Deep temporal modeling for ${currentDataset.rows.length} records.`
       });
       setNarrative(result);
       toast({
-        title: "Synthesis Complete",
-        description: "AI has successfully modeled data trends and projections.",
+        title: "Modeling Complete",
+        description: "Predictive trajectories calculated.",
       });
     } catch (err: any) {
-      console.error("Narrative generation failed", err);
       toast({
         title: "AI Engine Busy",
-        description: "Standard statistical analysis is complete, but automated interpretation is currently queued.",
+        description: "Numerical analysis complete, but textual synthesis is queued.",
         variant: "destructive"
       });
     } finally {
@@ -103,61 +101,50 @@ export default function Dashboard() {
             </div>
             <span className="font-headline font-bold text-lg tracking-tight text-white">AutoStat<span className="text-primary italic">AI</span></span>
           </div>
-          <div className="h-6 w-px bg-white/10 hidden md:block" />
-          <nav className="hidden md:flex gap-4">
-            <Button variant="ghost" size="sm" className="text-xs font-semibold text-primary">ANALYTICS</Button>
-            <Button variant="ghost" size="sm" className="text-xs font-semibold opacity-60">WORKFLOWS</Button>
-          </nav>
         </div>
         <div className="flex items-center gap-4">
-          <Badge variant="outline" className="border-primary/30 text-primary text-[10px] px-3 uppercase tracking-tighter">System Ready</Badge>
-          <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center overflow-hidden">
-             <Activity className="h-3.5 w-3.5 text-primary" />
-          </div>
+          <Badge variant="outline" className="border-primary/30 text-primary text-[10px] px-3 uppercase">Mission Control Ready</Badge>
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto p-6 md:p-8 max-w-[1600px]">
+      <main className="flex-grow container mx-auto p-6 md:p-8 max-w-[1700px]">
         {!currentDataset ? (
           <div className="py-12 animate-in fade-in zoom-in-95 duration-500">
             <DatasetUpload onUpload={handleUpload} />
           </div>
         ) : (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Control Bar */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/80 p-6 rounded-[2rem] border border-white/5 shadow-2xl backdrop-blur-xl">
-              <div className="flex items-center gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                  <Database className="h-6 w-6 text-primary" />
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-slate-900/90 p-8 rounded-[3rem] border border-white/10 shadow-2xl backdrop-blur-2xl">
+              <div className="flex items-center gap-6">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <Database className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-headline font-bold text-white flex items-center gap-2">
-                    Active Dataset Workspace
-                    <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[9px] px-2">SYNCED</Badge>
+                  <h2 className="text-2xl font-headline font-black text-white flex items-center gap-3 tracking-tight">
+                    Active Mission: {currentDataset.rows.length} Data Points
+                    <Badge className="bg-primary text-black border-none text-[9px] font-black">STABLE</Badge>
                   </h2>
-                  <div className="flex gap-4 mt-0.5 text-[10px] text-muted-foreground font-bold uppercase tracking-[0.15em]">
-                    <span className="flex items-center gap-1.5">{currentDataset.rows.length} SAMPLES</span>
-                    <span className="flex items-center gap-1.5">{currentDataset.headers.length} DIMENSIONS</span>
-                  </div>
+                  <p className="text-[10px] text-primary/60 font-black uppercase tracking-[0.3em] mt-1">Multi-Vector Ingestion Complete</p>
                 </div>
               </div>
-              <div className="flex gap-3 w-full md:w-auto">
-                <Button variant="outline" size="sm" className="flex-1 md:flex-none rounded-xl h-12 px-6 border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold text-xs" onClick={() => setCurrentDataset(null)}>
-                  <RefreshCw className="h-4 w-4 mr-2" /> SWAP DATASET
+              <div className="flex gap-4 w-full lg:w-auto">
+                <Button variant="outline" size="lg" className="flex-1 lg:flex-none rounded-2xl h-14 px-8 border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold" onClick={() => setCurrentDataset(null)}>
+                  <RefreshCw className="h-5 w-5 mr-3" /> SWAP SOURCE
                 </Button>
-                <Button size="sm" className="flex-1 md:flex-none bg-primary hover:bg-primary/90 text-black rounded-xl h-12 px-8 font-black text-xs shadow-xl shadow-primary/20">
-                  EXPORT ANALYSIS
+                <Button size="lg" className="flex-1 lg:flex-none bg-primary hover:bg-primary/90 text-black rounded-2xl h-14 px-10 font-black shadow-2xl shadow-primary/20">
+                  EXPORT MISSION LOG
                 </Button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-              <div className="xl:col-span-8 space-y-8">
-                {/* Main Visuals & Table Tabs */}
+            <div className="grid grid-cols-1 2xl:grid-cols-12 gap-10">
+              <div className="2xl:col-span-8 space-y-10">
+                {/* Visuals Tabs */}
                 <Tabs defaultValue="visuals" className="w-full">
-                  <TabsList className="bg-slate-950/80 border border-white/5 p-1.5 rounded-2xl mb-8 shadow-2xl">
-                    <TabsTrigger value="visuals" className="rounded-xl px-10 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-xs tracking-widest transition-all">DISTRIBUTIONS</TabsTrigger>
-                    <TabsTrigger value="table" className="rounded-xl px-10 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-black font-bold text-xs tracking-widest transition-all">DATA GRID</TabsTrigger>
+                  <TabsList className="bg-slate-950/90 border border-white/10 p-2 rounded-[2rem] mb-10 shadow-2xl">
+                    <TabsTrigger value="visuals" className="rounded-[1.5rem] px-14 py-4 data-[state=active]:bg-primary data-[state=active]:text-black font-black text-xs tracking-widest uppercase transition-all">Telemetry</TabsTrigger>
+                    <TabsTrigger value="table" className="rounded-[1.5rem] px-14 py-4 data-[state=active]:bg-primary data-[state=active]:text-black font-black text-xs tracking-widest uppercase transition-all">Raw Grid</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="visuals">
@@ -165,99 +152,78 @@ export default function Dashboard() {
                   </TabsContent>
 
                   <TabsContent value="table">
-                    <Card className="glass-card border-none overflow-hidden rounded-[2.5rem] shadow-2xl">
-                      <div className="overflow-x-auto max-h-[600px]">
+                    <Card className="glass border-none overflow-hidden rounded-[3rem] shadow-2xl">
+                      <div className="overflow-x-auto max-h-[700px]">
                         <table className="w-full text-left text-[11px]">
-                          <thead className="bg-slate-950/90 sticky top-0 z-10 text-muted-foreground font-bold uppercase tracking-widest">
+                          <thead className="bg-slate-950 sticky top-0 z-10 text-primary font-black uppercase tracking-widest border-b border-white/5">
                             <tr>
                               {currentDataset.headers.map(h => (
-                                <th key={h} className="px-6 py-5 border-b border-white/5">{h}</th>
+                                <th key={h} className="px-8 py-6">{h}</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-white/5">
-                            {currentDataset.rows.slice(0, 50).map((row, i) => (
-                              <tr key={i} className="hover:bg-white/[0.03] transition-colors group">
+                            {currentDataset.rows.slice(0, 100).map((row, i) => (
+                              <tr key={i} className="hover:bg-primary/[0.02] transition-colors group">
                                 {currentDataset.headers.map(h => (
-                                  <td key={h} className="px-6 py-4 font-mono text-white/40 group-hover:text-white transition-colors">{row[h]}</td>
+                                  <td key={h} className="px-8 py-5 font-mono text-white/50 group-hover:text-white transition-colors">{row[h]}</td>
                                 ))}
                               </tr>
                             ))}
                           </tbody>
                         </table>
                       </div>
-                      <div className="p-4 bg-slate-950/60 text-center border-t border-white/5">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">RECORDS 1-50 OF {currentDataset.rows.length}</p>
-                      </div>
                     </Card>
                   </TabsContent>
                 </Tabs>
 
-                {/* Audit Engine Section */}
-                <Card className="glass border-primary/10 rounded-[2.5rem] shadow-2xl overflow-hidden">
-                  <div className="h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-30" />
-                  <CardHeader className="pb-6">
-                    <CardTitle className="text-xl flex items-center gap-3 text-white">
-                      <SearchCode className="h-6 w-6 text-primary" />
-                      Intelligent Quality Audit
+                {/* Audit Engine */}
+                <Card className="glass border-primary/20 rounded-[3rem] shadow-2xl overflow-hidden relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <CardHeader className="pb-8 pt-10 px-10">
+                    <CardTitle className="text-2xl flex items-center gap-4 text-white font-black tracking-tight">
+                      <SearchCode className="h-8 w-8 text-primary" />
+                      Data Structural Audit
                     </CardTitle>
-                    <CardDescription className="text-xs uppercase tracking-[0.1em] font-bold text-primary/60">Automated diagnostic scan for data structural integrity.</CardDescription>
+                    <CardDescription className="text-xs uppercase tracking-[0.2em] font-black text-primary/60">Automated structural validation & risk detection</CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="px-10 pb-12">
                     {aiSuggestions ? (
-                      <div className="space-y-8 animate-in fade-in duration-700">
-                        <div className="p-8 rounded-[2rem] bg-primary/5 border border-primary/10 relative overflow-hidden group">
-                           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                             <Brain className="h-20 w-20 text-primary" />
-                           </div>
-                           <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-3">Diagnostic Summary</h4>
-                           <p className="text-base text-white/90 leading-relaxed font-medium relative z-10 italic">
-                             "{aiSuggestions.summary}"
-                           </p>
+                      <div className="space-y-10 animate-in fade-in duration-1000">
+                        <div className="p-10 rounded-[2.5rem] bg-primary/5 border border-primary/20 relative overflow-hidden">
+                           <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] mb-4">Diagnostics Result</h4>
+                           <p className="text-lg text-white/90 leading-relaxed font-bold italic tracking-tight">"{aiSuggestions.summary}"</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           {aiSuggestions.suggestions.map((s: any, idx: number) => (
-                            <div key={idx} className="p-6 rounded-[2rem] bg-slate-950/40 border border-white/5 hover:border-primary/30 transition-all group relative">
-                              <div className="flex justify-between items-start mb-4">
-                                <Badge variant="outline" className="text-[9px] border-primary/20 text-primary font-black px-3 py-1 uppercase tracking-tighter">
-                                  {s.issueType}
-                                </Badge>
-                                <span className="text-[9px] font-bold text-white/20 uppercase">Audit ID: {(idx+1).toString().padStart(3, '0')}</span>
-                              </div>
-                              <h5 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                                <AlertCircle className="h-4 w-4 text-primary/60" />
-                                {s.description}
-                              </h5>
-                              <p className="text-xs text-white/50 leading-relaxed group-hover:text-white/80 transition-colors mb-4">{s.suggestion}</p>
-                              <div className="flex flex-wrap gap-2 mt-auto">
+                            <div key={idx} className="p-8 rounded-[2.5rem] bg-slate-950/60 border border-white/5 hover:border-primary/40 transition-all group relative shadow-xl">
+                              <Badge variant="outline" className="text-[9px] border-primary/40 text-primary font-black px-4 py-1.5 uppercase mb-6">{s.issueType}</Badge>
+                              <h5 className="text-base font-black text-white mb-4 leading-tight">{s.description}</h5>
+                              <p className="text-sm text-white/50 leading-relaxed mb-6 font-medium">{s.suggestion}</p>
+                              <div className="flex flex-wrap gap-2">
                                 {s.affectedColumns.map((col: string) => (
-                                  <Badge key={col} className="bg-white/5 text-white/40 border-none text-[8px] px-2">{col}</Badge>
+                                  <Badge key={col} className="bg-white/5 text-white/40 border-none text-[8px] font-black px-3 py-1 uppercase">{col}</Badge>
                                 ))}
                               </div>
                             </div>
                           ))}
                         </div>
-                        <Button variant="ghost" className="w-full text-xs font-bold text-white/20 hover:text-primary transition-colors" onClick={runAudit} disabled={isAuditing}>
-                          {isAuditing ? <RefreshCw className="h-3 w-3 mr-2 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-2" />}
-                          RE-SCAN INTEGRITY
+                        <Button variant="ghost" className="w-full text-[10px] font-black text-white/20 hover:text-primary transition-all py-8 border border-dashed border-white/10 rounded-2xl" onClick={runAudit} disabled={isAuditing}>
+                          {isAuditing ? <RefreshCw className="h-4 w-4 mr-3 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-3" />}
+                          INITIATE DEEP STRUCTURAL RE-SCAN
                         </Button>
                       </div>
                     ) : (
-                      <div className="py-24 flex flex-col items-center justify-center text-center">
-                        <div className="w-24 h-24 rounded-full bg-slate-900 border-2 border-dashed border-white/10 flex items-center justify-center mb-8 animate-pulse">
-                          <Brain className="h-10 w-10 text-white/10" />
+                      <div className="py-24 text-center">
+                        <div className="w-24 h-24 rounded-full bg-slate-900 border-2 border-dashed border-white/20 flex items-center justify-center mx-auto mb-10 animate-pulse">
+                          <ShieldAlert className="h-10 w-10 text-white/20" />
                         </div>
-                        <h4 className="text-2xl font-headline font-bold text-white mb-4">Audit Pipeline Inactive</h4>
-                        <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-10 leading-relaxed">
-                          Initial automated scanning was bypassed due to service load. Run a secondary deep scan to identify structural issues and PII risks.
+                        <h4 className="text-3xl font-headline font-black text-white mb-4 tracking-tighter">Audit Pipeline Pending</h4>
+                        <p className="text-sm text-white/40 max-w-md mx-auto mb-12 font-medium leading-relaxed">
+                          Platform load skipped initial diagnostics. Trigger a manual high-fidelity scan to uncover hidden anomalies and data debt.
                         </p>
-                        <Button 
-                          onClick={runAudit} 
-                          disabled={isAuditing}
-                          className="bg-primary hover:bg-primary/90 text-black rounded-full px-12 h-14 font-black text-xs uppercase tracking-widest transition-all"
-                        >
-                          {isAuditing ? <RefreshCw className="h-4 w-4 mr-3 animate-spin" /> : <Zap className="h-4 w-4 mr-3" />}
-                          {isAuditing ? 'SCANNING DATA VECTORS...' : 'INITIATE DIAGNOSTIC SCAN'}
+                        <Button onClick={runAudit} disabled={isAuditing} className="bg-primary hover:bg-primary/90 text-black rounded-full px-16 h-16 font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20">
+                          {isAuditing ? 'SCANNING VECTORS...' : 'RUN STRUCTURAL DIAGNOSTIC'}
                         </Button>
                       </div>
                     )}
@@ -265,33 +231,33 @@ export default function Dashboard() {
                 </Card>
               </div>
 
-              {/* Sidebar: Stats & Narrative */}
-              <div className="xl:col-span-4 space-y-8">
-                {/* Core Stat Vectors */}
-                <Card className="glass-card border-none rounded-[2.5rem] shadow-2xl overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg text-white font-bold flex items-center gap-2">
-                      <Target className="h-5 w-5 text-primary" />
-                      Critical Distributions
+              {/* Sidebar */}
+              <div className="2xl:col-span-4 space-y-10">
+                {/* Stats Card */}
+                <Card className="glass border-none rounded-[3rem] shadow-2xl overflow-hidden">
+                  <CardHeader className="p-10 pb-4">
+                    <CardTitle className="text-xl text-white font-black flex items-center gap-3">
+                      <Target className="h-6 w-6 text-primary" />
+                      Core Trajectories
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-8 p-6">
-                    {numericColumns.slice(0, 3).map(col => (
-                      <div key={col} className="space-y-4">
+                  <CardContent className="space-y-10 p-10">
+                    {numericColumns.slice(0, 4).map(col => (
+                      <div key={col} className="space-y-6">
                         <div className="flex justify-between items-center px-1">
-                          <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.15em]">{col}</h4>
-                          <ArrowUpRight className="h-4 w-4 text-primary/30" />
+                          <h4 className="text-[12px] font-black text-primary uppercase tracking-[0.2em]">{col}</h4>
+                          <ArrowUpRight className="h-5 w-5 text-primary/30" />
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-4">
                           {[
-                            { l: 'AVERAGE', v: descriptiveResults[col]?.mean.toFixed(2) },
-                            { l: 'STABILITY (SD)', v: descriptiveResults[col]?.stdDev.toFixed(2) },
-                            { l: 'LOWER BOUND', v: descriptiveResults[col]?.min.toFixed(2) },
-                            { l: 'UPPER BOUND', v: descriptiveResults[col]?.max.toFixed(2) }
+                            { l: 'MEAN', v: descriptiveResults[col]?.mean.toFixed(2) },
+                            { l: 'STABILITY', v: descriptiveResults[col]?.stdDev.toFixed(2) },
+                            { l: 'FLOOR', v: descriptiveResults[col]?.min.toFixed(2) },
+                            { l: 'CEILING', v: descriptiveResults[col]?.max.toFixed(2) }
                           ].map(m => (
-                            <div key={m.l} className="bg-slate-950/80 p-4 rounded-2xl border border-white/5 shadow-inner transition-transform hover:scale-[1.02]">
-                              <p className="text-[8px] text-white/30 font-black mb-1 uppercase tracking-widest">{m.l}</p>
-                              <p className="text-base font-mono font-bold text-white/90">{m.v}</p>
+                            <div key={m.l} className="bg-slate-950 p-6 rounded-[1.5rem] border border-white/5 hover:border-primary/20 transition-all shadow-inner">
+                              <p className="text-[9px] text-white/30 font-black mb-1 uppercase tracking-widest">{m.l}</p>
+                              <p className="text-xl font-mono font-black text-white">{m.v}</p>
                             </div>
                           ))}
                         </div>
@@ -300,91 +266,82 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Insight & Forecast Engine - THE BIG FORECAST */}
-                <Card className="glass border-primary/40 rounded-[2.5rem] overflow-hidden shadow-2xl relative min-h-[600px] flex flex-col">
-                  <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
-                  <CardHeader className="pb-4 pt-10 px-8 shrink-0">
-                    <CardTitle className="text-2xl flex items-center gap-3 text-white font-bold tracking-tight">
-                      <Sparkles className="h-8 w-8 text-primary" />
-                      Global Forecasting
+                {/* Forecast Hero Section */}
+                <Card className="glass border-primary/40 rounded-[3rem] overflow-hidden shadow-2xl relative min-h-[800px] flex flex-col group">
+                  <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+                  <CardHeader className="pb-6 pt-12 px-10 shrink-0">
+                    <CardTitle className="text-3xl flex items-center gap-4 text-white font-black tracking-tighter">
+                      <Sparkles className="h-10 w-10 text-primary" />
+                      HERO FORECAST
                     </CardTitle>
-                    <CardDescription className="text-xs uppercase tracking-[0.2em] font-black text-primary/60">Predictive Temporal Analysis & Strategic Maneuvers</CardDescription>
+                    <Badge variant="outline" className="mt-4 border-primary/40 text-primary font-black tracking-[0.3em] uppercase px-4 py-2">Predictive Temporal Modeling</Badge>
                   </CardHeader>
-                  <CardContent className="px-8 pb-10 flex-grow flex flex-col">
+                  <CardContent className="px-10 pb-12 flex-grow flex flex-col">
                     {!narrative ? (
                       <div className="flex-grow flex flex-col items-center justify-center text-center">
-                        <div className="w-32 h-32 bg-primary/5 rounded-full flex items-center justify-center mb-10 border border-primary/10 glow-primary-sm animate-pulse">
-                          <TrendingUp className="h-14 w-14 text-primary" />
+                        <div className="w-40 h-40 bg-primary/10 rounded-full flex items-center justify-center mb-12 border border-primary/20 shadow-[0_0_60px_-10px_rgba(16,185,129,0.3)] animate-pulse">
+                          <TrendingUp className="h-20 w-20 text-primary" />
                         </div>
-                        <h3 className="text-xl font-headline font-bold text-white mb-4">Execute Deep Temporal Modeling</h3>
-                        <p className="text-sm text-white/50 mb-12 font-medium leading-relaxed max-w-xs">
-                          Generate complex predictive trajectories based on historical variance and distribution vectors.
+                        <h3 className="text-3xl font-headline font-black text-white mb-6 tracking-tight">Initiate Predictive Synthesis</h3>
+                        <p className="text-base text-white/50 mb-14 font-medium leading-relaxed max-w-xs">
+                          Launch deep-temporal analysis to map future trajectories and strategic risk vectors.
                         </p>
                         <Button 
                           onClick={generateNarrative} 
                           disabled={isGeneratingNarrative}
-                          className="w-full bg-primary hover:bg-primary/90 text-black rounded-[2rem] h-20 font-black text-sm uppercase tracking-[0.25em] transition-all shadow-[0_20px_50px_rgba(16,185,129,0.3)]"
+                          className="w-full bg-primary hover:bg-primary/90 text-black rounded-[2.5rem] h-24 font-black text-lg uppercase tracking-[0.3em] transition-all shadow-[0_25px_60px_rgba(16,185,129,0.4)]"
                         >
-                          {isGeneratingNarrative ? (
-                            <RefreshCw className="h-6 w-6 mr-4 animate-spin" />
-                          ) : (
-                            <Zap className="h-6 w-6 mr-4" />
-                          )}
-                          {isGeneratingNarrative ? 'MODELING DATA...' : 'INITIATE FORECAST'}
+                          {isGeneratingNarrative ? <RefreshCw className="h-8 w-8 mr-4 animate-spin" /> : <Zap className="h-8 w-8 mr-4" />}
+                          {isGeneratingNarrative ? 'MODELING...' : 'RUN FORECAST'}
                         </Button>
                       </div>
                     ) : (
-                      <div className="animate-in fade-in slide-in-from-top-10 duration-1000 space-y-10">
-                        {/* HERO FORECAST BLOCK - VERY BIG */}
-                        <div className="p-10 rounded-[2.5rem] bg-gradient-to-br from-primary/30 to-slate-900 border border-primary/40 shadow-[0_30px_60px_rgba(16,185,129,0.15)] relative overflow-hidden group">
-                           <div className="absolute -right-20 -top-20 opacity-5 group-hover:opacity-10 transition-opacity">
-                             <TrendingUp className="h-80 w-80 text-primary" />
+                      <div className="animate-in fade-in slide-in-from-top-12 duration-1000 space-y-12">
+                        {/* THE BIG FORECAST HERO */}
+                        <div className="p-12 rounded-[3.5rem] bg-gradient-to-br from-primary/40 to-slate-950 border-2 border-primary shadow-[0_40px_80px_rgba(16,185,129,0.25)] relative overflow-hidden">
+                           <div className="absolute -right-32 -top-32 opacity-10 rotate-12">
+                             <TrendingUp className="h-96 w-96 text-primary" />
                            </div>
-                           <div className="flex items-center justify-between mb-8">
-                             <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-2">
-                               <Target className="h-4 w-4" /> Primary Trajectory
-                             </h4>
-                             <Badge className="bg-primary text-black text-[10px] font-black tracking-widest px-4 py-1.5 rounded-full border-none">
+                           <div className="flex items-center justify-between mb-10 relative z-10">
+                             <Badge className="bg-primary text-black text-[11px] font-black tracking-widest px-6 py-2 rounded-full uppercase">
                                {narrative.forecasting.confidence.toUpperCase()} CONFIDENCE
                              </Badge>
+                             <span className="text-[11px] font-black text-primary/80 uppercase tracking-[0.3em]">{narrative.forecasting.timeframe}</span>
                            </div>
-                           <h2 className="text-3xl md:text-4xl font-headline font-black leading-[1.1] text-white mb-8 tracking-tighter">
+                           <h2 className="text-4xl md:text-5xl lg:text-6xl font-headline font-black leading-[1.05] text-white mb-10 tracking-tighter relative z-10">
                              {narrative.forecasting.projection}
                            </h2>
-                           <div className="grid grid-cols-2 gap-6 pt-8 border-t border-primary/20">
-                              <div>
-                                <h5 className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-2">Time Horizon</h5>
-                                <p className="text-sm font-bold text-primary">{narrative.forecasting.timeframe}</p>
-                              </div>
-                              <div>
-                                <h5 className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-2">System Risk</h5>
-                                <div className="flex gap-1">
-                                   {Array.from({length: 3}).map((_, i) => (
-                                     <div key={i} className={`h-1.5 w-6 rounded-full ${i < narrative.forecasting.risks.length ? 'bg-destructive' : 'bg-white/10'}`} />
-                                   ))}
-                                </div>
+                           <div className="pt-10 border-t border-primary/30 relative z-10">
+                              <h5 className="text-[11px] font-black text-white/40 uppercase tracking-[0.4em] mb-4">CRITICAL RISKS</h5>
+                              <div className="flex gap-2">
+                                 {narrative.forecasting.risks.map((_, i) => (
+                                   <div key={i} className="h-2 flex-grow rounded-full bg-destructive animate-pulse" />
+                                 ))}
+                                 {Array.from({length: Math.max(0, 5 - narrative.forecasting.risks.length)}).map((_, i) => (
+                                   <div key={i} className="h-2 flex-grow rounded-full bg-white/10" />
+                                 ))}
                               </div>
                            </div>
                         </div>
 
-                        <ScrollArea className="h-[450px] pr-4">
-                          <div className="space-y-10 pb-6">
-                            <div className="bg-slate-950/60 p-8 rounded-[2rem] border border-white/5 shadow-inner">
-                               <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-                                 <ClipboardCheck className="h-4 w-4" /> Executive Synthesis
+                        <ScrollArea className="h-[500px] pr-6">
+                          <div className="space-y-12 pb-10">
+                            <div className="bg-slate-950/80 p-10 rounded-[3rem] border border-white/10 shadow-inner">
+                               <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.5em] mb-8 flex items-center gap-3">
+                                 <ClipboardCheck className="h-5 w-5" /> SYNTHESIS LOG
                                </h4>
-                               <p className="text-sm leading-relaxed text-white/70 font-medium italic">"{narrative.executiveSummary}"</p>
+                               <p className="text-lg leading-relaxed text-white/80 font-bold italic tracking-tight">"{narrative.executiveSummary}"</p>
                             </div>
 
-                            <div className="space-y-5">
-                               <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] flex items-center gap-2 px-1">
-                                 <Lightbulb className="h-4 w-4" /> Strategic Observations
+                            <div className="space-y-6">
+                               <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.5em] flex items-center gap-3 px-2">
+                                 <Lightbulb className="h-5 w-5" /> STRATEGIC MANEUVERS
                                </h4>
                                <div className="space-y-4">
                                  {narrative.keyInsights.map((insight, i) => (
-                                   <div key={i} className="bg-white/5 p-5 rounded-3xl border border-white/5 text-[12px] text-white/80 leading-relaxed flex gap-5 transition-all hover:bg-white/[0.08] hover:translate-x-1">
-                                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                                        <span className="text-primary font-black text-[10px]">{i+1}</span>
+                                   <div key={i} className="bg-white/5 p-8 rounded-[2rem] border border-white/10 text-sm text-white/90 leading-relaxed font-bold flex gap-6 hover:bg-white/10 transition-all">
+                                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/40">
+                                        <span className="text-primary font-black text-xs">{i+1}</span>
                                      </div>
                                      {insight}
                                    </div>
@@ -392,13 +349,13 @@ export default function Dashboard() {
                                </div>
                             </div>
 
-                            <div className="bg-slate-950/60 p-8 rounded-[2rem] border border-white/5">
-                               <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] mb-6">Risk Factorization</h4>
-                               <div className="space-y-3">
+                            <div className="bg-destructive/5 p-10 rounded-[3rem] border border-destructive/20">
+                               <h4 className="text-[11px] font-black text-destructive uppercase tracking-[0.5em] mb-8">THREAT VECTORS</h4>
+                               <div className="space-y-4">
                                  {narrative.forecasting.risks.map((risk, i) => (
-                                   <div key={i} className="flex gap-4 items-center group bg-destructive/5 p-4 rounded-2xl border border-destructive/10">
-                                     <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-                                     <p className="text-[11px] text-destructive/80 font-bold uppercase tracking-tight">{risk}</p>
+                                   <div key={i} className="flex gap-4 items-center bg-destructive/10 p-5 rounded-2xl border border-destructive/20">
+                                     <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+                                     <p className="text-xs text-destructive font-black uppercase tracking-tight">{risk}</p>
                                    </div>
                                  ))}
                                </div>
@@ -408,10 +365,10 @@ export default function Dashboard() {
 
                         <Button 
                           variant="ghost" 
-                          className="w-full text-[10px] uppercase font-black tracking-[0.5em] text-white/10 hover:text-primary transition-all hover:bg-primary/5 py-10 rounded-[2rem] border border-dashed border-white/5" 
+                          className="w-full text-[11px] uppercase font-black tracking-[0.6em] text-white/10 hover:text-primary transition-all py-12 rounded-[3rem] border border-dashed border-white/5" 
                           onClick={() => setNarrative(null)}
                         >
-                          RESET ANALYSIS CORE
+                          RESET MISSION PARAMETERS
                         </Button>
                       </div>
                     )}

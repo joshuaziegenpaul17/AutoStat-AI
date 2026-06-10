@@ -8,59 +8,79 @@ export type ParsedData = {
 
 /**
  * Parses a CSV string or an Excel file buffer into a structured dataset.
+ * Includes data cleaning: trimming whitespace and handling missing values.
  */
 export const parseDataset = async (file: File): Promise<ParsedData> => {
   const isExcel = file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls');
   
   try {
+    let rawRows: Record<string, any>[] = [];
+    let headers: string[] = [];
+
     if (isExcel) {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      // Convert to JSON
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<string, any>[];
-      
-      if (jsonData.length === 0) return { headers: [], rows: [], columnTypes: {} };
-      
-      const headers = Object.keys(jsonData[0]);
-      return refineData(headers, jsonData);
+      rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<string, any>[];
+      if (rawRows.length > 0) {
+        headers = Object.keys(rawRows[0]);
+      }
     } else {
       const text = await file.text();
-      // Handle various line endings
       const lines = text.split(/\r?\n/).filter(line => line.trim());
-      if (lines.length === 0) return { headers: [], rows: [], columnTypes: {} };
-
-      // Better CSV header extraction handling quotes
-      const headers = splitCsvLine(lines[0]);
-      const rows: Record<string, any>[] = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const values = splitCsvLine(lines[i]);
-        const row: Record<string, any> = {};
-        headers.forEach((header, index) => {
-          const val = values[index];
-          if (val === undefined || val === '') {
-             row[header] = '';
-             return;
-          }
-          const trimmedVal = val.trim();
-          const num = Number(trimmedVal);
-          row[header] = (!isNaN(num) && trimmedVal !== '') ? num : trimmedVal;
-        });
-        rows.push(row);
+      if (lines.length > 0) {
+        headers = splitCsvLine(lines[0]);
+        for (let i = 1; i < lines.length; i++) {
+          const values = splitCsvLine(lines[i]);
+          const row: Record<string, any> = {};
+          headers.forEach((header, index) => {
+            row[header] = values[index] ?? '';
+          });
+          rawRows.push(row);
+        }
       }
-      return refineData(headers, rows);
     }
+
+    if (rawRows.length === 0) return { headers: [], rows: [], columnTypes: {} };
+
+    // DATA CLEANING PHASE
+    const cleanedRows = rawRows.map(row => {
+      const cleanedRow: Record<string, any> = {};
+      headers.forEach(h => {
+        let val = row[h];
+        
+        // 1. Trim whitespace for strings
+        if (typeof val === 'string') {
+          val = val.trim();
+        }
+
+        // 2. Handle missing values (normalize to empty string or null)
+        if (val === undefined || val === null || val === 'NaN' || val === 'null' || val === 'undefined') {
+          val = '';
+        }
+
+        // 3. Type Conversion Attempt
+        const num = Number(val);
+        if (val !== '' && !isNaN(num)) {
+          cleanedRow[h] = num;
+        } else {
+          cleanedRow[h] = val;
+        }
+      });
+      return cleanedRow;
+    }).filter(row => {
+      // Filter out completely empty rows
+      return Object.values(row).some(v => v !== '');
+    });
+
+    return refineData(headers, cleanedRows);
   } catch (error) {
     console.error('Error in parseDataset:', error);
-    throw new Error('Failed to parse dataset. Please check if the file is a valid Excel or CSV format.');
+    throw new Error('Failed to parse dataset. Ensure it is a valid format and headers are present.');
   }
 };
 
-/**
- * Robustly splits a CSV line, handling quoted values containing commas.
- */
 function splitCsvLine(line: string): string[] {
   const result = [];
   let current = '';
@@ -87,7 +107,6 @@ const refineData = (headers: string[], rows: Record<string, any>[]): ParsedData 
   headers.forEach(header => {
     const validRows = rows.filter(r => r[header] !== undefined && r[header] !== '');
     const numericCount = validRows.filter(r => typeof r[header] === 'number').length;
-    // If more than 50% of non-empty values are numbers, treat column as numeric
     columnTypes[header] = (validRows.length > 0 && numericCount > validRows.length / 2) ? 'number' : 'string';
   });
 

@@ -6,7 +6,7 @@ import { Upload, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { parseCSV, ParsedData } from '@/lib/csv-parser';
+import { parseDataset, ParsedData, getCsvSample } from '@/lib/data-parser';
 import { suggestDataQualityImprovements } from '@/ai/flows/data-quality-suggester';
 
 interface DatasetUploadProps {
@@ -19,8 +19,11 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleFile = async (file: File) => {
-    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-      setError('Please upload a valid CSV file.');
+    const allowedExtensions = ['.csv', '.xlsx', '.xls'];
+    const isAllowed = allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+    
+    if (!isAllowed) {
+      setError('Please upload a valid CSV or Excel file.');
       return;
     }
 
@@ -28,17 +31,16 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
     setError(null);
 
     try {
-      const text = await file.text();
-      const parsed = parseCSV(text);
+      const parsed = await parseDataset(file);
       
-      // Get AI suggestions for the data quality
-      // We only send a sample to avoid token limits if the file is huge
-      const sampleCsv = text.split('\n').slice(0, 100).join('\n');
+      // Get AI suggestions for the data quality using a CSV sample
+      const sampleCsv = getCsvSample(parsed, 100);
       const aiSuggestions = await suggestDataQualityImprovements({ csvData: sampleCsv });
 
       onUpload(parsed, aiSuggestions);
     } catch (err) {
-      setError('Failed to process the dataset. Ensure it is a valid CSV format.');
+      console.error(err);
+      setError('Failed to process the dataset. Ensure it is a valid CSV or Excel format.');
     } finally {
       setIsProcessing(false);
     }
@@ -69,7 +71,7 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
           </div>
           <h2 className="text-3xl font-headline font-bold mb-2">Initialize Data Pipeline</h2>
           <p className="text-muted-foreground mb-8 max-w-md">
-            Drag and drop your CSV dataset here to begin automated statistical extraction and AI-driven insights.
+            Drag and drop your CSV or Excel dataset here to begin automated statistical extraction and AI-driven insights.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -77,13 +79,13 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
               type="file" 
               id="file-upload" 
               className="hidden" 
-              accept=".csv"
+              accept=".csv, .xlsx, .xls"
               onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
               disabled={isProcessing}
             />
             <Button asChild size="lg" className="rounded-full px-8 bg-primary hover:bg-primary/90">
               <label htmlFor="file-upload" className="cursor-pointer">
-                {isProcessing ? 'Processing...' : 'Browse CSV'}
+                {isProcessing ? 'Processing...' : 'Browse Files'}
               </label>
             </Button>
             <Button variant="outline" size="lg" className="rounded-full px-8 glass border-white/10 hover:bg-white/5">
@@ -106,7 +108,7 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { icon: FileText, title: 'CSV Support', desc: 'Industry standard comma-separated values support.' },
+          { icon: FileText, title: 'CSV & Excel', desc: 'Full support for CSV and Microsoft Excel formats.' },
           { icon: CheckCircle2, title: 'Auto-Cleaning', desc: 'AI-assisted data validation and outlier detection.' },
           { icon: Upload, title: 'Safe Storage', desc: 'Secure encryption for all your uploaded research data.' }
         ].map((feat, idx) => (

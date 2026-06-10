@@ -1,10 +1,9 @@
 
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
-  Plus, BarChart3, Database, FileText, Brain, 
-  ChevronRight, Download, Trash2, Info, RefreshCw
+  BarChart3, Database, Brain, Download, RefreshCw, Info, Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,10 +13,11 @@ import { DatasetUpload } from '@/components/dashboard/DatasetUpload';
 import { StatVisuals } from '@/components/dashboard/StatVisuals';
 import { calculateDescriptiveStats, DescriptiveStats } from '@/lib/stats-engine';
 import { narrativeAnalysisGenerator } from '@/ai/flows/narrative-analysis-generator';
-import { ParsedData } from '@/lib/csv-parser';
+import { ParsedData } from '@/lib/data-parser';
 
 export default function Dashboard() {
   const [currentDataset, setCurrentDataset] = useState<ParsedData | null>(null);
+  const [datasetName, setDatasetName] = useState<string>("");
   const [aiSuggestions, setAiSuggestions] = useState<any>(null);
   const [isGeneratingNarrative, setIsGeneratingNarrative] = useState(false);
   const [narrative, setNarrative] = useState<string | null>(null);
@@ -72,7 +72,6 @@ export default function Dashboard() {
           <nav className="flex gap-4">
             <Button variant="ghost" size="sm" className="text-xs font-medium bg-white/5">Workbench</Button>
             <Button variant="ghost" size="sm" className="text-xs font-medium text-muted-foreground hover:text-white">Reports</Button>
-            <Button variant="ghost" size="sm" className="text-xs font-medium text-muted-foreground hover:text-white">Archive</Button>
           </nav>
         </div>
         <div className="flex items-center gap-4">
@@ -92,7 +91,7 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 p-6 rounded-2xl border border-white/5">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-2xl font-headline font-bold">Project_Data_Extract.csv</h2>
+                  <h2 className="text-2xl font-headline font-bold">Active Dataset Analysis</h2>
                   <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px]">VALIDATED</Badge>
                 </div>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">

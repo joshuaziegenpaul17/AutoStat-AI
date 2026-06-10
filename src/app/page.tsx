@@ -18,7 +18,6 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Features</a>
             <a href="#solutions" className="text-sm font-medium hover:text-primary transition-colors">Solutions</a>
-            <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Pricing</a>
           </nav>
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="text-sm font-medium">Log in</Button>
@@ -44,7 +43,7 @@ export default function LandingPage() {
               The Intelligent Way to <span className="text-primary italic">Analyze</span> Data.
             </h1>
             <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1000">
-              AutoStat AI automates your entire statistical workflow. From CSV cleaning to professional reports and AI-driven interpretations.
+              AutoStat AI automates your entire statistical workflow. From CSV and Excel cleaning to professional reports and AI-driven interpretations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-16 duration-1000">
               <Link href="/dashboard">
@@ -81,7 +80,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 { icon: Cpu, title: "AI Narratives", desc: "Get professional textual interpretations for every chart and statistical test." },
-                { icon: Database, title: "Robust CSV Core", desc: "Automated cleaning, type detection, and validation for complex datasets." },
+                { icon: Database, title: "CSV & Excel Core", desc: "Automated cleaning, type detection, and validation for diverse datasets." },
                 { icon: Zap, title: "Hypothesis Testing", desc: "Execute T-tests, ANOVA, and Regression models with a few clicks." },
                 { icon: ShieldCheck, title: "Privacy First", desc: "Your data is encrypted and processed with zero-retention policies." },
                 { icon: BarChart3, title: "High-Fi Visuals", desc: "Stunning Recharts integration for histograms, boxplots, and heatmaps." },

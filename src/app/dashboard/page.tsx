@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { 
-  BarChart3, Database, Brain, Download, RefreshCw, Info, Plus, ShieldAlert
+  BarChart3, Database, Brain, RefreshCw, Plus, ShieldAlert, FileText, TrendingUp, Filter
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { DatasetUpload } from '@/components/dashboard/DatasetUpload';
 import { StatVisuals } from '@/components/dashboard/StatVisuals';
@@ -52,8 +52,8 @@ export default function Dashboard() {
     } catch (err: any) {
       console.error("Narrative generation failed", err);
       toast({
-        title: "AI Narrative Unavailable",
-        description: "The analysis engine is currently busy. Please try again in a few minutes.",
+        title: "AI Engine Busy",
+        description: "The AI analysis is temporarily unavailable. Core statistical tools are still active.",
         variant: "destructive"
       });
     } finally {
@@ -65,61 +65,60 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col min-h-screen data-grid">
-      <header className="h-20 glass border-b border-white/5 flex items-center justify-between px-10 sticky top-0 z-50">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <BarChart3 className="h-6 w-6 text-black" />
+      <header className="h-16 glass border-b border-white/5 flex items-center justify-between px-8 sticky top-0 z-50">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <BarChart3 className="h-5 w-5 text-black" />
             </div>
-            <span className="font-headline font-bold text-xl tracking-tighter">AutoStat<span className="text-primary italic">AI</span></span>
+            <span className="font-headline font-bold text-lg tracking-tight">AutoStat<span className="text-primary italic">AI</span></span>
           </div>
-          <div className="h-8 w-px bg-white/10 hidden md:block" />
-          <nav className="hidden md:flex gap-6">
-            <Button variant="ghost" size="sm" className="text-xs font-bold tracking-widest text-primary">WORKBENCH</Button>
-            <Button variant="ghost" size="sm" className="text-xs font-bold tracking-widest opacity-40 hover:opacity-100">EXPLORER</Button>
+          <div className="h-6 w-px bg-white/10 hidden md:block" />
+          <nav className="hidden md:flex gap-4">
+            <Button variant="ghost" size="sm" className="text-xs font-semibold text-primary">ANALYTICS</Button>
+            <Button variant="ghost" size="sm" className="text-xs font-semibold opacity-60">WORKFLOWS</Button>
           </nav>
         </div>
-        <div className="flex items-center gap-6">
-          <Badge variant="outline" className="glass border-primary/30 text-primary px-4 py-1.5 font-mono text-[10px] tracking-tighter">V3.0_STABLE</Badge>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-white/10" />
+        <div className="flex items-center gap-4">
+          <Badge variant="outline" className="border-primary/30 text-primary text-[10px] px-3">ENTERPRISE v3.1</Badge>
+          <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10" />
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto p-10 max-w-[1500px]">
+      <main className="flex-grow container mx-auto p-8 max-w-[1400px]">
         {!currentDataset ? (
-          <div className="py-24 animate-in fade-in zoom-in-95 duration-700">
+          <div className="py-12 animate-in fade-in zoom-in-95 duration-500">
             <DatasetUpload onUpload={handleUpload} />
           </div>
         ) : (
-          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-slate-900/40 p-8 rounded-[2.5rem] border border-white/5">
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/50 p-6 rounded-3xl border border-white/5">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-3xl font-headline font-bold">Workspace: {numericColumns[0] || 'Generic'} Analysis</h2>
-                  <Badge className="bg-primary/20 text-primary border-primary/20 text-[10px] px-3 py-1">READY</Badge>
-                </div>
-                <div className="flex flex-wrap items-center gap-6 text-xs text-muted-foreground font-medium">
-                  <span className="flex items-center gap-2"><Database className="h-3.5 w-3.5 text-primary" /> {currentDataset.rows.length} OBSERVATIONS</span>
-                  <span className="flex items-center gap-2"><Plus className="h-3.5 w-3.5 text-primary" /> {currentDataset.headers.length} DIMENSIONS</span>
-                  <span className="flex items-center gap-2"><Brain className="h-3.5 w-3.5 text-primary" /> ENGINE ACTIVE</span>
+                <h2 className="text-2xl font-headline font-bold flex items-center gap-3">
+                  Dataset Explorer
+                  <Badge className="bg-primary/20 text-primary border-none text-[10px]">ACTIVE</Badge>
+                </h2>
+                <div className="flex gap-4 mt-1 text-[11px] text-muted-foreground font-medium uppercase tracking-wider">
+                  <span className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5" /> {currentDataset.rows.length} ROWS</span>
+                  <span className="flex items-center gap-1.5"><Filter className="h-3.5 w-3.5" /> {currentDataset.headers.length} COLUMNS</span>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4 w-full xl:w-auto">
-                <Button variant="outline" className="glass border-white/10 text-xs px-6 py-5 rounded-2xl" onClick={() => setCurrentDataset(null)}>
+              <div className="flex gap-3">
+                <Button variant="outline" size="sm" className="rounded-xl h-10 px-4" onClick={() => setCurrentDataset(null)}>
                   <RefreshCw className="h-4 w-4 mr-2" /> NEW DATASET
                 </Button>
-                <Button className="bg-primary hover:bg-primary/90 text-black text-xs font-black rounded-2xl px-10 py-5">
-                  EXPORT PDF
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-black rounded-xl h-10 px-6 font-bold">
+                  EXPORT ANALYSIS
                 </Button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-              <div className="lg:col-span-8 space-y-10">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+              <div className="xl:col-span-8 space-y-8">
                 <Tabs defaultValue="visuals" className="w-full">
-                  <TabsList className="bg-slate-900/60 border border-white/5 p-1.5 rounded-2xl mb-8">
-                    <TabsTrigger value="visuals" className="rounded-xl px-10 data-[state=active]:bg-primary data-[state=active]:text-black font-bold">VISUALIZATION</TabsTrigger>
-                    <TabsTrigger value="table" className="rounded-xl px-10 data-[state=active]:bg-primary data-[state=active]:text-black font-bold">GRID VIEW</TabsTrigger>
+                  <TabsList className="bg-slate-900/50 border border-white/5 p-1 rounded-xl mb-6">
+                    <TabsTrigger value="visuals" className="rounded-lg px-8 data-[state=active]:bg-primary data-[state=active]:text-black font-semibold">DISTRIBUTIONS</TabsTrigger>
+                    <TabsTrigger value="table" className="rounded-lg px-8 data-[state=active]:bg-primary data-[state=active]:text-black font-semibold">DATA GRID</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="visuals">
@@ -127,90 +126,90 @@ export default function Dashboard() {
                   </TabsContent>
 
                   <TabsContent value="table">
-                    <Card className="glass-card border-none overflow-hidden rounded-[2.5rem]">
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
-                          <thead className="bg-slate-950/60 text-muted-foreground uppercase tracking-widest font-black">
+                    <Card className="glass-card border-none overflow-hidden rounded-2xl">
+                      <div className="overflow-x-auto max-h-[600px]">
+                        <table className="w-full text-left text-[12px]">
+                          <thead className="bg-slate-950/80 sticky top-0 z-10 text-muted-foreground font-bold uppercase tracking-widest">
                             <tr>
                               {currentDataset.headers.map(h => (
-                                <th key={h} className="px-6 py-5 border-b border-white/5">{h}</th>
+                                <th key={h} className="px-5 py-4 border-b border-white/5">{h}</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
-                            {currentDataset.rows.slice(0, 15).map((row, i) => (
-                              <tr key={i} className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
+                            {currentDataset.rows.slice(0, 50).map((row, i) => (
+                              <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                                 {currentDataset.headers.map(h => (
-                                  <td key={h} className="px-6 py-5 font-mono text-muted-foreground">{row[h]}</td>
+                                  <td key={h} className="px-5 py-4 font-mono text-white/70">{row[h]}</td>
                                 ))}
                               </tr>
                             ))}
                           </tbody>
                         </table>
                       </div>
-                      <div className="p-6 bg-slate-950/20 text-center border-t border-white/5">
-                        <p className="text-[10px] text-muted-foreground tracking-widest font-bold">SYSTEM LIMIT: SHOWING TOP 15 ENTRIES</p>
+                      <div className="p-4 bg-slate-950/40 text-center border-t border-white/5">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">PREVIEW: TOP 50 RECORDS DISPLAYED</p>
                       </div>
                     </Card>
                   </TabsContent>
                 </Tabs>
 
                 {aiSuggestions ? (
-                  <Card className="glass border-primary/20 overflow-hidden rounded-[2.5rem] relative group">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="text-xl flex items-center gap-3">
-                        <Brain className="h-6 w-6 text-primary" />
-                        Automated Data Quality Scan
+                  <Card className="glass border-primary/20 rounded-3xl">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Brain className="h-5 w-5 text-primary" />
+                        AI Data Audit
                       </CardTitle>
-                      <CardDescription className="text-sm">Engineered insights for dataset remediation.</CardDescription>
+                      <CardDescription>Automated diagnostic scan of dataset integrity.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground mb-8 leading-relaxed italic border-l-2 border-primary/30 pl-6">"{aiSuggestions.summary}"</p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {aiSuggestions.suggestions.slice(0, 4).map((s: any, idx: number) => (
-                          <div key={idx} className="p-6 rounded-3xl bg-white/5 border border-white/5 hover:border-primary/20 transition-all">
-                            <div className="flex justify-between items-start mb-4">
-                              <span className="text-[11px] font-black text-primary tracking-widest uppercase">{s.issueType}</span>
-                              <Badge variant="outline" className="text-[9px] border-white/10 px-2">{s.affectedColumns[0]}</Badge>
+                      <p className="text-sm text-white/80 mb-6 italic border-l-2 border-primary/40 pl-4">{aiSuggestions.summary}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {aiSuggestions.suggestions.map((s: any, idx: number) => (
+                          <div key={idx} className="p-4 rounded-2xl bg-slate-900/40 border border-white/5">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-[10px] font-bold text-primary uppercase tracking-wider">{s.issueType}</span>
+                              <Badge variant="outline" className="text-[9px] border-white/10">{s.affectedColumns[0]}</Badge>
                             </div>
-                            <p className="text-xs leading-relaxed text-white/70">{s.suggestion}</p>
+                            <p className="text-xs text-white/60 leading-relaxed">{s.suggestion}</p>
                           </div>
                         ))}
                       </div>
                     </CardContent>
                   </Card>
                 ) : (
-                  <Card className="glass border-white/5 rounded-[2.5rem] p-10 flex items-center justify-center text-center">
-                    <div className="space-y-4">
-                      <ShieldAlert className="h-10 w-10 text-muted-foreground/40 mx-auto" />
-                      <p className="text-sm text-muted-foreground max-w-sm">AI Quality Scan is temporarily dormant due to high demand. Core statistical analysis remains fully functional.</p>
+                  <Card className="bg-slate-900/40 border-dashed border-white/10 rounded-3xl p-8 flex items-center justify-center text-center">
+                    <div className="max-w-xs">
+                      <ShieldAlert className="h-8 w-8 text-muted-foreground/30 mx-auto mb-4" />
+                      <p className="text-xs text-muted-foreground">AI quality engine is currently in fallback mode. Visual and statistical metrics remain fully operational.</p>
                     </div>
                   </Card>
                 )}
               </div>
 
-              <div className="lg:col-span-4 space-y-10">
-                <Card className="glass-card border-none rounded-[2.5rem]">
+              <div className="xl:col-span-4 space-y-8">
+                <Card className="glass-card border-none rounded-3xl">
                   <CardHeader>
-                    <CardTitle className="text-xl">Core Metrics</CardTitle>
+                    <CardTitle className="text-lg">Statistical Summary</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-8">
-                    {numericColumns.slice(0, 3).map(col => (
-                      <div key={col} className="space-y-4">
+                  <CardContent className="space-y-6">
+                    {numericColumns.slice(0, 4).map(col => (
+                      <div key={col} className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <h4 className="text-sm font-black text-primary uppercase tracking-tighter">{col}</h4>
-                          <Badge variant="outline" className="text-[9px] opacity-40">NORMALIZED</Badge>
+                          <h4 className="text-[11px] font-bold text-primary uppercase tracking-wider">{col}</h4>
+                          <TrendingUp className="h-3 w-3 text-white/20" />
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-2">
                           {[
                             { l: 'Mean', v: descriptiveResults[col]?.mean.toFixed(2) },
                             { l: 'Median', v: descriptiveResults[col]?.median.toFixed(2) },
-                            { l: 'σ (Sigma)', v: descriptiveResults[col]?.stdDev.toFixed(2) },
-                            { l: 'Range Max', v: descriptiveResults[col]?.max.toFixed(2) }
+                            { l: 'Sigma', v: descriptiveResults[col]?.stdDev.toFixed(2) },
+                            { l: 'Max', v: descriptiveResults[col]?.max.toFixed(2) }
                           ].map(m => (
-                            <div key={m.l} className="bg-slate-950/40 p-4 rounded-2xl border border-white/5">
-                              <p className="text-[10px] text-muted-foreground uppercase font-black mb-1">{m.l}</p>
-                              <p className="text-lg font-mono font-bold tracking-tighter text-white">{m.v}</p>
+                            <div key={m.l} className="bg-slate-950/40 p-3 rounded-xl border border-white/5">
+                              <p className="text-[9px] text-muted-foreground font-bold mb-1 uppercase tracking-tight">{m.l}</p>
+                              <p className="text-sm font-mono font-bold text-white">{m.v}</p>
                             </div>
                           ))}
                         </div>
@@ -219,42 +218,40 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="glass border-primary/30 relative overflow-hidden rounded-[2.5rem]">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent opacity-50" />
+                <Card className="glass border-primary/30 rounded-3xl overflow-hidden">
+                  <div className="h-1 bg-primary/20" />
                   <CardHeader>
-                    <CardTitle className="text-xl flex items-center gap-3">
-                      <Brain className="h-6 w-6 text-primary" />
-                      Narrative Synthesis
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Brain className="h-5 w-5 text-primary" />
+                      AI Interpretation
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     {!narrative ? (
-                      <div className="py-10 text-center space-y-6">
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          Synthesize complex statistical trends into professional interpretation.
+                      <div className="py-6 text-center">
+                        <p className="text-xs text-muted-foreground mb-6 px-2">
+                          Generate a natural language interpretation of current statistical findings.
                         </p>
                         <Button 
                           onClick={generateNarrative} 
                           disabled={isGeneratingNarrative}
-                          className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-black rounded-2xl py-8 border border-primary/20 transition-all font-black text-xs uppercase tracking-widest"
+                          className="w-full bg-primary/10 text-primary hover:bg-primary hover:text-black rounded-xl py-6 font-bold text-xs"
                         >
                           {isGeneratingNarrative ? (
                             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                           ) : (
-                            <Brain className="h-4 w-4 mr-2" />
+                            <FileText className="h-4 w-4 mr-2" />
                           )}
                           GENERATE INSIGHTS
                         </Button>
                       </div>
                     ) : (
-                      <div className="animate-in fade-in slide-in-from-right-4 duration-1000">
-                        <div className="bg-slate-950/40 p-6 rounded-[2rem] border border-white/5 prose prose-invert prose-sm max-w-none">
-                          <p className="text-sm leading-relaxed text-white/80 whitespace-pre-wrap font-medium">
-                            {narrative}
-                          </p>
+                      <div className="animate-in fade-in slide-in-from-top-2">
+                        <div className="bg-slate-950/40 p-4 rounded-2xl border border-white/5 text-xs leading-relaxed text-white/80 whitespace-pre-wrap">
+                          {narrative}
                         </div>
-                        <Button variant="ghost" className="w-full mt-6 text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black h-10 hover:text-primary transition-colors" onClick={() => setNarrative(null)}>
-                          REGENERATE SYNTHESIS
+                        <Button variant="ghost" className="w-full mt-4 text-[10px] uppercase font-bold tracking-widest text-muted-foreground hover:text-primary" onClick={() => setNarrative(null)}>
+                          REGENERATE
                         </Button>
                       </div>
                     )}

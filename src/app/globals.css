@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 215 20.2% 65.1%;
-    --primary: 162 82% 40%;
-    --primary-foreground: 224 71% 4%;
-    --secondary: 222.2 47.4% 11.2%;
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 7%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 222 47% 7%;
+    --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 223 47% 11%;
-    --muted-foreground: 215.4 16.3% 56.9%;
-    --accent: 216 100% 50%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 91% 60%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
-    --ring: 162 82% 40%;
-    --radius: 0.75rem;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 199 89% 48%;
+    --radius: 1rem;
   }
 }
 
@@ -32,7 +32,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   h1, h2, h3, h4, h5, h6 {
@@ -42,18 +42,15 @@
 
 @layer components {
   .glass {
-    @apply bg-slate-950/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-slate-950/60 backdrop-blur-xl border border-white/10 shadow-2xl;
   }
   .glass-card {
-    @apply bg-slate-900/60 backdrop-blur-2xl border border-white/5 shadow-inner;
-  }
-  .glow-primary {
-    @apply shadow-[0_0_40px_rgba(16,185,129,0.15)];
+    @apply bg-slate-900/40 backdrop-blur-lg border border-white/5 shadow-inner;
   }
   .data-grid {
     background-image: 
-      linear-gradient(rgba(16, 185, 129, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(16, 185, 129, 0.02) 1px, transparent 1px);
-    background-size: 50px 50px;
+      linear-gradient(rgba(0, 186, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 186, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 }

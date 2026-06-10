@@ -1,22 +1,22 @@
 {
   "placeholderImages": [
     {
-      "id": "hero-dashboard",
-      "description": "Abstract 3D data nodes and glowing neural network connections",
-      "imageUrl": "https://picsum.photos/seed/datanetwork/1200/800",
-      "imageHint": "data network"
+      "id": "data-hero",
+      "description": "Abstract digital data visualization with holographic charts and deep blue gradients",
+      "imageUrl": "https://picsum.photos/seed/analytics1/1200/600",
+      "imageHint": "data analytics"
     },
     {
-      "id": "stat-analysis",
-      "description": "Macro shot of a high-tech screen displaying complex statistical distributions",
-      "imageUrl": "https://picsum.photos/seed/datacharts/800/600",
-      "imageHint": "statistical charts"
+      "id": "data-workspace",
+      "description": "Professional analyst workspace showing interactive statistical plots and spreadsheets",
+      "imageUrl": "https://picsum.photos/seed/workspace2/800/600",
+      "imageHint": "data dashboard"
     },
     {
-      "id": "landing-hero",
-      "description": "Sleek dark interface showing financial trends and predictive analytics",
-      "imageUrl": "https://picsum.photos/seed/predictive/1200/600",
-      "imageHint": "predictive analytics"
+      "id": "data-reporting",
+      "description": "High-fidelity generated reports with clean typography and business insight metrics",
+      "imageUrl": "https://picsum.photos/seed/report3/800/600",
+      "imageHint": "business report"
     }
   ]
 }

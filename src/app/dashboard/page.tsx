@@ -6,7 +6,8 @@ import {
   BarChart3, LayoutDashboard, Sparkles, ShieldCheck, 
   Zap, BrainCircuit, Loader2, RefreshCw,
   AlertTriangle, Target, Activity, Database, 
-  FileDown, Share2, TrendingUp, Presentation
+  FileDown, Share2, TrendingUp, Presentation,
+  ChevronRight, Info, HelpCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,7 @@ export default function Dashboard() {
     setInsights(null);
     setAuditResults(null);
     setAnalysisError(null);
-    toast({ title: "Dataset Ingested", description: `Successfully mapped ${data.rows.length} records.` });
+    toast({ title: "Dataset Uploaded", description: `Successfully processed ${data.rows.length} records.` });
   };
 
   const descriptiveResults = useMemo(() => {
@@ -63,7 +64,7 @@ export default function Dashboard() {
     const cacheKey = `${currentDataset.rows.length}-${currentDataset.headers.join('-')}`;
     if (insightsCache.current[cacheKey]) {
       setInsights(insightsCache.current[cacheKey]);
-      toast({ title: "Insights Loaded", description: "Retrieved cached strategic synthesis." });
+      toast({ title: "Insights Loaded", description: "Retrieved cached executive summary." });
       return;
     }
     
@@ -87,7 +88,7 @@ export default function Dashboard() {
     }
 
     const statsSummary = Object.entries(descriptiveResults).map(([col, stats]) => {
-      return `Column: ${col}\n- Mean: ${stats.mean.toFixed(2)}\n- Median: ${stats.median.toFixed(2)}\n- StdDev: ${stats.stdDev.toFixed(2)}\n- Outliers: ${stats.outliers.length}\n- Range: [${stats.min}, ${stats.max}]`;
+      return `Field: ${col}\n- Mean: ${stats.mean.toFixed(2)}\n- Median: ${stats.median.toFixed(2)}\n- Outliers: ${stats.outliers.length}\n- Range: [${stats.min}, ${stats.max}]`;
     }).join('\n\n') + `\n\nTop Correlations:\n${correlations.join('\n')}`;
 
     const sample = getCsvSample(currentDataset, 10); 
@@ -102,9 +103,9 @@ export default function Dashboard() {
       if (insightsRes.success) {
         setInsights(insightsRes.data);
         insightsCache.current[cacheKey] = insightsRes.data;
-        toast({ title: "Analysis Complete", description: "Strategic synthesis generated successfully." });
+        toast({ title: "Analysis Complete", description: "Executive summary generated successfully." });
       } else {
-        setAnalysisError(insightsRes.error || "Synthesis failed to initialize.");
+        setAnalysisError(insightsRes.error || "Analysis failed to initialize.");
       }
 
       if (!auditResults) {
@@ -114,7 +115,7 @@ export default function Dashboard() {
         }
       }
     } catch (err: any) {
-      setAnalysisError("An unexpected response was received from the server.");
+      setAnalysisError("A server-side error occurred during analysis.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -126,22 +127,22 @@ export default function Dashboard() {
     return 85; 
   }, [currentDataset, auditResults]);
 
-  const tickerItems = [
-    "NEURAL SYNTHESIS ACTIVE",
-    "DATA VECTORS NORMALIZED",
-    "STATISTICAL INFERENCE COMPLETE",
-    "PREDICTIVE HORIZON MAPPED",
-    "ANOMALY DETECTION STABLE",
-    "ENTERPRISE TELEMETRY ONLINE",
-    "STRATEGIC INSIGHTS GENERATED"
+  const statusTicker = [
+    "SYSTEM STATUS: SECURE",
+    "ENCRYPTION: ACTIVE",
+    "DATA INTEGRITY: VERIFIED",
+    "ANALYSIS ENGINE: READY",
+    "SESSION: PROTECTED",
+    "COMPLIANCE: STANDBY",
+    "REPORTING: ONLINE"
   ];
 
   return (
     <div className="min-h-screen bg-[#050507] text-white font-sans selection:bg-indigo-500/30">
-      {/* Top Telemetry Ticker */}
+      {/* Analytics Status Ticker */}
       <div className="bg-indigo-600/10 border-b border-indigo-500/20 py-2 overflow-hidden whitespace-nowrap">
         <div className="animate-marquee flex items-center gap-12">
-          {[...tickerItems, ...tickerItems].map((item, i) => (
+          {[...statusTicker, ...statusTicker].map((item, i) => (
             <div key={i} className="flex items-center gap-4">
               <Activity className="h-3 w-3 text-indigo-500" />
               <span className="text-[10px] font-black text-indigo-400/60 tracking-[0.3em] uppercase">{item}</span>
@@ -159,13 +160,15 @@ export default function Dashboard() {
             <span className="text-xl font-bold tracking-tight">AutoStat AI</span>
           </Link>
           <div className="h-6 w-px bg-white/10" />
-          <nav className="flex items-center gap-6 text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
-            <span className="text-indigo-500 flex items-center gap-2"><LayoutDashboard className="h-3.5 w-3.5" /> Dashboard</span>
+          <nav className="flex items-center gap-8 text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
+            <Link href="/dashboard" className="text-indigo-500 flex items-center gap-2"><LayoutDashboard className="h-3.5 w-3.5" /> Dashboard</Link>
+            <Link href="/security" className="hover:text-white flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" /> Security</Link>
+            <Link href="/resources" className="hover:text-white flex items-center gap-2"><HelpCircle className="h-3.5 w-3.5" /> Resources</Link>
           </nav>
         </div>
         <div className="flex items-center gap-6">
           <Badge variant="outline" className="border-indigo-500/20 text-indigo-400 bg-indigo-500/5 text-[10px] font-bold px-4 py-1.5 uppercase tracking-widest">
-            STATUS: {isAnalyzing ? 'ANALYZING...' : 'ONLINE'}
+            {isAnalyzing ? 'STATUS: ANALYZING...' : 'STATUS: ONLINE'}
           </Badge>
         </div>
       </header>
@@ -182,23 +185,23 @@ export default function Dashboard() {
             <section className="space-y-10">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div>
-                  <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-2">Dataset Overview</h2>
-                  <p className="text-white/40 font-medium">Structural profile and health metrics of the current mission vectors.</p>
+                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Dataset Overview</h2>
+                  <p className="text-white/40 font-medium">Structural profile and health metrics of the current analytical workspace.</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <Badge className="bg-white/5 border-white/10 text-white font-mono text-xs px-4 py-2 rounded-lg">
                     <Database className="h-3.5 w-3.5 mr-2 text-indigo-500" />
-                    FILE: Mission_Data.csv
+                    FILE: {currentDataset.rows.length > 0 ? 'Data_Workspace.csv' : 'Empty'}
                   </Badge>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { label: 'Data Quality', value: `${dataHealthScore}%`, icon: ShieldCheck, color: 'text-indigo-400' },
-                  { label: 'Numerical Vectors', value: numericColumns.length, icon: Zap, color: 'text-emerald-400' },
+                  { label: 'Data Health', value: `${dataHealthScore}%`, icon: ShieldCheck, color: 'text-indigo-400' },
+                  { label: 'Numeric Fields', value: numericColumns.length, icon: Zap, color: 'text-emerald-400' },
                   { label: 'Total Records', value: currentDataset.rows.length.toLocaleString(), icon: Activity, color: 'text-blue-400' },
-                  { label: 'Integrity Risks', value: auditResults?.issuesIdentified?.length || 0, icon: AlertTriangle, color: 'text-yellow-400' },
+                  { label: 'Quality Risks', value: auditResults?.issuesIdentified?.length || 0, icon: AlertTriangle, color: 'text-yellow-400' },
                 ].map((stat, i) => (
                   <Card key={i} className="bg-white/5 border-white/10 rounded-[2rem] overflow-hidden group hover:border-white/20 transition-all">
                     <CardContent className="p-8 flex items-center justify-between">
@@ -218,15 +221,15 @@ export default function Dashboard() {
             {/* 2. Visualizations & Deep Statistics */}
             <section className="space-y-10">
               <div>
-                <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-2">Exploratory Analytics</h2>
-                <p className="text-white/40 font-medium">Visual mapping and numerical distribution of feature sets.</p>
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Exploratory Analytics</h2>
+                <p className="text-white/40 font-medium">Visual mapping and statistical distribution of identified feature sets.</p>
               </div>
 
               <Tabs defaultValue="visuals" className="w-full">
                 <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl mb-10 h-auto flex flex-wrap gap-2">
                   <TabsTrigger value="visuals" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Visualizations</TabsTrigger>
-                  <TabsTrigger value="stats" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Deep Statistics</TabsTrigger>
-                  <TabsTrigger value="table" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Vector Table</TabsTrigger>
+                  <TabsTrigger value="stats" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Descriptive Statistics</TabsTrigger>
+                  <TabsTrigger value="table" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Data Table</TabsTrigger>
                 </TabsList>
                 <TabsContent value="visuals" className="mt-0 outline-none">
                   <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} categoricalColumns={categoricalColumns} />
@@ -243,7 +246,7 @@ export default function Dashboard() {
                             <div><p className="text-[10px] font-bold text-white/30 mb-1">Mean</p><p className="text-xl font-black">{descriptiveResults[col]?.mean.toFixed(2)}</p></div>
                             <div><p className="text-[10px] font-bold text-white/30 mb-1">Median</p><p className="text-xl font-black">{descriptiveResults[col]?.median.toFixed(2)}</p></div>
                             <div><p className="text-[10px] font-bold text-white/30 mb-1">Std Dev</p><p className="text-xl font-black">{descriptiveResults[col]?.stdDev.toFixed(2)}</p></div>
-                            <div><p className="text-[10px] font-bold text-white/30 mb-1">Range</p><p className="text-xl font-black">{descriptiveResults[col]?.max - descriptiveResults[col]?.min}</p></div>
+                            <div><p className="text-[10px] font-bold text-white/30 mb-1">Range</p><p className="text-xl font-black">{(descriptiveResults[col]?.max - descriptiveResults[col]?.min).toFixed(2)}</p></div>
                           </div>
                         </CardContent>
                       </Card>
@@ -274,17 +277,17 @@ export default function Dashboard() {
             {/* 3. Predictive Horizons / Trends */}
             <section className="space-y-10">
               <div>
-                <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-2">Predictive Horizons</h2>
-                <p className="text-white/40 font-medium">Trajectory modeling and temporal forecasting from historical sequence.</p>
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Forecasting Section</h2>
+                <p className="text-white/40 font-medium">Trajectory modeling and temporal projections based on historical data sequences.</p>
               </div>
               <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-[2.5rem] p-12 text-center">
                 <div className="max-w-2xl mx-auto space-y-6">
                   <div className="p-4 rounded-full bg-indigo-500/10 w-fit mx-auto border border-indigo-500/20">
                     <TrendingUp className="h-8 w-8 text-indigo-500" />
                   </div>
-                  <h3 className="text-2xl font-bold">Temporal Analysis Engine</h3>
+                  <h3 className="text-2xl font-bold">Temporal Prediction Engine</h3>
                   <p className="text-white/50 leading-relaxed font-medium">
-                    Our econometric modeling engine is currently mapping the sequential velocity of your numeric vectors. Final projections will be included in the AI Strategic Synthesis below.
+                    Our statistical forecasting models are processing the sequential velocity of your numeric fields. Final projections will be integrated into the AI Executive Summary below.
                   </p>
                 </div>
               </Card>
@@ -292,11 +295,11 @@ export default function Dashboard() {
 
             <Separator className="bg-white/5" />
 
-            {/* 4. AI Strategic Synthesis (Executive Summary) */}
-            <section id="ai-synthesis" className="space-y-10">
+            {/* 4. AI Executive Summary */}
+            <section id="ai-summary" className="space-y-10">
               <div>
-                <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-2">Executive Summary</h2>
-                <p className="text-white/40 font-medium">Authoritative narrative synthesis for C-suite and strategic planning.</p>
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">AI Executive Summary</h2>
+                <p className="text-white/40 font-medium">Professional automated narrative synthesis for stakeholders and leadership.</p>
               </div>
 
               <div className="relative group">
@@ -308,8 +311,8 @@ export default function Dashboard() {
                         <BrainCircuit className="h-8 w-8 text-indigo-500" />
                       </div>
                       <div>
-                        <CardTitle className="text-2xl font-bold tracking-tight">AI Strategic Synthesis</CardTitle>
-                        <CardDescription className="text-white/40 font-medium uppercase text-[10px] tracking-widest mt-1">Enterprise-grade narrative generation</CardDescription>
+                        <CardTitle className="text-2xl font-bold tracking-tight">Report Summary</CardTitle>
+                        <CardDescription className="text-white/40 font-medium uppercase text-[10px] tracking-widest mt-1">Automated insight generation</CardDescription>
                       </div>
                     </div>
                     <Button 
@@ -318,14 +321,14 @@ export default function Dashboard() {
                       className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-10 font-bold uppercase tracking-widest text-xs shadow-lg shadow-indigo-600/20 w-full md:w-auto"
                     >
                       {isAnalyzing ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                      {isAnalyzing ? "Synthesizing Insights..." : insights ? "Regenerate Analysis" : "Generate Strategic Synthesis"}
+                      {isAnalyzing ? "Analyzing Data..." : insights ? "Refresh Analysis" : "Generate Executive Summary"}
                     </Button>
                   </CardHeader>
                   <CardContent className="p-10">
                     {analysisError && (
                       <Alert variant="destructive" className="mb-8 bg-red-500/10 border-red-500/20 text-red-400">
                         <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>Synthesis Difficulty</AlertTitle>
+                        <AlertTitle>Analysis Difficulty</AlertTitle>
                         <AlertDescription>
                           {analysisError}
                           <Button variant="link" size="sm" onClick={runAiAnalysis} className="text-red-400 font-bold ml-2 underline">Retry Analysis</Button>
@@ -337,7 +340,7 @@ export default function Dashboard() {
                       <div className="space-y-10 py-10">
                         <div className="flex items-center gap-4">
                           <Loader2 className="h-6 w-6 text-indigo-500 animate-spin" />
-                          <p className="text-indigo-400 font-bold uppercase tracking-widest text-xs animate-pulse">Engaging Neural Engines... MAPPING STATISTICAL VECTORS</p>
+                          <p className="text-indigo-400 font-bold uppercase tracking-widest text-xs animate-pulse">Processing Statistical Models... GENERATING INSIGHTS</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                           <Skeleton className="h-48 rounded-2xl bg-white/5" />
@@ -350,13 +353,13 @@ export default function Dashboard() {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
                           <div className="lg:col-span-2 space-y-10">
                             <div>
-                              <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-6">High-Level Synthesis</h4>
+                              <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-6">Strategic Overview</h4>
                               <p className="text-2xl text-white/90 leading-relaxed font-medium italic">"{insights.executiveSummary}"</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                               <Card className="bg-white/5 border-white/10 rounded-2xl overflow-hidden group hover:bg-white/[0.07] transition-colors">
                                 <CardContent className="p-8">
-                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Sparkles className="h-4 w-4 text-indigo-500" /> Key Intelligence</h5>
+                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Sparkles className="h-4 w-4 text-indigo-500" /> Key Findings</h5>
                                   <ul className="space-y-4">
                                     {insights.keyFindings.map((f: string, i: number) => (
                                       <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -369,7 +372,7 @@ export default function Dashboard() {
                               </Card>
                               <Card className="bg-white/5 border-white/10 rounded-2xl overflow-hidden group hover:bg-white/[0.07] transition-colors">
                                 <CardContent className="p-8">
-                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Business Opportunities</h5>
+                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Opportunities</h5>
                                   <ul className="space-y-4">
                                     {insights.businessOpportunities.map((o: string, i: number) => (
                                       <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -389,16 +392,27 @@ export default function Dashboard() {
                               <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-4">
                                 <div className="h-full bg-indigo-500" style={{ width: `${insights.confidenceScore}%` }} />
                               </div>
-                              <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Model Precision Alpha</p>
+                              <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Model Precision Score</p>
                             </Card>
                             <Card className="bg-red-500/5 border-red-500/20 rounded-2xl p-8">
-                              <h5 className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-6 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Strategic Risks</h5>
+                              <h5 className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-6 flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Noted Risks</h5>
                               <ul className="space-y-3">
                                 {insights.potentialRisks.map((r: string, i: number) => (
                                   <li key={i} className="text-xs text-red-200/60 leading-relaxed font-medium">- {r}</li>
                                 ))}
                               </ul>
                             </Card>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-10 border-t border-white/5">
+                          <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-8">Recommendations & Next Steps</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {insights.recommendations.map((rec: string, i: number) => (
+                              <Card key={i} className="bg-white/5 border-white/10 p-6 rounded-xl">
+                                <p className="text-sm text-white/80 leading-relaxed font-medium">{rec}</p>
+                              </Card>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -409,7 +423,7 @@ export default function Dashboard() {
                         </div>
                         <div className="space-y-2">
                           <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Action Required</p>
-                          <p className="text-white/40 font-medium max-w-md mx-auto">Generate analysis to unlock AI-powered strategic insights and executive recommendations.</p>
+                          <p className="text-white/40 font-medium max-w-md mx-auto">Generate analysis to unlock AI-powered insights and executive recommendations.</p>
                         </div>
                         <Button 
                           onClick={runAiAnalysis} 
@@ -425,9 +439,9 @@ export default function Dashboard() {
                       <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6">
                         <div className="flex items-center gap-3">
                           <ShieldCheck className="h-5 w-5 text-indigo-500" />
-                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Synthesis Verified by AI Engine v2.0</span>
+                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Report Verified by Analysis Engine v2.0</span>
                         </div>
-                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">TIMESTAMP: {new Date().toLocaleTimeString()} UTC</p>
+                        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">TIMESTAMP: {new Date().toLocaleTimeString()}</p>
                       </div>
                     </CardFooter>
                   )}
@@ -441,25 +455,25 @@ export default function Dashboard() {
                 <Card className="bg-white/5 border-white/10 rounded-[2rem] p-10 group hover:border-indigo-500/30 transition-all">
                   <div className="flex items-start justify-between mb-8">
                     <div className="space-y-2">
-                      <h4 className="text-xl font-bold">Mission Log Export</h4>
-                      <p className="text-sm text-white/40 font-medium">Download high-fidelity PDF report including all charts and synthesis.</p>
+                      <h4 className="text-xl font-bold">Analytics Report Export</h4>
+                      <p className="text-sm text-white/40 font-medium">Download a professional PDF report including all charts and executive summaries.</p>
                     </div>
                     <FileDown className="h-8 w-8 text-white/20 group-hover:text-indigo-500 transition-colors" />
                   </div>
                   <Button variant="outline" className="w-full border-white/10 hover:bg-white/10 h-14 rounded-xl font-bold uppercase tracking-widest text-xs">
-                    Generate Report
+                    Export PDF Report
                   </Button>
                 </Card>
                 <Card className="bg-white/5 border-white/10 rounded-[2rem] p-10 group hover:border-emerald-500/30 transition-all">
                   <div className="flex items-start justify-between mb-8">
                     <div className="space-y-2">
-                      <h4 className="text-xl font-bold">Vector Sharing</h4>
-                      <p className="text-sm text-white/40 font-medium">Generate a secure link to share this analytical session with stakeholders.</p>
+                      <h4 className="text-xl font-bold">Workspace Sharing</h4>
+                      <p className="text-sm text-white/40 font-medium">Generate a secure access link to share this analytical workspace with stakeholders.</p>
                     </div>
                     <Share2 className="h-8 w-8 text-white/20 group-hover:text-emerald-500 transition-colors" />
                   </div>
                   <Button variant="outline" className="w-full border-white/10 hover:bg-white/10 h-14 rounded-xl font-bold uppercase tracking-widest text-xs">
-                    Collaborate
+                    Share Workspace
                   </Button>
                 </Card>
               </div>
@@ -475,12 +489,12 @@ export default function Dashboard() {
             <span className="font-bold text-xl tracking-tighter uppercase italic">AutoStat AI</span>
           </div>
           <div className="flex items-center gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
-            <span>Privacy Protocol</span>
-            <span>Mission Terms</span>
-            <span>Alpha v2.5.0</span>
+            <Link href="/security">Security Center</Link>
+            <Link href="/resources">Documentation</Link>
+            <Link href="/security">Privacy Policy</Link>
           </div>
           <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-            © 2025 AUTOSTAT SYSTEMS • READY FOR DEPLOYMENT
+            © 2025 AUTOSTAT ANALYTICS • SECURE PROCESSING
           </p>
         </div>
       </footer>

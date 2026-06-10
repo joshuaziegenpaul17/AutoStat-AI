@@ -14,44 +14,36 @@ const InsightsFlowInputSchema = z.object({
 });
 
 async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 3, delay = 2000): Promise<any> {
-  const modelName = 'googleai/gemini-1.5-flash';
-  
   try {
-    console.log(`[AI Synthesis] Dispatching to Model: ${modelName}`);
-    console.log(`[AI Synthesis] Request Payload Statistics:`, {
-      previewLength: input.datasetPreview.length,
-      columns: input.columnNames.length,
-      hasStats: !!input.statsSummary
-    });
-
+    console.log(`[AI Synthesis] Dispatching request to Gemini...`);
+    
+    // Pre-process column names to avoid Handlebars join helper issues
     const promptInput = {
       datasetPreview: input.datasetPreview,
       statsSummary: input.statsSummary,
       columnNamesString: input.columnNames.join(", ")
     };
 
+    // Use the defined prompt which leverages the default model from Genkit initialization
     const response = await aiInsightsPrompt(promptInput);
     
     if (!response || !response.output) {
       throw new Error("Gemini returned a null or empty output object.");
     }
 
-    console.log(`[AI Synthesis] Response Payload Received:`, {
-      confidence: response.output.confidenceScore,
-      findingsCount: response.output.keyFindings.length
-    });
-
+    console.log(`[AI Synthesis] Synthesis successful. Confidence: ${response.output.confidenceScore}%`);
     return response.output;
   } catch (error: any) {
     const errorMsg = (error?.message || "Unknown Engine Error").toUpperCase();
     console.error(`[AI Synthesis Error] ${errorMsg}`);
 
-    // Detection of retryable transient errors
+    // Detection of retryable transient errors (503, 429, etc.)
     const isRetryable = errorMsg.includes("503") || 
                         errorMsg.includes("429") || 
                         errorMsg.includes("UNAVAILABLE") || 
                         errorMsg.includes("OVERLOADED") ||
-                        errorMsg.includes("RESOURCE_EXHAUSTED");
+                        errorMsg.includes("RESOURCE_EXHAUSTED") ||
+                        errorMsg.includes("DEADLINE_EXCEEDED");
 
     if (retries > 0 && isRetryable) {
       console.warn(`[AI Synthesis] Transient failure. Retrying in ${delay}ms... (Remaining: ${retries})`);

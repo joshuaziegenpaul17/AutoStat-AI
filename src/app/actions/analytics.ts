@@ -16,26 +16,26 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
 
 export async function runInsightsAction(input: { datasetPreview: string, statsSummary: string, columnNames: string[] }) {
   try {
-    // 1. Check for API configuration
+    // Check for API configuration
     if (!process.env.GOOGLE_GENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      console.error("[Action:Insights] Missing API Configuration. Verify environment variables.");
-      return { success: false, error: "AI Engine Configuration Missing: Please set GOOGLE_GENAI_API_KEY." };
+      console.error("[Action:Insights] Missing API Configuration.");
+      return { success: false, error: "AI Engine Configuration Missing: Please ensure GOOGLE_GENAI_API_KEY is set." };
     }
 
     console.log("[Action:Insights] Triggering strategic synthesis flow...");
     const result = await aiInsightsGeneratorFlow(input);
     
-    console.log("[Action:Insights] Synthesis successful.");
     return { success: true, data: result };
   } catch (error: any) {
-    console.error("[Action:Insights] Critical AI Error Trace:", error);
+    console.error("[Action:Insights] Critical AI Error:", error);
     
     let errorMessage = error?.message || "Synthesis encountered a system error.";
     
-    // Clean up error messages for the UI
-    if (errorMessage.includes("403")) errorMessage = "Permission Denied: Verify API Key status.";
-    if (errorMessage.includes("404")) errorMessage = "Model Not Found: The specified Gemini version is currently unavailable.";
-    if (errorMessage.includes("503")) errorMessage = "Service Unavailable: Gemini is under high load. Please retry.";
+    // Mapping common API errors to user-friendly messages
+    if (errorMessage.includes("403")) errorMessage = "Permission Denied: Verify your API Key permissions.";
+    if (errorMessage.includes("404")) errorMessage = "Model Connection Error: The Gemini service endpoint was not found.";
+    if (errorMessage.includes("503") || errorMessage.includes("504")) errorMessage = "Service Unavailable: The AI engine is currently under high load. Please try again in a few seconds.";
+    if (errorMessage.includes("429")) errorMessage = "Rate Limit Exceeded: Too many requests. Please pause before retrying.";
     
     return { success: false, error: errorMessage };
   }

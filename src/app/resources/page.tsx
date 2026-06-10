@@ -1,4 +1,3 @@
-
 "use client"
 
 import React from 'react';
@@ -16,7 +15,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 export default function ResourcesPage() {
   const features = [
     { title: "Automated Data Profiling", desc: "Instantly detect data types, distributions, and structural issues." },
-    { title: "Statistical Modeling", desc: "Industry-standard descriptive statistics and correlation analysis." },
+    { title: "Statistical Modeling", desc: "Standard descriptive statistics and correlation analysis." },
     { title: "AI Executive Summaries", desc: "Automated narrative generation for stakeholder reporting." },
     { title: "Predictive Forecasting", desc: "Temporal modeling to identify sequential trends and trajectories." }
   ];
@@ -125,9 +124,9 @@ export default function ResourcesPage() {
             </Card>
             <Card className="bg-white/5 border-white/10 rounded-3xl p-8 space-y-4">
               <FileText className="h-6 w-6 text-indigo-400" />
-              <h4 className="text-xl font-bold">4. Report Exporting</h4>
+              <h4 className="text-xl font-bold">4. Report Insights</h4>
               <p className="text-sm text-white/40 leading-relaxed">
-                Finalize your analysis by generating a comprehensive PDF report that includes all statistical findings and the AI-powered executive summary.
+                Finalize your analysis by reviewing a comprehensive executive report that includes statistical findings and AI-powered recommendations.
               </p>
             </Card>
           </div>
@@ -163,7 +162,7 @@ export default function ResourcesPage() {
               <AccordionItem value="item-4" className="border-white/5">
                 <AccordionTrigger className="text-left font-bold text-lg hover:no-underline py-6">Need additional support?</AccordionTrigger>
                 <AccordionContent className="text-white/40 text-sm leading-relaxed pb-6">
-                  For enterprise inquiries or specific technical support, please contact our analytical support team via the contact details provided in your enterprise agreement.
+                  For professional inquiries or specific technical support, please contact our analytical support team via the contact details provided in your agreement.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -173,7 +172,7 @@ export default function ResourcesPage() {
         <section className="bg-indigo-600 rounded-[2.5rem] p-16 text-center space-y-8">
           <h2 className="text-4xl font-black uppercase tracking-tighter">Ready to analyze your data?</h2>
           <p className="text-indigo-100 max-w-xl mx-auto font-medium opacity-80">
-            Join thousands of analysts transforming raw data into high-fidelity executive insights with AutoStat AI.
+            Join users transforming raw data into high-fidelity executive insights with AutoStat AI.
           </p>
           <Link href="/dashboard" className="block">
             <Button size="lg" className="bg-white text-indigo-600 hover:bg-white/90 rounded-full px-12 h-16 font-bold uppercase tracking-widest text-xs">
@@ -184,14 +183,37 @@ export default function ResourcesPage() {
       </main>
 
       <footer className="py-20 border-t border-white/5 bg-black/40">
-        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex items-center gap-4 opacity-40">
-            <BarChart3 className="h-6 w-6" />
-            <span className="font-bold text-xl tracking-tighter uppercase italic">AutoStat AI</span>
+        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-start gap-12">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 opacity-40">
+              <BarChart3 className="h-6 w-6" />
+              <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
+            </div>
+            <p className="text-[10px] text-white/20 max-w-sm leading-relaxed">
+              AutoStat AI is a data analytics and reporting platform designed to assist users in exploring and understanding datasets through statistical analysis, forecasting, visualization, and AI-assisted insights.
+            </p>
           </div>
-          <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-            DOCUMENTATION • ENTERPRISE ANALYTICS • v2.5.0
-          </p>
+          <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Legal</p>
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+              <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Resources</p>
+              <Link href="/resources" className="hover:text-white transition-colors">Documentation</Link>
+              <Link href="/security" className="hover:text-white transition-colors">Security Center</Link>
+            </div>
+          </div>
+          <div className="md:text-right space-y-2">
+            <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
+              © 2025 AUTOSTAT ANALYTICS
+            </p>
+            <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
+              v2.5.0 STABLE • SECURE PROCESSING
+            </p>
+          </div>
         </div>
       </footer>
     </div>

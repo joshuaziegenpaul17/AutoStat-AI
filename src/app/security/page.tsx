@@ -1,4 +1,3 @@
-
 "use client"
 
 import React from 'react';
@@ -161,14 +160,37 @@ export default function SecurityPage() {
       </main>
 
       <footer className="py-20 border-t border-white/5 bg-black/40">
-        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex items-center gap-4 opacity-40">
-            <BarChart3 className="h-6 w-6" />
-            <span className="font-bold text-xl tracking-tighter uppercase italic">AutoStat AI</span>
+        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-start gap-12">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 opacity-40">
+              <BarChart3 className="h-6 w-6" />
+              <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
+            </div>
+            <p className="text-[10px] text-white/20 max-w-sm leading-relaxed">
+              AutoStat AI is a data analytics and reporting platform designed to assist users in exploring and understanding datasets through statistical analysis, forecasting, visualization, and AI-assisted insights.
+            </p>
           </div>
-          <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-            TRUST CENTER • PRIVACY FIRST ANALYTICS • SECURE PROCESSING
-          </p>
+          <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Legal</p>
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+              <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Platform</p>
+              <Link href="/dashboard" className="hover:text-white transition-colors">Workspace</Link>
+              <Link href="/resources" className="hover:text-white transition-colors">Resources</Link>
+            </div>
+          </div>
+          <div className="md:text-right space-y-2">
+            <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
+              © 2025 AUTOSTAT ANALYTICS
+            </p>
+            <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
+              v2.5.0 STABLE • SECURE PROCESSING
+            </p>
+          </div>
         </div>
       </footer>
     </div>

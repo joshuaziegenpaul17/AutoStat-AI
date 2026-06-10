@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useRef } from 'react';
@@ -133,7 +132,7 @@ export default function Dashboard() {
     "DATA INTEGRITY: VERIFIED",
     "ANALYTICAL ENGINE: READY",
     "SESSION: SECURE",
-    "COMPLIANCE: ACTIVE",
+    "PRIVACY PROTOCOLS: ACTIVE",
     "REPORTING: ONLINE"
   ];
 
@@ -439,7 +438,7 @@ export default function Dashboard() {
                       <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6">
                         <div className="flex items-center gap-3">
                           <ShieldCheck className="h-5 w-5 text-indigo-500" />
-                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Analytics Engine v2.5 Verified</span>
+                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Analytics Engine Verified</span>
                         </div>
                         <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">TIMESTAMP: {new Date().toLocaleTimeString()}</p>
                       </div>
@@ -453,19 +452,37 @@ export default function Dashboard() {
       </main>
 
       <footer className="py-20 border-t border-white/5 bg-black/40 mt-20">
-        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex items-center gap-4 opacity-40">
-            <BarChart3 className="h-6 w-6" />
-            <span className="font-bold text-xl tracking-tighter uppercase italic">AutoStat AI</span>
+        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-start gap-12 text-left">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 opacity-40">
+              <BarChart3 className="h-6 w-6" />
+              <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
+            </div>
+            <p className="text-[10px] text-white/20 max-w-sm leading-relaxed">
+              AutoStat AI is a data analytics and reporting platform designed to assist users in exploring and understanding datasets through statistical analysis, forecasting, visualization, and AI-assisted insights.
+            </p>
           </div>
-          <div className="flex items-center gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
-            <Link href="/security">Security Center</Link>
-            <Link href="/resources">Documentation</Link>
-            <Link href="/security">Privacy Policy</Link>
+          <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Legal</p>
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+              <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Support</p>
+              <Link href="/resources" className="hover:text-white transition-colors">Documentation</Link>
+              <Link href="/security" className="hover:text-white transition-colors">Security Center</Link>
+            </div>
           </div>
-          <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-            © 2025 AUTOSTAT ANALYTICS • SECURE PROCESSING
-          </p>
+          <div className="md:text-right space-y-2">
+            <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
+              © 2025 AUTOSTAT ANALYTICS
+            </p>
+            <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
+              v2.5.0 STABLE • SECURE PROCESSING
+            </p>
+          </div>
         </div>
       </footer>
     </div>

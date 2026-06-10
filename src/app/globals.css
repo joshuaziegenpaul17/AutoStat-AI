@@ -4,28 +4,28 @@
 
 @layer base {
   :root {
-    --background: 222 47% 4%;
+    --background: 222 47% 2%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
+    --card: 222 47% 4%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 6%;
+    --popover: 222 47% 4%;
     --popover-foreground: 210 40% 98%;
-    --primary: 160 84% 39%;
+    --primary: 155 100% 45%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 222 47% 12%;
+    --secondary: 222 47% 10%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 222 47% 12%;
+    --muted: 222 47% 10%;
     --muted-foreground: 215 20% 65%;
-    --accent: 190 90% 50%;
+    --accent: 180 100% 50%;
     --accent-foreground: 222 47% 4%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 222 47% 15%;
-    --input: 222 47% 15%;
-    --ring: 160 84% 39%;
+    --border: 222 47% 12%;
+    --input: 222 47% 12%;
+    --ring: 155 100% 45%;
     --radius: 0.75rem;
-    --chart-1: 160 84% 39%;
-    --chart-2: 190 90% 50%;
+    --chart-1: 155 100% 45%;
+    --chart-2: 180 100% 50%;
     --chart-3: 200 80% 60%;
     --chart-4: 140 70% 50%;
     --chart-5: 180 60% 70%;
@@ -47,16 +47,18 @@
 
 @layer components {
   .glass {
-    @apply bg-white/[0.03] backdrop-blur-md border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)];
+    @apply bg-white/[0.02] backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
   }
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-white/5 shadow-2xl;
+    @apply bg-card/60 backdrop-blur-2xl border border-white/5 shadow-2xl;
   }
   .glow-primary {
-    @apply shadow-[0_0_20px_rgba(40,167,120,0.3)];
+    @apply shadow-[0_0_30px_rgba(0,255,149,0.2)];
   }
   .data-grid {
-    background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
-    background-size: 24px 24px;
+    background-image: 
+      linear-gradient(rgba(0, 255, 149, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 149, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 }

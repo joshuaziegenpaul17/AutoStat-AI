@@ -18,7 +18,7 @@ export const parseDataset = async (file: File): Promise<ParsedData> => {
       const workbook = XLSX.read(data, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      // header: 1 returns an array of arrays
+      // Convert to JSON
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<string, any>[];
       
       if (jsonData.length === 0) return { headers: [], rows: [], columnTypes: {} };
@@ -27,16 +27,16 @@ export const parseDataset = async (file: File): Promise<ParsedData> => {
       return refineData(headers, jsonData);
     } else {
       const text = await file.text();
-      // Improved CSV splitting to handle quoted values with commas
+      // Handle various line endings
       const lines = text.split(/\r?\n/).filter(line => line.trim());
       if (lines.length === 0) return { headers: [], rows: [], columnTypes: {} };
 
-      const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+      // Better CSV header extraction handling quotes
+      const headers = splitCsvLine(lines[0]);
       const rows: Record<string, any>[] = [];
 
       for (let i = 1; i < lines.length; i++) {
-        // Basic CSV split - for production apps, use a dedicated library like PapaParse
-        const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim().replace(/^"|"$/g, ''));
+        const values = splitCsvLine(lines[i]);
         const row: Record<string, any> = {};
         headers.forEach((header, index) => {
           const val = values[index];
@@ -44,8 +44,9 @@ export const parseDataset = async (file: File): Promise<ParsedData> => {
              row[header] = '';
              return;
           }
-          const num = Number(val);
-          row[header] = (!isNaN(num) && val.trim() !== '') ? num : val;
+          const trimmedVal = val.trim();
+          const num = Number(trimmedVal);
+          row[header] = (!isNaN(num) && trimmedVal !== '') ? num : trimmedVal;
         });
         rows.push(row);
       }
@@ -53,9 +54,32 @@ export const parseDataset = async (file: File): Promise<ParsedData> => {
     }
   } catch (error) {
     console.error('Error in parseDataset:', error);
-    throw new Error('Failed to parse dataset format.');
+    throw new Error('Failed to parse dataset. Please check if the file is a valid Excel or CSV format.');
   }
 };
+
+/**
+ * Robustly splits a CSV line, handling quoted values containing commas.
+ */
+function splitCsvLine(line: string): string[] {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim().replace(/^"|"$/g, ''));
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim().replace(/^"|"$/g, ''));
+  return result;
+}
 
 const refineData = (headers: string[], rows: Record<string, any>[]): ParsedData => {
   const columnTypes: Record<string, 'number' | 'string'> = {};
@@ -63,15 +87,13 @@ const refineData = (headers: string[], rows: Record<string, any>[]): ParsedData 
   headers.forEach(header => {
     const validRows = rows.filter(r => r[header] !== undefined && r[header] !== '');
     const numericCount = validRows.filter(r => typeof r[header] === 'number').length;
+    // If more than 50% of non-empty values are numbers, treat column as numeric
     columnTypes[header] = (validRows.length > 0 && numericCount > validRows.length / 2) ? 'number' : 'string';
   });
 
   return { headers, rows, columnTypes };
 };
 
-/**
- * Utility to convert parsed rows back to a CSV sample for AI analysis.
- */
 export const getCsvSample = (data: ParsedData, limit = 100): string => {
   const sampleRows = data.rows.slice(0, limit);
   const headerLine = data.headers.join(',');

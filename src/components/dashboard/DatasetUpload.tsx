@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Upload, FileText, CheckCircle2, AlertCircle, FileSpreadsheet } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, AlertCircle, FileSpreadsheet, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -37,14 +37,20 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
         throw new Error('The file appears to be empty or missing headers.');
       }
 
-      // Get AI suggestions for the data quality using a CSV sample
-      const sampleCsv = getCsvSample(parsed, 50);
-      const aiSuggestions = await suggestDataQualityImprovements({ csvData: sampleCsv });
+      // Attempt AI suggestions, but don't crash if Gemini is busy
+      let aiSuggestions = null;
+      try {
+        const sampleCsv = getCsvSample(parsed, 50);
+        aiSuggestions = await suggestDataQualityImprovements({ csvData: sampleCsv });
+      } catch (aiErr) {
+        console.warn('AI Insights temporarily unavailable:', aiErr);
+        // We continue anyway so the user can see their data
+      }
 
       onUpload(parsed, aiSuggestions);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to process the dataset. Ensure the file is not corrupted and contains data.');
+      setError(err.message || 'An unexpected error occurred during processing.');
     } finally {
       setIsProcessing(false);
     }
@@ -58,27 +64,27 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-8">
       <Card 
         className={cn(
-          "relative border-dashed border-2 transition-all duration-300 glass overflow-hidden",
-          isDragging ? "border-primary bg-primary/5 scale-[1.01]" : "border-white/10",
-          isProcessing && "opacity-60 cursor-not-allowed"
+          "relative border-dashed border-2 transition-all duration-500 glass overflow-hidden rounded-[2rem]",
+          isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "border-white/10",
+          isProcessing && "opacity-70 cursor-not-allowed"
         )}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={onDrop}
       >
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-6 p-4 rounded-2xl bg-primary/10 ring-1 ring-primary/20 glow-primary">
-            <Upload className="h-10 w-10 text-primary" />
+        <CardContent className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="mb-8 p-5 rounded-3xl bg-primary/10 ring-1 ring-primary/30 glow-primary animate-pulse">
+            <Upload className="h-12 w-12 text-primary" />
           </div>
-          <h2 className="text-3xl font-headline font-bold mb-2">Initialize Data Pipeline</h2>
-          <p className="text-muted-foreground mb-8 max-w-md">
-            Drag and drop your CSV or Excel dataset here to begin automated statistical extraction and AI-driven insights.
+          <h2 className="text-4xl font-headline font-bold mb-4 tracking-tight">Ingest Intelligence</h2>
+          <p className="text-muted-foreground mb-10 max-w-lg text-lg leading-relaxed">
+            Upload your CSV or Excel dataset. Our engine will automatically validate, visualize, and prepare AI narratives.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-5">
             <input 
               type="file" 
               id="file-upload" 
@@ -87,42 +93,42 @@ export const DatasetUpload: React.FC<DatasetUploadProps> = ({ onUpload }) => {
               onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
               disabled={isProcessing}
             />
-            <Button asChild size="lg" className="rounded-full px-8 bg-primary hover:bg-primary/90 text-white font-bold">
-              <label htmlFor="file-upload" className="cursor-pointer">
-                {isProcessing ? 'Analyzing...' : 'Upload Dataset'}
+            <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg bg-primary hover:bg-primary/80 text-black font-bold transition-all hover:scale-105">
+              <label htmlFor="file-upload" className="cursor-pointer flex items-center gap-2">
+                {isProcessing ? <Loader2 className="animate-spin h-5 w-5" /> : null}
+                {isProcessing ? 'Processing...' : 'Upload Data Source'}
               </label>
-            </Button>
-            <Button variant="outline" size="lg" className="rounded-full px-8 glass border-white/10 hover:bg-white/5">
-              Documentation
             </Button>
           </div>
 
           {error && (
-            <div className="mt-8 flex items-center gap-3 text-destructive font-medium bg-destructive/10 px-6 py-3 rounded-xl border border-destructive/20 animate-in fade-in slide-in-from-top-2">
-              <AlertCircle className="h-5 w-5" />
+            <div className="mt-10 flex items-center gap-4 text-destructive font-medium bg-destructive/5 px-8 py-4 rounded-2xl border border-destructive/20 animate-in fade-in slide-in-from-top-4">
+              <AlertCircle className="h-6 w-6" />
               <span className="text-sm">{error}</span>
             </div>
           )}
         </CardContent>
 
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-white/5">
-          {isProcessing && <div className="h-full bg-primary animate-pulse transition-all duration-500" style={{ width: '70%' }} />}
-        </div>
+        {isProcessing && (
+          <div className="absolute bottom-0 left-0 w-full h-1.5 bg-white/5">
+            <div className="h-full bg-primary animate-progress-loading" style={{ width: '40%' }} />
+          </div>
+        )}
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
-          { icon: FileSpreadsheet, title: 'Multi-Format', desc: 'Native support for Excel (.xlsx) and CSV datasets.' },
-          { icon: CheckCircle2, title: 'Deep Validation', desc: 'AI-assisted data validation and anomaly detection.' },
-          { icon: FileText, title: 'Instant Reports', desc: 'Generate professional interpretations automatically.' }
+          { icon: FileSpreadsheet, title: 'Multi-Format', desc: 'Native processing for XLSX, XLS, and CSV datasets.' },
+          { icon: CheckCircle2, title: 'Deep Validation', desc: 'Automatic type detection and anomaly scanning.' },
+          { icon: FileText, title: 'Instant Narrative', desc: 'Generative insights explaining your data trends.' }
         ].map((feat, idx) => (
-          <div key={idx} className="glass rounded-2xl p-6 border-white/5 flex gap-4 items-start hover:bg-white/[0.05] transition-colors">
-            <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
-              <feat.icon className="h-5 w-5" />
+          <div key={idx} className="glass rounded-[2rem] p-8 border-white/5 flex flex-col gap-4 items-center text-center hover:bg-white/[0.04] transition-all duration-300">
+            <div className="p-4 rounded-2xl bg-primary/5 text-primary">
+              <feat.icon className="h-7 w-7" />
             </div>
             <div>
-              <h4 className="font-bold text-sm mb-1">{feat.title}</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
+              <h4 className="font-bold text-lg mb-2">{feat.title}</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">{feat.desc}</p>
             </div>
           </div>
         ))}

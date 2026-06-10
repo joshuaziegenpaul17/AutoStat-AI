@@ -2,21 +2,21 @@
   "placeholderImages": [
     {
       "id": "hero-dashboard",
-      "description": "A high-tech data visualization interface with emerald and cyan highlights",
-      "imageUrl": "https://picsum.photos/seed/datavis1/1200/800",
-      "imageHint": "data analytics"
+      "description": "High-tech data visualization interface with emerald highlights and complex charts",
+      "imageUrl": "https://picsum.photos/seed/datamatrix99/1200/800",
+      "imageHint": "data visualization"
     },
     {
       "id": "stat-analysis",
-      "description": "Abstract representation of data points and statistical trends",
-      "imageUrl": "https://picsum.photos/seed/stats2/800/600",
-      "imageHint": "charts visualization"
+      "description": "Abstract network of nodes and statistical line graphs",
+      "imageUrl": "https://picsum.photos/seed/analytics55/800/600",
+      "imageHint": "statistical charts"
     },
     {
       "id": "landing-hero",
-      "description": "Modern enterprise data dashboard preview",
-      "imageUrl": "https://picsum.photos/seed/enterprise-data/1200/600",
-      "imageHint": "analytics dashboard"
+      "description": "Minimalist professional dashboard showing financial spreadsheets and performance metrics",
+      "imageUrl": "https://picsum.photos/seed/spreadsheet88/1200/600",
+      "imageHint": "business dashboard"
     }
   ]
 }

@@ -1,22 +1,11 @@
+
 {
   "placeholderImages": [
     {
-      "id": "data-hero",
-      "description": "Abstract network of glowing emerald data nodes and digital connections representing advanced intelligence",
-      "imageUrl": "https://picsum.photos/seed/aisynthesis/1200/600",
-      "imageHint": "artificial intelligence"
-    },
-    {
-      "id": "data-workspace",
-      "description": "Modern analytics interface with high-density statistical charts",
-      "imageUrl": "https://picsum.photos/seed/analyticsinterface/800/600",
-      "imageHint": "dashboard"
-    },
-    {
-      "id": "data-reporting",
-      "description": "Clean, professional document showing automated data insights",
-      "imageUrl": "https://picsum.photos/seed/statisticalreport/800/600",
-      "imageHint": "business intelligence"
+      "id": "dashboard-hero",
+      "description": "High-fidelity professional analytics dashboard mockup with charts and statistics",
+      "imageUrl": "https://picsum.photos/seed/analytics-preview/1000/1000",
+      "imageHint": "data analytics"
     }
   ]
 }

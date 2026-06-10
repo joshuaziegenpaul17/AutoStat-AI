@@ -4,31 +4,26 @@
 
 @layer base {
   :root {
-    --background: 222 47% 2%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 4%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 4%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 155 100% 45%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 222 47% 10%;
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+    --primary: 162 82% 40%;
+    --primary-foreground: 224 71% 4%;
+    --secondary: 222.2 47.4% 11.2%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 222 47% 10%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 180 100% 50%;
-    --accent-foreground: 222 47% 4%;
-    --destructive: 0 84.2% 60.2%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 216 100% 50%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 222 47% 12%;
-    --input: 222 47% 12%;
-    --ring: 155 100% 45%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 162 82% 40%;
     --radius: 0.75rem;
-    --chart-1: 155 100% 45%;
-    --chart-2: 180 100% 50%;
-    --chart-3: 200 80% 60%;
-    --chart-4: 140 70% 50%;
-    --chart-5: 180 60% 70%;
   }
 }
 
@@ -47,18 +42,18 @@
 
 @layer components {
   .glass {
-    @apply bg-white/[0.02] backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+    @apply bg-slate-950/40 backdrop-blur-xl border border-white/10 shadow-2xl;
   }
   .glass-card {
-    @apply bg-card/60 backdrop-blur-2xl border border-white/5 shadow-2xl;
+    @apply bg-slate-900/60 backdrop-blur-2xl border border-white/5 shadow-inner;
   }
   .glow-primary {
-    @apply shadow-[0_0_30px_rgba(0,255,149,0.2)];
+    @apply shadow-[0_0_40px_rgba(16,185,129,0.15)];
   }
   .data-grid {
     background-image: 
-      linear-gradient(rgba(0, 255, 149, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 149, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(16, 185, 129, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
   }
 }

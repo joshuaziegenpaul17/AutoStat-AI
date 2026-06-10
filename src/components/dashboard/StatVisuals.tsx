@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ScatterChart, Scatter, LineChart, Line, Legend, AreaChart, Area,
   PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
-  ComposedChart, RadialBarChart, RadialBar
+  ComposedChart, RadialBarChart, RadialBar, ZAxis
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,20 +26,28 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
   const allHeaders = data.length > 0 ? Object.keys(data[0]) : [];
   const stringColumns = allHeaders.filter(h => !numericColumns.includes(h));
 
+  // State for chart column selections
   const [histCol, setHistCol] = useState(numericColumns[0] || "");
   const [scatterX, setScatterX] = useState(numericColumns[0] || "");
   const [scatterY, setScatterY] = useState(numericColumns[1] || numericColumns[0] || "");
+  
   const [areaCol, setAreaCol] = useState(numericColumns[0] || "");
   const [pieCatCol, setPieCatCol] = useState(stringColumns[0] || allHeaders[0] || "");
+  
   const [composedBarCol, setComposedBarCol] = useState(numericColumns[0] || "");
   const [composedLineCol, setComposedLineCol] = useState(numericColumns[1] || numericColumns[0] || "");
-  const [freqCol, setFreqCol] = useState(stringColumns[0] || allHeaders[0] || "");
-  const [radarCols, setRadarCols] = useState(numericColumns.slice(0, 5));
+  
   const [lineCol1, setLineCol1] = useState(numericColumns[0] || "");
   const [lineCol2, setLineCol2] = useState(numericColumns[1] || numericColumns[0] || "");
-  const [stackCol1, setStackCol1] = useState(numericColumns[0] || "");
-  const [stackCol2, setStackCol2] = useState(numericColumns[1] || numericColumns[0] || "");
-  const [stackCol3, setStackCol3] = useState(numericColumns[2] || numericColumns[0] || "");
+  
+  // Advanced State
+  const [bubbleX, setBubbleX] = useState(numericColumns[0] || "");
+  const [bubbleY, setBubbleY] = useState(numericColumns[1] || numericColumns[0] || "");
+  const [bubbleZ, setBubbleZ] = useState(numericColumns[2] || numericColumns[0] || "");
+  
+  const [stepCol, setStepCol] = useState(numericColumns[0] || "");
+  
+  const [radialCol, setRadialCol] = useState(stringColumns[0] || allHeaders[0] || "");
 
   if (allHeaders.length === 0) return (
     <div className="p-20 text-center glass rounded-[3.5rem] border-dashed border-white/10">
@@ -78,11 +86,29 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
   };
 
   const getRadarData = () => {
+    const radarCols = numericColumns.slice(0, 5);
     return radarCols.map(col => ({
       subject: col,
       A: data.reduce((acc, d) => acc + (Number(d[col]) || 0), 0) / data.length,
       fullMark: Math.max(...data.map(d => Number(d[col]) || 0))
     }));
+  };
+
+  const getRadialData = () => {
+    if (!radialCol) return [];
+    const counts: Record<string, number> = {};
+    data.forEach(d => {
+      const val = String(d[radialCol]);
+      counts[val] = (counts[val] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([name, value], i) => ({ 
+        name, 
+        value, 
+        fill: COLORS[i % COLORS.length] 
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 6);
   };
 
   const ColumnSelector = ({ label, value, onValueChange, options, className = "" }: any) => (
@@ -106,10 +132,11 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
   return (
     <div className="space-y-12">
       <Tabs defaultValue="primary" className="w-full">
-        <TabsList className="bg-slate-950/80 p-1.5 rounded-[2.5rem] mb-12 border border-white/10 w-full lg:w-auto">
-          <TabsTrigger value="primary" className="rounded-[2rem] px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] data-[state=active]:bg-primary data-[state=active]:text-black transition-all flex-1 lg:flex-none">Core Vectors</TabsTrigger>
-          <TabsTrigger value="proportions" className="rounded-[2rem] px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] data-[state=active]:bg-primary data-[state=active]:text-black transition-all flex-1 lg:flex-none">Distribution Mapping</TabsTrigger>
-          <TabsTrigger value="comparative" className="rounded-[2rem] px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] data-[state=active]:bg-primary data-[state=active]:text-black transition-all flex-1 lg:flex-none">Benchmark Synthesis</TabsTrigger>
+        <TabsList className="bg-slate-950/80 p-1.5 rounded-[2.5rem] mb-12 border border-white/10 w-full overflow-x-auto scrollbar-hide flex">
+          <TabsTrigger value="primary" className="rounded-[2rem] px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] data-[state=active]:bg-primary data-[state=active]:text-black transition-all flex-1">Core Vectors</TabsTrigger>
+          <TabsTrigger value="proportions" className="rounded-[2rem] px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] data-[state=active]:bg-primary data-[state=active]:text-black transition-all flex-1">Distribution</TabsTrigger>
+          <TabsTrigger value="comparative" className="rounded-[2rem] px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] data-[state=active]:bg-primary data-[state=active]:text-black transition-all flex-1">Benchmarks</TabsTrigger>
+          <TabsTrigger value="advanced" className="rounded-[2rem] px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] data-[state=active]:bg-primary data-[state=active]:text-black transition-all flex-1">Advanced Synthesis</TabsTrigger>
         </TabsList>
 
         <TabsContent value="primary" className="grid grid-cols-1 lg:grid-cols-2 gap-10 outline-none">
@@ -270,6 +297,84 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
                   <Legend wrapperStyle={{ fontSize: '10px', textTransform: 'uppercase' }} />
                   <Line type="monotone" dataKey={lineCol1} stroke="#6366f1" strokeWidth={3} dot={false} />
                   <Line type="monotone" dataKey={lineCol2} stroke="#10b981" strokeWidth={3} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="advanced" className="grid grid-cols-1 lg:grid-cols-2 gap-10 outline-none">
+          <Card className={chartCardClass}>
+            <CardHeader className="pb-8 p-0 space-y-6">
+              <CardTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-4">
+                <div className="w-2 h-6 bg-cyan-500 rounded-full" /> Bubble Multi-Vector Correlation
+              </CardTitle>
+              <div className="grid grid-cols-3 gap-4">
+                <ColumnSelector label="X Vector" value={bubbleX} onValueChange={setBubbleX} options={numericColumns} />
+                <ColumnSelector label="Y Vector" value={bubbleY} onValueChange={setBubbleY} options={numericColumns} />
+                <ColumnSelector label="Size (Z)" value={bubbleZ} onValueChange={setBubbleZ} options={numericColumns} />
+              </div>
+            </CardHeader>
+            <CardContent className="h-[350px] p-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
+                  <XAxis type="number" dataKey="x" name={bubbleX} stroke="rgba(255,255,255,0.2)" fontSize={10} />
+                  <YAxis type="number" dataKey="y" name={bubbleY} stroke="rgba(255,255,255,0.2)" fontSize={10} />
+                  <ZAxis type="number" dataKey="z" range={[50, 400]} name={bubbleZ} />
+                  <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                  <Scatter 
+                    name="Advanced Mapping" 
+                    data={data.slice(0, 100).map(d => ({ 
+                      x: Number(d[bubbleX]), 
+                      y: Number(d[bubbleY]), 
+                      z: Number(d[bubbleZ]) 
+                    }))} 
+                    fill="#06b6d4" 
+                    fillOpacity={0.5} 
+                  />
+                </ScatterChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className={chartCardClass}>
+            <CardHeader className="pb-8 p-0 space-y-6">
+              <CardTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-4">
+                <div className="w-2 h-6 bg-lime-500 rounded-full" /> Radial Category Magnitude
+              </CardTitle>
+              <ColumnSelector label="Radial Domain" value={radialCol} onValueChange={setRadialCol} options={allHeaders} />
+            </CardHeader>
+            <CardContent className="h-[350px] p-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadialBarChart cx="50%" cy="50%" innerRadius="10%" outerRadius="80%" barSize={20} data={getRadialData()}>
+                  <RadialBar
+                    label={{ position: 'insideStart', fill: '#fff', fontSize: 8 }}
+                    background
+                    dataKey="value"
+                  />
+                  <Legend iconSize={10} layout="vertical" verticalAlign="middle" wrapperStyle={{ right: 0, fontSize: 10, fontWeight: 'bold' }} />
+                  <Tooltip />
+                </RadialBarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className={`${chartCardClass} lg:col-span-2`}>
+            <CardHeader className="pb-8 p-0 space-y-6">
+              <CardTitle className="text-lg font-black uppercase tracking-tight flex items-center gap-4">
+                <div className="w-2 h-6 bg-red-500 rounded-full" /> Step Line Sequence Analysis
+              </CardTitle>
+              <ColumnSelector label="Sequence Vector" value={stepCol} onValueChange={setStepCol} options={numericColumns} className="max-w-xs" />
+            </CardHeader>
+            <CardContent className="h-[400px] p-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data.slice(0, 80).map((d, i) => ({ ...d, idx: i }))}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                  <XAxis dataKey="idx" hide />
+                  <YAxis stroke="rgba(255,255,255,0.2)" fontSize={10} />
+                  <Tooltip contentStyle={{ backgroundColor: '#020617', border: 'none', borderRadius: '16px' }} />
+                  <Line type="stepAfter" dataKey={stepCol} stroke="#ef4444" strokeWidth={3} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>

@@ -1,17 +1,22 @@
-
 {
   "placeholderImages": [
     {
       "id": "hero-dashboard",
-      "description": "A futuristic data analytics dashboard with glowing charts and indigo highlights",
-      "imageUrl": "https://picsum.photos/seed/autostat1/1200/800",
-      "imageHint": "data dashboard"
+      "description": "A high-tech data visualization interface with emerald and cyan highlights",
+      "imageUrl": "https://picsum.photos/seed/datavis1/1200/800",
+      "imageHint": "data analytics"
     },
     {
       "id": "stat-analysis",
-      "description": "Visual representation of statistical distribution and analysis",
-      "imageUrl": "https://picsum.photos/seed/autostat2/800/600",
-      "imageHint": "statistics chart"
+      "description": "Abstract representation of data points and statistical trends",
+      "imageUrl": "https://picsum.photos/seed/stats2/800/600",
+      "imageHint": "charts visualization"
+    },
+    {
+      "id": "landing-hero",
+      "description": "Modern enterprise data dashboard preview",
+      "imageUrl": "https://picsum.photos/seed/enterprise-data/1200/600",
+      "imageHint": "analytics dashboard"
     }
   ]
 }

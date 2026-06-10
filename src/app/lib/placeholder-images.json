@@ -2,21 +2,21 @@
   "placeholderImages": [
     {
       "id": "data-hero",
-      "description": "Abstract digital data visualization with holographic charts and deep blue gradients",
-      "imageUrl": "https://picsum.photos/seed/analytics1/1200/600",
-      "imageHint": "data analytics"
+      "description": "Abstract network of glowing emerald data nodes and digital connections",
+      "imageUrl": "https://picsum.photos/seed/datanetwork/1200/600",
+      "imageHint": "data visualization"
     },
     {
       "id": "data-workspace",
-      "description": "Professional analyst workspace showing interactive statistical plots and spreadsheets",
-      "imageUrl": "https://picsum.photos/seed/workspace2/800/600",
-      "imageHint": "data dashboard"
+      "description": "Modern analytics interface with high-density statistical charts",
+      "imageUrl": "https://picsum.photos/seed/analyticsinterface/800/600",
+      "imageHint": "dashboard"
     },
     {
       "id": "data-reporting",
-      "description": "High-fidelity generated reports with clean typography and business insight metrics",
-      "imageUrl": "https://picsum.photos/seed/report3/800/600",
-      "imageHint": "business report"
+      "description": "Clean, professional document showing automated data insights",
+      "imageUrl": "https://picsum.photos/seed/statisticalreport/800/600",
+      "imageHint": "business intelligence"
     }
   ]
 }

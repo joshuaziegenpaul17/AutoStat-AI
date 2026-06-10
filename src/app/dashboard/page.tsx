@@ -52,8 +52,8 @@ export default function Dashboard() {
     } catch (err: any) {
       console.error("Narrative generation failed", err);
       toast({
-        title: "AI Engine Busy",
-        description: "The AI analysis is temporarily unavailable. Core statistical tools are still active.",
+        title: "AI Service Unavailable",
+        description: "The AI engine is currently experiencing high demand. Core statistical analysis remains active.",
         variant: "destructive"
       });
     } finally {
@@ -182,7 +182,7 @@ export default function Dashboard() {
                   <Card className="bg-slate-900/40 border-dashed border-white/10 rounded-3xl p-8 flex items-center justify-center text-center">
                     <div className="max-w-xs">
                       <ShieldAlert className="h-8 w-8 text-muted-foreground/30 mx-auto mb-4" />
-                      <p className="text-xs text-muted-foreground">AI quality engine is currently in fallback mode. Visual and statistical metrics remain fully operational.</p>
+                      <p className="text-xs text-muted-foreground">AI quality engine is currently in standby. Visual and statistical metrics remain fully operational.</p>
                     </div>
                   </Card>
                 )}

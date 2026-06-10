@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 222 47% 7%;
+    --background: 222 47% 4%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 9%;
+    --card: 222 47% 6%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 7%;
+    --popover: 222 47% 4%;
     --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 222 47% 7%;
-    --secondary: 217 33% 17%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 222 47% 4%;
+    --secondary: 217 33% 12%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
+    --muted: 217 33% 12%;
     --muted-foreground: 215 20% 65%;
-    --accent: 217 91% 60%;
+    --accent: 142 76% 36%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 199 89% 48%;
+    --border: 217 33% 12%;
+    --input: 217 33% 12%;
+    --ring: 142 71% 45%;
     --radius: 1rem;
   }
 }
@@ -49,8 +49,8 @@
   }
   .data-grid {
     background-image: 
-      linear-gradient(rgba(0, 186, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 186, 255, 0.02) 1px, transparent 1px);
+      linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 }

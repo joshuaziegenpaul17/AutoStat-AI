@@ -1,51 +1,40 @@
 'use server';
-/**
- * @fileOverview A robust Genkit flow for analyzing CSV data quality with automated retries.
- *
- * - suggestDataQualityImprovements - Main function for analysis.
- * - DataQualitySuggesterInput - Input schema.
- * - DataQualitySuggesterOutput - Output schema.
- */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const DataQualitySuggesterInputSchema = z.object({
-  csvData: z
-    .string()
-    .describe('The raw CSV data as a string.'),
+  csvData: z.string().describe('The raw CSV data as a string.'),
 });
 export type DataQualitySuggesterInput = z.infer<typeof DataQualitySuggesterInputSchema>;
 
 const DataQualitySuggesterOutputSchema = z.object({
   summary: z.string().describe('A general summary of the data quality.'),
-  suggestions: z
-    .array(
-      z.object({
-        issueType: z.enum([
-          'Missing Values',
-          'Outliers',
-          'Inconsistent Format',
-          'Data Type Mismatch',
-          'Duplicate Rows',
-          'Irregular Whitespace',
-          'Inconsistent Categorical Values',
-          'Potential PII',
-          'Other',
-        ]),
-        description: z.string(),
-        suggestion: z.string(),
-        affectedColumns: z.array(z.string()),
-      })
-    )
-    .describe('Specific quality issues identified.'),
+  suggestions: z.array(
+    z.object({
+      issueType: z.enum([
+        'Missing Values',
+        'Outliers',
+        'Inconsistent Format',
+        'Data Type Mismatch',
+        'Duplicate Rows',
+        'Irregular Whitespace',
+        'Inconsistent Categorical Values',
+        'Potential PII',
+        'Other',
+      ]),
+      description: z.string(),
+      suggestion: z.string(),
+      affectedColumns: z.array(z.string()),
+    })
+  ).describe('Specific quality issues identified.'),
 });
 export type DataQualitySuggesterOutput = z.infer<typeof DataQualitySuggesterOutputSchema>;
 
 const prompt = ai.definePrompt({
   name: 'dataQualitySuggesterPrompt',
-  input: {schema: DataQualitySuggesterInputSchema},
-  output: {schema: DataQualitySuggesterOutputSchema},
+  input: { schema: DataQualitySuggesterInputSchema },
+  output: { schema: DataQualitySuggesterOutputSchema },
   prompt: `You are an expert data quality auditor. Analyze the provided CSV data for missing values, outliers, and structural inconsistencies. Provide a professional summary and specific actionable suggestions.
 
 CSV Data:
@@ -54,7 +43,7 @@ CSV Data:
 
 async function generateWithRetry(input: DataQualitySuggesterInput, retries = 3, delay = 1500): Promise<DataQualitySuggesterOutput> {
   try {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     if (!output) throw new Error("Model returned empty output.");
     return output;
   } catch (error: any) {

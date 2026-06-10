@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { 
-  BarChart3, Database, RefreshCw, ShieldAlert, TrendingUp, Lightbulb, ClipboardCheck, AlertCircle, ArrowUpRight, Target, Sparkles, SearchCode, Zap
+  BarChart3, Database, RefreshCw, ShieldAlert, TrendingUp, Lightbulb, ClipboardCheck, ArrowUpRight, Target, Sparkles, SearchCode, Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -55,10 +55,10 @@ export default function Dashboard() {
       } else {
         throw new Error(res.error);
       }
-    } catch (err) {
+    } catch (err: any) {
       toast({
         title: "Audit Error",
-        description: "Service busy. Diagnostics deferred to manual retry.",
+        description: err.message || "Service busy. Diagnostics deferred.",
         variant: "destructive"
       });
     } finally {
@@ -82,7 +82,7 @@ export default function Dashboard() {
     } catch (err: any) {
       toast({
         title: "Modeling Deferred",
-        description: "Platform capacity reached. Retrying shortly.",
+        description: err.message || "Platform capacity reached.",
         variant: "destructive"
       });
     } finally {

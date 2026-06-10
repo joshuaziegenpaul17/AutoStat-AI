@@ -15,8 +15,9 @@ const InsightsFlowInputSchema = z.object({
 
 /**
  * Executes AI prompt with safe backoff to avoid Server Action timeouts (Next.js limits).
+ * Optimized for Gemini 2.0 Flash.
  */
-async function generateWithRetry(input: any, retries = 3, delay = 2000) {
+async function generateWithRetry(input: any, retries = 3, delay = 5000) {
   try {
     const { output } = await aiInsightsPrompt(input);
     if (!output) throw new Error("Analytical engine produced no data.");
@@ -31,9 +32,9 @@ async function generateWithRetry(input: any, retries = 3, delay = 2000) {
       msg.toLowerCase().includes("quota");
 
     if (retries > 0 && isRetryable) {
-      const jitter = Math.random() * 1000;
+      const jitter = Math.random() * 2000;
       const finalDelay = delay + jitter;
-      console.warn(`[Insights Flow] Rate limit detected. Retrying in ${Math.round(finalDelay)}ms...`);
+      console.warn(`[Insights Flow] Rate limit detected. Retrying in ${Math.round(finalDelay)}ms... (${retries} retries left)`);
       await new Promise(res => setTimeout(res, finalDelay));
       return generateWithRetry(input, retries - 1, delay * 2);
     }

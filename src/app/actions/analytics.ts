@@ -3,6 +3,9 @@
 import { suggestDataQualityImprovements } from "@/ai/flows/data-quality-suggester";
 import { generateAiInsights } from "@/ai/flows/ai-insights-generator";
 
+// Counter to track total AI calls in this session (per server instance)
+let totalAiRequests = 0;
+
 /**
  * Runs a structural audit on the dataset.
  */
@@ -11,7 +14,6 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
     const result = await suggestDataQualityImprovements({ datasetPreview: csvData, columnNames });
     if (!result) throw new Error("Quality diagnostic produced no data.");
     
-    // Explicit serialization to prevent Next.js 15 "Unexpected response"
     return { 
       success: true, 
       data: JSON.parse(JSON.stringify(result)) 
@@ -20,17 +22,20 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
     console.error("[Action:Audit] Failure:", error);
     return { 
       success: false, 
-      error: String(error?.message || "Structural audit encountered a network difficulty.") 
+      error: String(error?.message || "Structural audit encountered a difficulty.") 
     };
   }
 }
 
 /**
  * Generates strategic insights using Gemini 2.0 Flash.
- * Optimized for Next.js 15 Server Action stability.
  */
 export async function runInsightsAction(input: { datasetPreview: string, statsSummary: string, columnNames: string[] }) {
   try {
+    totalAiRequests++;
+    console.log(`[AI Request Monitor] Total Gemini Calls Initiated: ${totalAiRequests}`);
+    console.log(`[AI Request Monitor] Current Request Batch: 1 click -> 1 call triggered.`);
+
     const apiKey = process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
     if (!apiKey) {
       return { success: false, error: "AI Engine Configuration Missing: API Key is required." };
@@ -42,10 +47,10 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
       throw new Error("AI engine returned an empty synthesis.");
     }
 
-    // Ensure strict serialization for the Client
     return { 
       success: true, 
-      data: JSON.parse(JSON.stringify(result)) 
+      data: JSON.parse(JSON.stringify(result)),
+      requestId: totalAiRequests
     };
   } catch (error: any) {
     console.error("[Action:Insights] Error Trace:", error);

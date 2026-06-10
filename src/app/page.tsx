@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BarChart3, ArrowRight, ShieldCheck, Zap, Database, Globe, Activity } from 'lucide-react';
+import { BarChart3, ArrowRight, Zap, Database, Globe, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function LandingPage() {
@@ -11,7 +11,7 @@ export default function LandingPage() {
     "ANOMALY DETECTION STABLE",
     "ENTERPRISE TELEMETRY ONLINE",
     "STRATEGIC INSIGHTS GENERATED",
-    "REAL-TIME DIAGNOSTICS ENGAGED"
+    "SINGLE-CALL SYNTHESIS PROTOCOL"
   ];
 
   return (
@@ -45,14 +45,14 @@ export default function LandingPage() {
           <div className="container mx-auto px-6 text-center max-w-4xl relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-xs font-bold mb-8 uppercase tracking-widest">
               <Zap className="h-3 w-3" />
-              <span>Next-Gen Statistical Engine v2.5</span>
+              <span>Next-Gen Statistical Engine v2.0</span>
             </div>
             <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter uppercase italic">
               Statistical <br />
               <span className="text-indigo-500">Intelligence</span>
             </h1>
             <p className="text-lg md:text-xl text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-              Automated analytical narratives for enterprise datasets. AutoStat AI transforms raw CSV vectors into structured strategic intelligence instantly.
+              Automated analytical narratives for enterprise datasets. AutoStat AI transforms raw CSV vectors into structured strategic intelligence instantly using single-call neural synthesis.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">

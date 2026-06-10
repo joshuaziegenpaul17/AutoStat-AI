@@ -1,11 +1,10 @@
 "use client"
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { 
-  BarChart3, Download, LayoutDashboard, ChevronLeft, 
-  Sparkles, TrendingUp, ShieldCheck, 
-  Zap, BrainCircuit, Share2, Info, Loader2, RefreshCw,
-  AlertTriangle, Target, Lightbulb, BarChart, Activity
+  BarChart3, LayoutDashboard, Sparkles, ShieldCheck, 
+  Zap, BrainCircuit, Loader2, RefreshCw,
+  AlertTriangle, Target, Activity
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { DatasetUpload } from '@/components/dashboard/DatasetUpload';
 import { StatVisuals } from '@/components/dashboard/StatVisuals';
-import { calculateDescriptiveStats, DescriptiveStats } from '@/lib/stats-engine';
+import { calculateDescriptiveStats, DescriptiveStats, calculatePearsonCorrelation } from '@/lib/stats-engine';
 import { ParsedData, getCsvSample } from '@/lib/data-parser';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -27,6 +26,10 @@ export default function Dashboard() {
   const [insights, setInsights] = useState<any>(null);
   const [auditResults, setAuditResults] = useState<any>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  
+  // Cache for insights linked to the current dataset rows count and headers
+  const insightsCache = useRef<Record<string, any>>({});
+  
   const { toast } = useToast();
 
   const handleUpload = (data: ParsedData) => {
@@ -54,17 +57,47 @@ export default function Dashboard() {
   const categoricalColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'string') : [];
 
   const runAiAnalysis = async () => {
-    if (!currentDataset) return;
+    if (!currentDataset || isAnalyzing) return;
+
+    // Generate unique key for current dataset state
+    const cacheKey = `${currentDataset.rows.length}-${currentDataset.headers.join('-')}`;
+    
+    // Check Cache
+    if (insightsCache.current[cacheKey]) {
+      setInsights(insightsCache.current[cacheKey]);
+      toast({ title: "Insights Loaded", description: "Retrieved cached strategic synthesis." });
+      return;
+    }
     
     setIsAnalyzing(true);
     setAnalysisError(null);
     
-    const statsSummary = Object.entries(descriptiveResults).map(([col, stats]) => {
-      return `Column: ${col}\n- Mean: ${stats.mean.toFixed(2)}\n- Median: ${stats.median.toFixed(2)}\n- StdDev: ${stats.stdDev.toFixed(2)}\n- Outliers: ${stats.outliers.length}`;
-    }).join('\n\n');
+    // 1. Calculate correlations and summary statistics client-side to reduce AI payload
+    const correlations: string[] = [];
+    if (numericColumns.length >= 2) {
+      for (let i = 0; i < Math.min(numericColumns.length, 5); i++) {
+        for (let j = i + 1; j < Math.min(numericColumns.length, 5); j++) {
+          const c1 = numericColumns[i];
+          const c2 = numericColumns[j];
+          const x = currentDataset.rows.map(r => r[c1]).filter(v => typeof v === 'number');
+          const y = currentDataset.rows.map(r => r[c2]).filter(v => typeof v === 'number');
+          const r = calculatePearsonCorrelation(x, y);
+          if (Math.abs(r) > 0.5) {
+            correlations.push(`${c1} vs ${c2}: ${r.toFixed(2)}`);
+          }
+        }
+      }
+    }
 
-    const sample = getCsvSample(currentDataset, 12); // Optimized sample size for free tier stability
+    const statsSummary = Object.entries(descriptiveResults).map(([col, stats]) => {
+      return `Column: ${col}\n- Mean: ${stats.mean.toFixed(2)}\n- Median: ${stats.median.toFixed(2)}\n- StdDev: ${stats.stdDev.toFixed(2)}\n- Outliers: ${stats.outliers.length}\n- Range: [${stats.min}, ${stats.max}]`;
+    }).join('\n\n') + `\n\nTop Correlations:\n${correlations.join('\n')}`;
+
+    // 2. Optimized Sample (Very small to reduce token usage/errors)
+    const sample = getCsvSample(currentDataset, 10); 
     
+    console.log(`[Dashboard] Single Synthesis Request Initiated at ${new Date().toLocaleTimeString()}`);
+
     try {
       const insightsRes = await runInsightsAction({
         datasetPreview: sample,
@@ -74,22 +107,22 @@ export default function Dashboard() {
 
       if (insightsRes.success) {
         setInsights(insightsRes.data);
+        insightsCache.current[cacheKey] = insightsRes.data; // Cache the result
+        toast({ title: "Analysis Complete", description: "Strategic synthesis generated successfully." });
       } else {
         setAnalysisError(insightsRes.error || "Synthesis failed to initialize.");
         toast({ variant: "destructive", title: "Synthesis Difficulty", description: insightsRes.error });
       }
 
-      const auditRes = await runAuditAction(sample, currentDataset.headers);
-      if (auditRes.success) {
-        setAuditResults(auditRes.data);
-      }
-      
-      if (insightsRes.success) {
-        toast({ title: "Analysis Complete", description: "Strategic synthesis mission successful." });
+      // Run quality audit separately if not already present
+      if (!auditResults) {
+        const auditRes = await runAuditAction(sample, currentDataset.headers);
+        if (auditRes.success) {
+          setAuditResults(auditRes.data);
+        }
       }
     } catch (err: any) {
       setAnalysisError("An unexpected response was received from the server.");
-      toast({ variant: "destructive", title: "Analysis Failed", description: "Engine timed out. Please retry." });
     } finally {
       setIsAnalyzing(false);
     }
@@ -109,12 +142,12 @@ export default function Dashboard() {
     "ANOMALY DETECTION STABLE",
     "ENTERPRISE TELEMETRY ONLINE",
     "STRATEGIC INSIGHTS GENERATED",
-    "REAL-TIME DIAGNOSTICS ENGAGED"
+    "SINGLE-CALL SYNTHESIS PROTOCOL"
   ];
 
   return (
     <div className="min-h-screen bg-[#050507] text-white font-sans selection:bg-indigo-500/30">
-      {/* Dashboard Marquee */}
+      {/* Top Telemetry Ticker */}
       <div className="bg-indigo-600/10 border-b border-indigo-500/20 py-2 overflow-hidden whitespace-nowrap">
         <div className="animate-marquee flex items-center gap-12">
           {[...tickerItems, ...tickerItems].map((item, i) => (
@@ -165,7 +198,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <CardTitle className="text-2xl font-bold tracking-tight">AI Strategic Synthesis</CardTitle>
-                      <CardDescription className="text-white/40 font-medium">Enterprise-grade narrative generation from raw data</CardDescription>
+                      <CardDescription className="text-white/40 font-medium">Enterprise-grade narrative generation from statistical summaries</CardDescription>
                     </div>
                   </div>
                   <Button 
@@ -174,7 +207,7 @@ export default function Dashboard() {
                     className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-12 px-8 font-bold uppercase tracking-widest text-xs shadow-lg shadow-indigo-600/20"
                   >
                     {isAnalyzing ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                    {insights ? "Regenerate Insights" : "Run AI Synthesis"}
+                    {isAnalyzing ? "AI analysis in progress..." : insights ? "Regenerate Insights" : "Run AI Synthesis"}
                   </Button>
                 </CardHeader>
                 <CardContent className="p-10">
@@ -193,7 +226,7 @@ export default function Dashboard() {
                     <div className="space-y-8 py-10">
                       <div className="flex items-center gap-4">
                         <Loader2 className="h-6 w-6 text-indigo-500 animate-spin" />
-                        <p className="text-indigo-400 font-bold uppercase tracking-widest text-xs animate-pulse">Engaging Analytical Engines...</p>
+                        <p className="text-indigo-400 font-bold uppercase tracking-widest text-xs animate-pulse">Engaging Analytical Engines... (Single Request Active)</p>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <Skeleton className="h-40 rounded-2xl bg-white/5" />

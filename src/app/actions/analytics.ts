@@ -19,7 +19,7 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
     // Check for API configuration
     if (!process.env.GOOGLE_GENAI_API_KEY && !process.env.GEMINI_API_KEY) {
       console.error("[Action:Insights] Missing API Configuration.");
-      return { success: false, error: "AI Engine Configuration Missing: Please ensure GOOGLE_GENAI_API_KEY is set." };
+      return { success: false, error: "AI Engine Configuration Missing: Please ensure GOOGLE_GENAI_API_KEY is set in your environment." };
     }
 
     console.log("[Action:Insights] Triggering strategic synthesis flow...");
@@ -31,11 +31,16 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
     
     let errorMessage = error?.message || "Synthesis encountered a system error.";
     
-    // Mapping common API errors to user-friendly messages
-    if (errorMessage.includes("403")) errorMessage = "Permission Denied: Verify your API Key permissions.";
-    if (errorMessage.includes("404")) errorMessage = "Model Connection Error: The Gemini service endpoint was not found.";
-    if (errorMessage.includes("503") || errorMessage.includes("504")) errorMessage = "Service Unavailable: The AI engine is currently under high load. Please try again in a few seconds.";
-    if (errorMessage.includes("429")) errorMessage = "Rate Limit Exceeded: Too many requests. Please pause before retrying.";
+    // Detailed mapping for common API errors
+    if (errorMessage.includes("403")) {
+      errorMessage = "Permission Denied (403): Your API Key may be invalid or lacks permissions for this model.";
+    } else if (errorMessage.includes("404")) {
+      errorMessage = `Model Connection Error (404): The Gemini service endpoint was not found. This usually means the model ID or region is incorrect. (Raw: ${errorMessage})`;
+    } else if (errorMessage.includes("503") || errorMessage.includes("504")) {
+      errorMessage = "Service Overload (503/504): The AI engine is under high demand. Please retry in a moment.";
+    } else if (errorMessage.includes("429")) {
+      errorMessage = "Rate Limit Exceeded (429): Too many requests. Please pause before retrying.";
+    }
     
     return { success: false, error: errorMessage };
   }

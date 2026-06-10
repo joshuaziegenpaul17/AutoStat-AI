@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "data-hero",
-      "description": "Abstract network of glowing emerald data nodes and digital connections",
-      "imageUrl": "https://picsum.photos/seed/datanetwork/1200/600",
-      "imageHint": "data visualization"
+      "description": "Abstract network of glowing emerald data nodes and digital connections representing advanced intelligence",
+      "imageUrl": "https://picsum.photos/seed/aisynthesis/1200/600",
+      "imageHint": "artificial intelligence"
     },
     {
       "id": "data-workspace",

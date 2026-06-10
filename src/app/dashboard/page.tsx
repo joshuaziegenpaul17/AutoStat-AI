@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  BarChart3, Database, RefreshCw, ShieldAlert, TrendingUp, Lightbulb, ClipboardCheck, Target, Sparkles, SearchCode, Zap, LayoutGrid
+  BarChart3, Database, RefreshCw, ShieldAlert, BrainCircuit, Lightbulb, ClipboardCheck, Target, Sparkles, SearchCode, Zap, LayoutGrid
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,14 +15,14 @@ import { calculateDescriptiveStats, DescriptiveStats } from '@/lib/stats-engine'
 import { ParsedData, getCsvSample } from '@/lib/data-parser';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { runAuditAction, runForecastAction } from '@/app/actions/analytics';
+import { runAuditAction, runInsightsAction } from '@/app/actions/analytics';
 
 export default function Dashboard() {
   const [currentDataset, setCurrentDataset] = useState<ParsedData | null>(null);
   const [aiSuggestions, setAiSuggestions] = useState<any>(null);
   const [isAuditing, setIsAuditing] = useState(false);
-  const [isGeneratingNarrative, setIsGeneratingNarrative] = useState(false);
-  const [narrative, setNarrative] = useState<any>(null);
+  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
+  const [insights, setInsights] = useState<any>(null);
   const [descriptiveResults, setDescriptiveResults] = useState<Record<string, DescriptiveStats>>({});
   const { toast } = useToast();
 
@@ -39,7 +39,7 @@ export default function Dashboard() {
       }
     });
     setDescriptiveResults(results);
-    setNarrative(null);
+    setInsights(null);
   };
 
   const runAudit = async () => {
@@ -65,30 +65,27 @@ export default function Dashboard() {
     }
   };
 
-  const generateNarrative = async () => {
+  const generateInsights = async () => {
     if (!currentDataset) return;
-    setIsGeneratingNarrative(true);
+    setIsGeneratingInsights(true);
     try {
-      const numericColumns = Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number');
-      const targetColumn = numericColumns[0] || currentDataset.headers[0];
-      const sampleCsv = getCsvSample(currentDataset, 80);
-      
-      const res = await runForecastAction(sampleCsv, targetColumn, 6);
+      const sampleCsv = getCsvSample(currentDataset, 100);
+      const res = await runInsightsAction(sampleCsv, currentDataset.headers);
       
       if (res.success) {
-        setNarrative(res.data);
-        toast({ title: "Forecast Built", description: "Predictive temporal model synthesized." });
+        setInsights(res.data);
+        toast({ title: "Synthesis Complete", description: "AI Strategic Insights have been generated." });
       } else {
         throw new Error(res.error);
       }
     } catch (err: any) {
       toast({
-        title: "Modeling Deferred",
+        title: "Synthesis Deferred",
         description: err.message || "Platform capacity reached.",
         variant: "destructive"
       });
     } finally {
-      setIsGeneratingNarrative(false);
+      setIsGeneratingInsights(false);
     }
   };
 
@@ -130,13 +127,13 @@ ${i + 1}. [${s.issueType}] ${s.description}
 `).join('')}
 ` : 'Audit pending initialization.'}
 
-[PREDICTIVE SYNTHESIS]
-${narrative ? `
-Summary:      ${narrative.executiveSummary}
-Trend:        ${narrative.trajectoryTrend.toUpperCase()}
-Confidence:   ${narrative.confidence}
-Risks:        ${narrative.strategicRiskVectors.join(', ')}
-` : 'Forecast not initialized.'}
+[STRATEGIC AI INSIGHTS]
+${insights ? `
+Summary:      ${insights.executiveSummary}
+Confidence:   ${insights.confidenceScore}%
+Findings:     ${insights.keyFindings.join(', ')}
+Anomalies:    ${insights.dataAnomalies.join(', ')}
+` : 'Insights not initialized.'}
 ================================================================================
 `;
 
@@ -339,26 +336,26 @@ Risks:        ${narrative.strategicRiskVectors.join(', ')}
                 <Card className="glass border-primary/40 rounded-[3.5rem] overflow-hidden shadow-2xl relative min-h-[850px] flex flex-col group">
                   <CardHeader className="pb-8 pt-16 px-12">
                     <CardTitle className="text-4xl flex items-center gap-5 text-white font-black tracking-tighter glow-text">
-                      <Sparkles className="h-12 w-12 text-primary" />
-                      PREDICTIVE
+                      <BrainCircuit className="h-12 w-12 text-primary" />
+                      AI INSIGHTS
                     </CardTitle>
                     <Badge variant="outline" className="mt-6 border-primary/50 text-primary font-black uppercase px-6 py-3 text-[10px] tracking-widest bg-primary/5">
                       Synthesis Active
                     </Badge>
                   </CardHeader>
                   <CardContent className="px-12 pb-16 flex-grow flex flex-col">
-                    {!narrative ? (
+                    {!insights ? (
                       <div className="flex-grow flex flex-col items-center justify-center text-center py-20">
-                        <TrendingUp className="h-24 w-24 text-white/5 mb-12" />
-                        <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Initiate Forecast</h3>
-                        <p className="text-white/20 text-lg mb-16 max-w-xs mx-auto">Construct high-temporal projections from current distributions.</p>
+                        <Zap className="h-24 w-24 text-white/5 mb-12" />
+                        <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Run Synthesis</h3>
+                        <p className="text-white/20 text-lg mb-16 max-w-xs mx-auto">Extract strategic executive intelligence from current data distributions.</p>
                         <Button 
-                          onClick={generateNarrative} 
-                          disabled={isGeneratingNarrative}
+                          onClick={generateInsights} 
+                          disabled={isGeneratingInsights}
                           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-[3rem] h-28 font-black text-xl uppercase shadow-2xl shadow-primary/40 transition-all hover:scale-[1.02]"
                         >
-                          {isGeneratingNarrative ? <RefreshCw className="h-10 w-10 mr-4 animate-spin" /> : <Zap className="h-10 w-10 mr-4" />}
-                          {isGeneratingNarrative ? 'MODELING...' : 'RUN FORECAST'}
+                          {isGeneratingInsights ? <RefreshCw className="h-10 w-10 mr-4 animate-spin" /> : <Sparkles className="h-10 w-10 mr-4" />}
+                          {isGeneratingInsights ? 'ANALYZING...' : 'RUN INSIGHTS'}
                         </Button>
                       </div>
                     ) : (
@@ -366,14 +363,14 @@ Risks:        ${narrative.strategicRiskVectors.join(', ')}
                         <div className="p-14 rounded-[4rem] bg-gradient-to-br from-primary/30 via-zinc-950 to-zinc-950 border-2 border-primary shadow-[0_0_80px_-20px_rgba(139,92,246,0.3)]">
                            <div className="flex items-center justify-between mb-12">
                              <Badge className="bg-primary text-primary-foreground font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest">
-                               {narrative.confidence.toUpperCase()} CONFIDENCE
+                               {insights.confidenceScore}% CONFIDENCE
                              </Badge>
                            </div>
-                           <h2 className="text-5xl md:text-6xl font-headline font-black text-white mb-12 leading-[0.95] tracking-tighter">
-                             {narrative.trajectoryTrend.toUpperCase()} TRAJECTORY
+                           <h2 className="text-4xl md:text-5xl font-headline font-black text-white mb-12 leading-[0.95] tracking-tighter uppercase">
+                             Strategic Synthesis
                            </h2>
                            <div className="pt-12 border-t border-primary/20">
-                              <h5 className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">SYNTHESIZED {narrative.predictedMetrics.length} POINTS</h5>
+                              <h5 className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">INTELLIGENCE RATING: HIGH</h5>
                            </div>
                         </div>
 
@@ -381,29 +378,29 @@ Risks:        ${narrative.strategicRiskVectors.join(', ')}
                           <div className="space-y-12 pb-12">
                             <div className="bg-zinc-950/80 p-12 rounded-[3.5rem] border border-white/5 shadow-xl">
                                <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-4 mb-8">
-                                 <ClipboardCheck className="h-6 w-6" /> Executive Log
+                                 <ClipboardCheck className="h-6 w-6" /> Executive Summary
                                </h4>
-                               <p className="text-xl leading-relaxed text-white/60 font-bold italic">"{narrative.executiveSummary}"</p>
+                               <p className="text-xl leading-relaxed text-white/60 font-bold italic">"{insights.executiveSummary}"</p>
                             </div>
                             <div className="space-y-8">
                                <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.4em] flex items-center gap-4 px-4">
-                                 <Lightbulb className="h-6 w-6" /> Strategic Insights
+                                 <Lightbulb className="h-6 w-6" /> Key Findings
                                </h4>
                                <div className="space-y-5">
-                                 {narrative.keyInsights.map((insight: string, i: number) => (
+                                 {insights.keyFindings.map((finding: string, i: number) => (
                                    <div key={i} className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 text-base text-white/70 font-bold flex gap-6">
                                      <span className="text-primary font-black text-xl leading-none">{i+1}</span>
-                                     <span className="leading-snug">{insight}</span>
+                                     <span className="leading-snug">{finding}</span>
                                    </div>
                                  ))}
                                </div>
                             </div>
                             <div className="space-y-8">
                                <h4 className="text-[11px] font-black text-destructive uppercase tracking-[0.4em] flex items-center gap-4 px-4">
-                                 <ShieldAlert className="h-6 w-6" /> Risk Vectors
+                                 <ShieldAlert className="h-6 w-6" /> Data Anomalies
                                </h4>
                                <div className="space-y-3">
-                                 {narrative.strategicRiskVectors.map((risk: string, i: number) => (
+                                 {insights.dataAnomalies.map((risk: string, i: number) => (
                                    <div key={i} className="bg-destructive/5 p-6 rounded-2xl border border-destructive/10 text-sm text-destructive/70 font-bold">
                                      {risk}
                                    </div>
@@ -416,7 +413,7 @@ Risks:        ${narrative.strategicRiskVectors.join(', ')}
                         <Button 
                           variant="ghost" 
                           className="w-full text-[11px] uppercase font-black text-white/10 hover:text-primary py-10 rounded-[3.5rem] border border-dashed border-white/5" 
-                          onClick={() => setNarrative(null)}
+                          onClick={() => setInsights(null)}
                         >
                           RESET MISSION
                         </Button>

@@ -2,4 +2,4 @@ import { config } from 'dotenv';
 config();
 
 import '@/ai/flows/data-quality-suggester.ts';
-import '@/ai/flows/narrative-analysis-generator.ts';
+import '@/ai/flows/ai-insights-generator.ts';

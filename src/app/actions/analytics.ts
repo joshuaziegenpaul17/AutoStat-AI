@@ -1,7 +1,7 @@
 'use server';
 
 import { dataQualitySuggesterFlow } from "@/ai/flows/data-quality-suggester";
-import { narrativeAnalysisGeneratorFlow } from "@/ai/flows/narrative-analysis-generator";
+import { aiInsightsGeneratorFlow } from "@/ai/flows/ai-insights-generator";
 
 export async function runAuditAction(csvData: string, columnNames: string[]) {
   try {
@@ -15,14 +15,14 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
   }
 }
 
-export async function runForecastAction(timeSeriesData: string, targetColumn: string, horizon: number = 6) {
+export async function runInsightsAction(csvData: string, columnNames: string[]) {
   try {
-    const result = await narrativeAnalysisGeneratorFlow({ timeSeriesData, targetColumn, horizon });
-    if (result.strategicRiskVectors[0]?.includes("capacity reached")) {
-      return { success: false, error: "Forecast cluster loaded. Try again shortly." };
+    const result = await aiInsightsGeneratorFlow({ datasetPreview: csvData, columnNames });
+    if (result.dataAnomalies?.includes("Service temporarily unavailable")) {
+      return { success: false, error: "Insights cluster loaded. Try again shortly." };
     }
     return { success: true, data: result };
   } catch (error: any) {
-    return { success: false, error: error?.message || "Forecasting failed" };
+    return { success: false, error: error?.message || "Insights synthesis failed" };
   }
 }

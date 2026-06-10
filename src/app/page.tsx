@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, BarChart3, ShieldCheck, Zap, Globe, Cpu, Database, LayoutDashboard, Layers, MousePointer2 } from 'lucide-react';
+import { ArrowRight, BarChart3, Zap, Globe, Cpu, Database, LayoutDashboard, Layers, MousePointer2, BrainCircuit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -50,8 +50,8 @@ export default function LandingPage() {
             </div>
             
             <h1 className="text-7xl md:text-9xl font-headline font-black mb-10 leading-[0.85] tracking-tighter text-white">
-              Symmetry <br />
-              <span className="text-primary italic glow-text">In Chaos.</span>
+              Intelligence <br />
+              <span className="text-primary italic glow-text">Without Limits.</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-white/50 mb-16 max-w-3xl mx-auto leading-relaxed font-medium">
@@ -98,9 +98,9 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {[
                 { 
-                  icon: Cpu, 
-                  title: "Predictive Synthesis", 
-                  desc: "Neural distributions mapped to executive strategy. Temporal projection for mission-critical paths." 
+                  icon: BrainCircuit, 
+                  title: "Strategic Insights", 
+                  desc: "Neural distributions mapped to executive strategy. AI-driven synthesis for mission-critical decisions." 
                 },
                 { 
                   icon: Database, 

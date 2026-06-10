@@ -3,7 +3,7 @@ import { z } from 'genkit';
 
 export const QualityInputSchema = z.object({
   datasetPreview: z.string(),
-  columnNames: z.array(z.string()),
+  columnNamesString: z.string(),
 });
 
 export const QualityOutputSchema = z.object({
@@ -25,7 +25,7 @@ export const dataQualityPrompt = ai.definePrompt({
   prompt: `You are a senior data engineer and expert statistical auditor. Analyze the structural integrity of this dataset.
 
 ### CRITICAL INSPECTION:
-1. Data Types & Layouts: Inspect preview for discrepancies in {{join columnNames ", "}}.
+1. Data Types & Layouts: Inspect preview for discrepancies in {{{columnNamesString}}}.
 2. Statistical Vulnerabilities: Flag high sparsity or unhandled missing values.
 3. Anomaly Risks: Mixed types or timestamp inconsistencies.
 
@@ -38,7 +38,7 @@ export const dataQualityPrompt = ai.definePrompt({
 * Suggestions must be actionable.
 
 INPUT:
-Columns: {{join columnNames ", "}}
+Columns: {{{columnNamesString}}}
 Preview:
-{{datasetPreview}}`,
+{{{datasetPreview}}}`,
 });

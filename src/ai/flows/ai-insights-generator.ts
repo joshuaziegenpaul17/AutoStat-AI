@@ -4,10 +4,17 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { aiInsightsPrompt, InsightsInputSchema, InsightsOutputSchema } from '../prompts/insights-prompt';
+import { aiInsightsPrompt, InsightsOutputSchema } from '../prompts/insights-prompt';
 import { z } from 'genkit';
 
-async function generateWithRetry(input: z.infer<typeof InsightsInputSchema>, retries = 3, delay = 2000): Promise<any> {
+// Flow input schema remains compatible with the UI/Action layer
+const InsightsFlowInputSchema = z.object({
+  datasetPreview: z.string(),
+  statsSummary: z.string(),
+  columnNames: z.array(z.string()),
+});
+
+async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 3, delay = 2000): Promise<any> {
   try {
     console.log(`[AI Flow Trace] Request Payload:`, {
       datasetLength: input.datasetPreview.length,
@@ -15,7 +22,14 @@ async function generateWithRetry(input: z.infer<typeof InsightsInputSchema>, ret
       statsSummary: input.statsSummary
     });
 
-    const { output } = await aiInsightsPrompt(input);
+    // Pre-join column names to avoid Handlebars "join" helper errors
+    const promptInput = {
+      datasetPreview: input.datasetPreview,
+      statsSummary: input.statsSummary,
+      columnNamesString: input.columnNames.join(", ")
+    };
+
+    const { output } = await aiInsightsPrompt(promptInput);
     
     if (!output) {
       throw new Error("Gemini returned an empty response object.");
@@ -45,18 +59,17 @@ async function generateWithRetry(input: z.infer<typeof InsightsInputSchema>, ret
   }
 }
 
-export async function generateAiInsights(input: z.infer<typeof InsightsInputSchema>) {
+export async function generateAiInsights(input: z.infer<typeof InsightsFlowInputSchema>) {
   return aiInsightsGeneratorFlow(input);
 }
 
 export const aiInsightsGeneratorFlow = ai.defineFlow(
   {
     name: 'aiInsightsGeneratorFlow',
-    inputSchema: InsightsInputSchema,
+    inputSchema: InsightsFlowInputSchema,
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {
-    // We let the error propagate to the server action for real reporting
     return await generateWithRetry(input);
   }
 );

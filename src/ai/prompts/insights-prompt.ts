@@ -4,7 +4,7 @@ import { z } from 'genkit';
 export const InsightsInputSchema = z.object({
   datasetPreview: z.string().describe('A CSV-formatted sample of the raw data.'),
   statsSummary: z.string().describe('A structured text summary of calculated statistical metrics.'),
-  columnNames: z.array(z.string()),
+  columnNamesString: z.string().describe('Comma-separated list of column headers.'),
 });
 
 export const InsightsOutputSchema = z.object({
@@ -39,7 +39,7 @@ export const aiInsightsPrompt = ai.definePrompt({
 - Ensure 'strongestCorrelations' and 'potentialRisks' are specific.
 
 ### DATA CONTEXT:
-COLUMN HEADERS: {{join columnNames ", "}}
+COLUMN HEADERS: {{{columnNamesString}}}
 
 STATISTICAL SUMMARY:
 {{{statsSummary}}}

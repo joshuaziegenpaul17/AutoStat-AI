@@ -4,11 +4,23 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { dataQualityPrompt, QualityInputSchema, QualityOutputSchema } from '../prompts/quality-prompt';
+import { dataQualityPrompt, QualityOutputSchema } from '../prompts/quality-prompt';
+import { z } from 'genkit';
 
-async function generateWithRetry(input: any, retries = 3, delay = 2000): Promise<any> {
+const QualityFlowInputSchema = z.object({
+  datasetPreview: z.string(),
+  columnNames: z.array(z.string()),
+});
+
+async function generateWithRetry(input: z.infer<typeof QualityFlowInputSchema>, retries = 3, delay = 2000): Promise<any> {
   try {
-    const { output } = await dataQualityPrompt(input);
+    // Pre-join column names to avoid Handlebars "join" helper errors
+    const promptInput = {
+      datasetPreview: input.datasetPreview,
+      columnNamesString: input.columnNames.join(", ")
+    };
+
+    const { output } = await dataQualityPrompt(promptInput);
     if (!output) throw new Error("Model returned empty output.");
     return output;
   } catch (error: any) {
@@ -34,7 +46,7 @@ export async function suggestDataQualityImprovements(input: { csvData: string, c
 export const dataQualitySuggesterFlow = ai.defineFlow(
   {
     name: 'dataQualitySuggesterFlow',
-    inputSchema: QualityInputSchema,
+    inputSchema: QualityFlowInputSchema,
     outputSchema: QualityOutputSchema,
   },
   async (input) => {

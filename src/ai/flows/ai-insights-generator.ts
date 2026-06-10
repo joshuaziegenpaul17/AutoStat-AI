@@ -1,7 +1,6 @@
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent.
- * Only async functions are exported to comply with Next.js Server Action rules.
+ * @fileOverview Strategic Insights AI agent with enhanced retry resilience.
  */
 
 import { ai } from '@/ai/genkit';
@@ -13,6 +12,27 @@ const InsightsFlowInputSchema = z.object({
   statsSummary: z.string(),
   columnNames: z.array(z.string()),
 });
+
+/**
+ * Executes the AI prompt with exponential backoff retries for 429/503 errors.
+ */
+async function generateWithRetry(input: any, retries = 3, delay = 5000) {
+  try {
+    const { output } = await aiInsightsPrompt(input);
+    if (!output) throw new Error("Analytical engine produced no data.");
+    return output;
+  } catch (error: any) {
+    const msg = error?.message || "";
+    const isRetryable = msg.includes("429") || msg.includes("503") || msg.includes("limit") || msg.includes("busy");
+
+    if (retries > 0 && isRetryable) {
+      console.warn(`[Insights Flow] Rate limit or busy. Retrying in ${delay}ms...`);
+      await new Promise(res => setTimeout(res, delay));
+      return generateWithRetry(input, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+}
 
 const aiInsightsGeneratorFlow = ai.defineFlow(
   {
@@ -27,9 +47,7 @@ const aiInsightsGeneratorFlow = ai.defineFlow(
       columnNamesString: input.columnNames.join(", ")
     };
 
-    const { output } = await aiInsightsPrompt(promptInput);
-    if (!output) throw new Error("Analytical engine failed to produce output.");
-    return output;
+    return await generateWithRetry(promptInput);
   }
 );
 

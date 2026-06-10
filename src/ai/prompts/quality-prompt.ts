@@ -20,6 +20,7 @@ export const QualityOutputSchema = z.object({
 
 export const dataQualityPrompt = ai.definePrompt({
   name: 'dataQualityPrompt',
+  model: 'googleai/gemini-1.5-flash',
   input: { schema: QualityInputSchema },
   output: { schema: QualityOutputSchema },
   prompt: `You are a senior data engineer and expert statistical auditor. Analyze the structural integrity of this dataset.

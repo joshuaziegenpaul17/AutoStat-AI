@@ -27,7 +27,7 @@ const narrativeAnalysisPrompt = ai.definePrompt({
   name: 'narrativeAnalysisPrompt',
   input: { schema: NarrativeAnalysisGeneratorInputSchema },
   output: { schema: NarrativeAnalysisGeneratorOutputSchema },
-  prompt: `You are an expert statistical analyst. Provide a structured interpretation of these statistical results.
+  prompt: `You are an expert statistical analyst and forecaster. Provide a structured interpretation of these statistical results and a forward-looking forecast.
 
 Statistical Analysis Results:
 {{{analysisResults}}}

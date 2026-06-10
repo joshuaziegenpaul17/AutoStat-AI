@@ -23,7 +23,7 @@
     --border: 217 33% 12%;
     --input: 217 33% 12%;
     --ring: 142 71% 45%;
-    --radius: 1rem;
+    --radius: 1.5rem;
   }
 }
 
@@ -42,15 +42,18 @@
 
 @layer components {
   .glass {
-    @apply bg-slate-950/60 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-slate-950/60 backdrop-blur-2xl border border-white/10 shadow-2xl;
   }
   .glass-card {
-    @apply bg-slate-900/40 backdrop-blur-lg border border-white/5 shadow-inner;
+    @apply bg-slate-900/40 backdrop-blur-xl border border-white/5 shadow-inner;
   }
   .data-grid {
     background-image: 
-      linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(16, 185, 129, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  .glow-primary-sm {
+    box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.2);
   }
 }

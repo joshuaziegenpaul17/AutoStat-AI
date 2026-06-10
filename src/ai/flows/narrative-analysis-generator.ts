@@ -29,9 +29,10 @@ const NarrativeAnalysisGeneratorOutputSchema = z.object({
   keyInsights: z.array(z.string()).describe('List of critical observations from the data.'),
   dataTrends: z.string().describe('Interpretation of identified patterns and trends.'),
   forecasting: z.object({
-    projection: z.string().describe('A logical projection of where the data might head.'),
-    confidence: z.string().describe('Estimated confidence level in the forecast.'),
+    projection: z.string().describe('A detailed, logical projection of where the data might head based on current variance and trend vectors.'),
+    confidence: z.string().describe('Estimated confidence level in the forecast (e.g., High, Medium, Low) with reasoning.'),
     risks: z.array(z.string()).describe('Potential risks or variables that could disrupt the forecast.'),
+    timeframe: z.string().describe('The estimated period this forecast covers.'),
   }).describe('Predictive analysis and future projections based on current data patterns.'),
   recommendations: z.array(z.string()).describe('Actionable next steps based on the analysis.'),
 });
@@ -58,7 +59,11 @@ Provide your interpretation in a structured format with:
 1. An executive summary.
 2. Specific key insights.
 3. Detailed trend analysis.
-4. A data-driven forecast (projection, confidence, and risks).
+4. A data-driven forecast:
+   - Provide a detailed 'projection' explaining the likely future state of these metrics.
+   - Assign a 'confidence' level and explain why (based on the standard deviation/variance in the data).
+   - Identify 'risks' that could alter this trajectory.
+   - Define a logical 'timeframe'.
 5. Clear, actionable recommendations.
 
 Focus on identifying business impact and potential future outcomes based on the numerical distributions.`,
@@ -114,7 +119,8 @@ const narrativeAnalysisGeneratorFlow = ai.defineFlow(
         forecasting: {
           projection: "Current system load prevents real-time predictive modeling.",
           confidence: "Low (System Latency)",
-          risks: ["Upstream service availability", "High query volume"]
+          risks: ["Upstream service availability", "High query volume"],
+          timeframe: "Immediate"
         },
         recommendations: [
           "Review the numerical descriptive statistics cards for variance and distribution shifts.",

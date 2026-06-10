@@ -3,8 +3,6 @@
 import { dataQualitySuggesterFlow } from "@/ai/flows/data-quality-suggester";
 import { aiInsightsGeneratorFlow } from "@/ai/flows/ai-insights-generator";
 
-export const maxDuration = 60; // Increase timeout to 60 seconds where supported
-
 /**
  * Runs a structural audit on the dataset.
  * Uses strict serialization to prevent "Unexpected response" errors in Next.js 15.

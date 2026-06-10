@@ -13,10 +13,12 @@ const InsightsFlowInputSchema = z.object({
   columnNames: z.array(z.string()),
 });
 
-async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 4, delay = 6000): Promise<any> {
+/**
+ * Generates insights with a defensive retry strategy.
+ * Reduced total duration to fit within standard Server Action timeouts.
+ */
+async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>, retries = 3, delay = 4000): Promise<any> {
   try {
-    console.log(`[AI Synthesis] Dispatching request to Gemini 2.5 Flash. Retries remaining: ${retries}`);
-    
     const promptInput = {
       datasetPreview: input.datasetPreview,
       statsSummary: input.statsSummary,
@@ -25,36 +27,23 @@ async function generateWithRetry(input: z.infer<typeof InsightsFlowInputSchema>,
 
     const response = await aiInsightsPrompt(promptInput);
     
-    console.log("RAW GEMINI RESPONSE", JSON.stringify(response, null, 2));
-
     if (!response || !response.output) {
-      console.error("[AI Synthesis] EMPTY OUTPUT FROM GEMINI");
       throw new Error("Empty analytical output received from engine.");
     }
 
-    console.log("PARSED RESPONSE", JSON.stringify(response.output, null, 2));
     return response.output;
   } catch (error: any) {
     const errorMsg = error?.message || "Unknown Engine Error";
     console.error(`[AI Synthesis Error] ${errorMsg}`);
 
-    // Log Zod issues if they exist
-    if (error.name === 'ZodError') {
-      console.error("[SCHEMA VALIDATION FAILURE]", JSON.stringify(error.errors, null, 2));
-    }
-
     const isRateLimit = errorMsg.includes("429") || errorMsg.includes("quota") || errorMsg.toLowerCase().includes("rate limit");
     const isRetryable = isRateLimit || 
                         errorMsg.includes("503") || 
                         errorMsg.includes("UNAVAILABLE") || 
-                        errorMsg.includes("high demand") ||
                         errorMsg.includes("deadline");
 
     if (retries > 0 && isRetryable) {
-      const jitter = Math.random() * 2000;
-      const waitTime = (isRateLimit ? delay * 2 : delay) + jitter;
-      
-      console.warn(`[AI Synthesis] ${isRateLimit ? 'Rate limit' : 'Transient error'} detected. Waiting ${Math.round(waitTime)}ms before retry...`);
+      const waitTime = isRateLimit ? delay * 1.5 : delay;
       await new Promise(res => setTimeout(res, waitTime));
       return generateWithRetry(input, retries - 1, delay * 2);
     }
@@ -74,8 +63,6 @@ export const aiInsightsGeneratorFlow = ai.defineFlow(
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {
-    const result = await generateWithRetry(input);
-    console.log("RETURNED TO CLIENT", JSON.stringify(result, null, 2));
-    return result;
+    return await generateWithRetry(input);
   }
 );

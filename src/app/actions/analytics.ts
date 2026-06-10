@@ -16,10 +16,11 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
 
 export async function runInsightsAction(input: { datasetPreview: string, statsSummary: string, columnNames: string[] }) {
   try {
-    // Check for API configuration
-    if (!process.env.GOOGLE_GENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      console.error("[Action:Insights] Missing API Configuration.");
-      return { success: false, error: "AI Engine Configuration Missing: Please ensure GOOGLE_GENAI_API_KEY is set in your environment." };
+    // Check for API configuration and log which keys are detected
+    const apiKey = process.env.GOOGLE_GENAI_API_KEY || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (!apiKey) {
+      console.error("[Action:Insights] Missing API Configuration. (Checked: GOOGLE_GENAI_API_KEY, GEMINI_API_KEY, GOOGLE_API_KEY)");
+      return { success: false, error: "AI Engine Configuration Missing: Please ensure an API Key is set in your environment variables." };
     }
 
     console.log("[Action:Insights] Triggering strategic synthesis flow...");
@@ -35,7 +36,7 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
     if (errorMessage.includes("403")) {
       errorMessage = "Permission Denied (403): Your API Key may be invalid or lacks permissions for this model.";
     } else if (errorMessage.includes("404")) {
-      errorMessage = `Model Connection Error (404): The Gemini service endpoint was not found. (Raw: ${errorMessage})`;
+      errorMessage = `Model Connection Error (404): The Gemini service endpoint was not found. This can happen if the model identifier is incorrect or the service is restricted for your API key. (Raw: ${errorMessage})`;
     } else if (errorMessage.includes("503") || errorMessage.includes("504")) {
       errorMessage = "Service Overload (503/504): The AI engine is under high demand. Please retry in a moment.";
     } else if (errorMessage.includes("429")) {

@@ -5,11 +5,11 @@ import { aiInsightsGeneratorFlow } from "@/ai/flows/ai-insights-generator";
 
 export async function runAuditAction(csvData: string, columnNames: string[]) {
   try {
-    console.log("[Action:Audit] Processing structural audit request...");
+    console.log("[Action:Audit] Initiating structural diagnostic mission...");
     const result = await dataQualitySuggesterFlow({ datasetPreview: csvData, columnNames });
     return { success: true, data: result };
   } catch (error: any) {
-    console.error("[Action:Audit] Critical Failure:", error);
+    console.error("[Action:Audit] Diagnostic Failure:", error);
     return { success: false, error: error?.message || "Structural audit failed" };
   }
 }
@@ -18,21 +18,24 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
   try {
     // 1. Check for API configuration
     if (!process.env.GOOGLE_GENAI_API_KEY && !process.env.GEMINI_API_KEY) {
-      return { success: false, error: "AI Engine Configuration Missing: Please set GOOGLE_GENAI_API_KEY in your environment." };
+      console.error("[Action:Insights] Missing API Configuration. Verify environment variables.");
+      return { success: false, error: "AI Engine Configuration Missing: Please set GOOGLE_GENAI_API_KEY." };
     }
 
-    console.log("[Action:Insights] Dispatching strategic synthesis request to AI flow...");
+    console.log("[Action:Insights] Triggering strategic synthesis flow...");
     const result = await aiInsightsGeneratorFlow(input);
     
-    console.log("[Action:Insights] Flow returned successful data payload.");
+    console.log("[Action:Insights] Synthesis successful.");
     return { success: true, data: result };
   } catch (error: any) {
-    console.error("[Action:Insights] Critical Exception:", error);
+    console.error("[Action:Insights] Critical AI Error Trace:", error);
     
-    // Determine if it's a specific API error we should clean up for the user
-    let errorMessage = error?.message || "Insights synthesis encountered a system error.";
-    if (errorMessage.includes("403")) errorMessage = "Permission Denied: Check if your API Key is valid and enabled for Gemini 1.5.";
-    if (errorMessage.includes("404")) errorMessage = "Model Not Found: The specified Gemini model version may be unavailable.";
+    let errorMessage = error?.message || "Synthesis encountered a system error.";
+    
+    // Clean up error messages for the UI
+    if (errorMessage.includes("403")) errorMessage = "Permission Denied: Verify API Key status.";
+    if (errorMessage.includes("404")) errorMessage = "Model Not Found: The specified Gemini version is currently unavailable.";
+    if (errorMessage.includes("503")) errorMessage = "Service Unavailable: Gemini is under high load. Please retry.";
     
     return { success: false, error: errorMessage };
   }

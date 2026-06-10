@@ -4,16 +4,21 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { aiInsightsPrompt, InsightsInputSchema, InsightsOutputSchema } from '../prompts/insights-prompt';
+import { aiInsightsPrompt, InsightsOutputSchema } from '../prompts/insights-prompt';
+import { z } from 'genkit';
 
-async function generateWithRetry(input: any, retries = 4, delay = 2000): Promise<any> {
+const FlowInputSchema = z.object({
+  datasetPreview: z.string(),
+  columnNames: z.array(z.string()),
+});
+
+async function generateWithRetry(input: { datasetPreview: string, columnNamesString: string }, retries = 2, delay = 1500): Promise<any> {
   try {
     const { output } = await aiInsightsPrompt(input);
     if (!output) throw new Error("Model returned empty output.");
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
-    // Handle transient errors from Gemini
     const isTransient = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE") || msg.includes("high demand") || msg.includes("deadline");
 
     if (retries > 0 && isTransient) {
@@ -32,12 +37,16 @@ export async function generateAiInsights(input: { datasetPreview: string, column
 export const aiInsightsGeneratorFlow = ai.defineFlow(
   {
     name: 'aiInsightsGeneratorFlow',
-    inputSchema: InsightsInputSchema,
+    inputSchema: FlowInputSchema,
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {
     try {
-      return await generateWithRetry(input);
+      const columnNamesString = input.columnNames.join(', ');
+      return await generateWithRetry({
+        datasetPreview: input.datasetPreview,
+        columnNamesString
+      });
     } catch (err) {
       console.error("[Insights Critical] Failure in insights generation.", err);
       return {

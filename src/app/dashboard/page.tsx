@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  BarChart3, Database, RefreshCw, ShieldAlert, BrainCircuit, Lightbulb, ClipboardCheck, Target, Sparkles, SearchCode, Zap, LayoutGrid
+  BarChart3, Database, RefreshCw, ShieldAlert, BrainCircuit, Lightbulb, ClipboardCheck, Target, Sparkles, LayoutGrid, Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -46,7 +46,7 @@ export default function Dashboard() {
     if (!currentDataset) return;
     setIsAuditing(true);
     try {
-      const sampleCsv = getCsvSample(currentDataset, 60);
+      const sampleCsv = getCsvSample(currentDataset, 40);
       const res = await runAuditAction(sampleCsv, currentDataset.headers);
       if (res.success) {
         setAiSuggestions(res.data);
@@ -69,7 +69,8 @@ export default function Dashboard() {
     if (!currentDataset) return;
     setIsGeneratingInsights(true);
     try {
-      const sampleCsv = getCsvSample(currentDataset, 100);
+      // Use a smaller sample to prevent workstation timeouts
+      const sampleCsv = getCsvSample(currentDataset, 60);
       const res = await runInsightsAction(sampleCsv, currentDataset.headers);
       
       if (res.success) {
@@ -81,7 +82,7 @@ export default function Dashboard() {
     } catch (err: any) {
       toast({
         title: "Synthesis Deferred",
-        description: err.message || "Platform capacity reached.",
+        description: err.message || "Platform capacity reached. Please try with a smaller dataset or retry shortly.",
         variant: "destructive"
       });
     } finally {
@@ -131,8 +132,8 @@ ${i + 1}. [${s.issueType}] ${s.description}
 ${insights ? `
 Summary:      ${insights.executiveSummary}
 Confidence:   ${insights.confidenceScore}%
-Findings:     ${insights.keyFindings.join(', ')}
-Anomalies:    ${insights.dataAnomalies.join(', ')}
+Findings:     ${insights.keyFindings.join('\n- ')}
+Anomalies:    ${insights.dataAnomalies.join('\n- ')}
 ` : 'Insights not initialized.'}
 ================================================================================
 `;
@@ -260,7 +261,7 @@ Anomalies:    ${insights.dataAnomalies.join(', ')}
                 <Card className="glass border-none rounded-[3.5rem] shadow-2xl overflow-hidden relative group">
                   <CardHeader className="pb-10 pt-12 px-12">
                     <CardTitle className="text-3xl flex items-center gap-4 text-white font-black tracking-tighter">
-                      <SearchCode className="h-9 w-9 text-primary glow-text" />
+                      <ShieldAlert className="h-9 w-9 text-primary glow-text" />
                       Structural Audit
                     </CardTitle>
                     <CardDescription className="text-[10px] uppercase tracking-[0.4em] font-black text-primary/60 mt-2">Anomaly detection & quality metrics</CardDescription>

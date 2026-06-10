@@ -3,7 +3,7 @@ import { z } from 'genkit';
 
 export const InsightsInputSchema = z.object({
   datasetPreview: z.string(),
-  columnNames: z.array(z.string()),
+  columnNamesString: z.string(),
 });
 
 export const InsightsOutputSchema = z.object({
@@ -32,7 +32,7 @@ export const aiInsightsPrompt = ai.definePrompt({
 - Ensure all findings are grounded in the provided snapshot.
 
 INPUT:
-Columns: {{join columnNames ", "}}
+Columns: {{{columnNamesString}}}
 Snapshot:
-{{datasetPreview}}`,
+{{{datasetPreview}}}`,
 });

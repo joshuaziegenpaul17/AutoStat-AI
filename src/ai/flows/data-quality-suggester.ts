@@ -1,4 +1,7 @@
 'use server';
+/**
+ * @fileOverview Data quality auditing AI agent.
+ */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
@@ -41,19 +44,19 @@ CSV Data:
 {{csvData}}`,
 });
 
-async function generateWithRetry(input: DataQualitySuggesterInput, retries = 3, delay = 1500): Promise<DataQualitySuggesterOutput> {
+async function generateWithRetry(input: DataQualitySuggesterInput, retries = 3, delay = 2000): Promise<DataQualitySuggesterOutput> {
   try {
     const { output } = await prompt(input);
     if (!output) throw new Error("Model returned empty output.");
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
-    const isTransient = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE") || msg.includes("high demand");
+    const isTransient = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE") || msg.includes("high demand") || msg.includes("deadline");
 
     if (retries > 0 && isTransient) {
       console.warn(`[Audit Retry] Engine busy. Retrying in ${delay}ms... (${retries} attempts left)`);
       await new Promise(res => setTimeout(res, delay));
-      return generateWithRetry(input, retries - 1, delay * 2);
+      return generateWithRetry(input, retries - 1, delay * 1.5);
     }
     throw error;
   }

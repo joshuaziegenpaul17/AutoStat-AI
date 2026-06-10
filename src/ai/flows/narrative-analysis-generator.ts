@@ -1,4 +1,7 @@
 'use server';
+/**
+ * @fileOverview Predictive narrative analysis AI agent.
+ */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
@@ -45,19 +48,19 @@ Include:
 5. Actionable recommendations.`,
 });
 
-async function generateWithRetry(input: NarrativeAnalysisGeneratorInput, retries = 3, delay = 1000): Promise<NarrativeAnalysisGeneratorOutput> {
+async function generateWithRetry(input: NarrativeAnalysisGeneratorInput, retries = 3, delay = 2000): Promise<NarrativeAnalysisGeneratorOutput> {
   try {
     const { output } = await narrativeAnalysisPrompt(input);
     if (!output) throw new Error("Model returned empty output.");
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
-    const isTransient = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE") || msg.includes("high demand");
+    const isTransient = msg.includes("503") || msg.includes("429") || msg.includes("UNAVAILABLE") || msg.includes("high demand") || msg.includes("deadline");
 
     if (retries > 0 && isTransient) {
-      console.warn(`[Genkit Retry] Forecast engine busy. Retrying in ${delay}ms... (${retries} attempts left)`);
+      console.warn(`[Forecast Retry] AI engine busy. Retrying in ${delay}ms... (${retries} attempts left)`);
       await new Promise(res => setTimeout(res, delay));
-      return generateWithRetry(input, retries - 1, delay * 2);
+      return generateWithRetry(input, retries - 1, delay * 1.5);
     }
     throw error;
   }
@@ -79,8 +82,8 @@ const narrativeAnalysisGeneratorFlow = ai.defineFlow(
     } catch (err) {
       console.error("[Genkit Critical] Permanent failure in narrative generation.", err);
       return {
-        executiveSummary: "The AI analysis engine is currently experiencing high demand.",
-        keyInsights: ["Numerical metrics processed successfully.", "Structural charts remain active."],
+        executiveSummary: "The AI analysis engine is currently experiencing high demand. Please trigger a manual retry.",
+        keyInsights: ["Numerical metrics processed locally.", "Structural charts remain active."],
         dataTrends: "Trend interpretation temporarily unavailable.",
         forecasting: {
           projection: "Current platform load prevents real-time predictive modeling.",
@@ -88,7 +91,7 @@ const narrativeAnalysisGeneratorFlow = ai.defineFlow(
           risks: ["Service availability"],
           timeframe: "Immediate"
         },
-        recommendations: ["Review descriptive statistics cards.", "Retry in a few moments."]
+        recommendations: ["Review descriptive statistics cards.", "Retry forecasting in a few moments."]
       };
     }
   }

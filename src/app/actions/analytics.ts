@@ -31,7 +31,7 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
     
     let errorMessage = error?.message || "Synthesis encountered a system error.";
     
-    // Detailed mapping for common API errors
+    // Detailed mapping for common API errors to help with debugging
     if (errorMessage.includes("403")) {
       errorMessage = "Permission Denied (403): Your API Key may be invalid or lacks permissions for this model.";
     } else if (errorMessage.includes("404")) {

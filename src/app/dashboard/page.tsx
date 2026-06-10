@@ -1,9 +1,10 @@
+
 "use client"
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  BarChart3, Database, RefreshCw, ShieldAlert, TrendingUp, Lightbulb, ClipboardCheck, Target, Sparkles, SearchCode, Zap, ChevronRight, LayoutGrid
+  BarChart3, Database, RefreshCw, ShieldAlert, TrendingUp, Lightbulb, ClipboardCheck, Target, Sparkles, SearchCode, Zap, LayoutGrid
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -91,6 +92,90 @@ export default function Dashboard() {
     }
   };
 
+  const handleExportLog = () => {
+    if (!currentDataset) return;
+
+    const timestamp = new Date().toLocaleString();
+    const missionId = `MISSION-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    
+    let content = `
+================================================================================
+                              AUTOSTAT AI MISSION LOG
+================================================================================
+MISSION ID:   ${missionId}
+TIMESTAMP:    ${timestamp}
+STATUS:       ANALYSIS COMPLETE
+VECTORS:      ${currentDataset.rows.length}
+DIMENSIONS:   ${currentDataset.headers.length}
+--------------------------------------------------------------------------------
+
+[DATA SOURCE PARAMETERS]
+Headers:      ${currentDataset.headers.join(', ')}
+Types:        ${Object.entries(currentDataset.columnTypes).map(([k, v]) => `${k}:${v}`).join(', ')}
+
+[STATISTICAL DESCRIPTIVES]
+${Object.entries(descriptiveResults).map(([col, stats]) => `
+--- FIELD: ${col} ---
+Mean:         ${stats.mean.toFixed(4)}
+Std Dev:      ${stats.stdDev.toFixed(4)}
+Median:       ${stats.median}
+Range:        [${stats.min} - ${stats.max}]
+Count:        ${stats.count}
+`).join('\n')}
+
+[STRUCTURAL AUDIT DIAGNOSTICS]
+${aiSuggestions ? `
+Summary:      ${aiSuggestions.summary}
+Issues:       ${aiSuggestions.suggestions.length} detected
+${aiSuggestions.suggestions.map((s, i) => `
+${i + 1}. [${s.issueType}]
+   Description: ${s.description}
+   Suggestion:  ${s.suggestion}
+   Affected:    ${s.affectedColumns.join(', ')}
+`).join('')}
+` : 'Audit not performed or pending initialization.'}
+
+[PREDICTIVE SYNTHESIS & FORECASTING]
+${narrative ? `
+Executive Summary:
+${narrative.executiveSummary}
+
+Key Analytical Insights:
+${narrative.keyInsights.map((insight, i) => `${i + 1}. ${insight}`).join('\n')}
+
+Temporal Forecast:
+- Projection:  ${narrative.forecasting.projection}
+- Confidence:  ${narrative.forecasting.confidence}
+- Timeframe:   ${narrative.forecasting.timeframe}
+
+Risks & Dependencies:
+${narrative.forecasting.risks.map(risk => `- ${risk}`).join('\n')}
+
+Actionable Recommendations:
+${narrative.recommendations.map(rec => `- ${rec}`).join('\n')}
+` : 'Forecast not initialized for this mission.'}
+
+--------------------------------------------------------------------------------
+                         END OF MISSION LOG EXPORT
+================================================================================
+`;
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `auto-stat-log-${missionId.toLowerCase()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Mission Log Exported",
+      description: "Structured analytical report downloaded successfully."
+    });
+  };
+
   const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
 
   return (
@@ -148,7 +233,11 @@ export default function Dashboard() {
                 <Button variant="outline" size="lg" className="flex-1 lg:flex-none rounded-2xl h-16 border-white/5 bg-white/5 hover:bg-white/10 text-white font-black px-8" onClick={() => setCurrentDataset(null)}>
                   <RefreshCw className="h-5 w-5 mr-3" /> SWAP MISSION
                 </Button>
-                <Button size="lg" className="flex-1 lg:flex-none bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl h-16 px-12 font-black shadow-2xl shadow-primary/30">
+                <Button 
+                  size="lg" 
+                  onClick={handleExportLog}
+                  className="flex-1 lg:flex-none bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl h-16 px-12 font-black shadow-2xl shadow-primary/30"
+                >
                   EXPORT LOG
                 </Button>
               </div>

@@ -9,6 +9,9 @@ import { generateAiInsights } from "@/ai/flows/ai-insights-generator";
 export async function runAuditAction(csvData: string, columnNames: string[]) {
   try {
     const result = await suggestDataQualityImprovements({ datasetPreview: csvData, columnNames });
+    if (!result) throw new Error("Quality diagnostic produced no data.");
+    
+    // Explicit serialization to prevent Next.js 15 "Unexpected response"
     return { 
       success: true, 
       data: JSON.parse(JSON.stringify(result)) 
@@ -23,7 +26,8 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
 }
 
 /**
- * Generates strategic insights using Gemini 2.5 Flash.
+ * Generates strategic insights using Gemini 2.0 Flash.
+ * Optimized for Next.js 15 Server Action stability.
  */
 export async function runInsightsAction(input: { datasetPreview: string, statsSummary: string, columnNames: string[] }) {
   try {
@@ -38,12 +42,13 @@ export async function runInsightsAction(input: { datasetPreview: string, statsSu
       throw new Error("AI engine returned an empty synthesis.");
     }
 
+    // Ensure strict serialization for the Client
     return { 
       success: true, 
       data: JSON.parse(JSON.stringify(result)) 
     };
   } catch (error: any) {
-    console.error("[Action:Insights] Error:", error);
+    console.error("[Action:Insights] Error Trace:", error);
     
     let errorMessage = String(error?.message || "Synthesis encountered a system difficulty.");
     if (errorMessage.includes("429") || errorMessage.toLowerCase().includes("rate limit")) {

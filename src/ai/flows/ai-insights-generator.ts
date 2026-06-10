@@ -1,18 +1,13 @@
 'use server';
 /**
- * @fileOverview Strategic Insights AI agent with high-availability retries.
+ * @fileOverview Strategic Insights AI agent with enhanced statistical context.
  */
 
 import { ai } from '@/ai/genkit';
-import { aiInsightsPrompt, InsightsOutputSchema } from '../prompts/insights-prompt';
+import { aiInsightsPrompt, InsightsInputSchema, InsightsOutputSchema } from '../prompts/insights-prompt';
 import { z } from 'genkit';
 
-const FlowInputSchema = z.object({
-  datasetPreview: z.string(),
-  columnNames: z.array(z.string()),
-});
-
-async function generateWithRetry(input: { datasetPreview: string, columnNamesString: string }, retries = 2, delay = 1500): Promise<any> {
+async function generateWithRetry(input: z.infer<typeof InsightsInputSchema>, retries = 2, delay = 1500): Promise<any> {
   try {
     const { output } = await aiInsightsPrompt(input);
     if (!output) throw new Error("Model returned empty output.");
@@ -30,31 +25,31 @@ async function generateWithRetry(input: { datasetPreview: string, columnNamesStr
   }
 }
 
-export async function generateAiInsights(input: { datasetPreview: string, columnNames: string[] }) {
+export async function generateAiInsights(input: z.infer<typeof InsightsInputSchema>) {
   return aiInsightsGeneratorFlow(input);
 }
 
 export const aiInsightsGeneratorFlow = ai.defineFlow(
   {
     name: 'aiInsightsGeneratorFlow',
-    inputSchema: FlowInputSchema,
+    inputSchema: InsightsInputSchema,
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {
     try {
-      const columnNamesString = input.columnNames.join(', ');
-      return await generateWithRetry({
-        datasetPreview: input.datasetPreview,
-        columnNamesString
-      });
+      return await generateWithRetry(input);
     } catch (err) {
       console.error("[Insights Critical] Failure in insights generation.", err);
       return {
         executiveSummary: "Strategic synthesis is currently deferred due to platform load.",
         keyFindings: ["Raw data processed locally.", "Engine awaiting clearance."],
-        recommendations: ["Retry diagnostic mission shortly."],
-        confidenceScore: 0,
-        dataAnomalies: ["Service temporarily unavailable"]
+        strongestCorrelations: ["Statistical relationships identified but narrative deferred."],
+        potentialRisks: ["Service temporarily unavailable"],
+        detectedAnomalies: ["High API latency detected."],
+        forecastAnalysis: "Forecast narrative unavailable.",
+        businessOpportunities: ["Retry diagnostic mission shortly."],
+        recommendations: ["Ensure stable network connection."],
+        confidenceScore: 0
       };
     }
   }

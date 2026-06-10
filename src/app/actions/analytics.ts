@@ -15,10 +15,10 @@ export async function runAuditAction(csvData: string, columnNames: string[]) {
   }
 }
 
-export async function runInsightsAction(csvData: string, columnNames: string[]) {
+export async function runInsightsAction(input: { datasetPreview: string, statsSummary: string, columnNames: string[] }) {
   try {
-    const result = await aiInsightsGeneratorFlow({ datasetPreview: csvData, columnNames });
-    if (result.dataAnomalies?.includes("Service temporarily unavailable")) {
+    const result = await aiInsightsGeneratorFlow(input);
+    if (result.detectedAnomalies?.includes("Service temporarily unavailable") || result.confidenceScore === 0) {
       return { success: false, error: "Insights cluster loaded. Try again shortly." };
     }
     return { success: true, data: result };

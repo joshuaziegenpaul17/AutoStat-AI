@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   ScatterChart, Scatter, LineChart, Line, Legend, AreaChart, Area,
@@ -123,7 +123,6 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
           <TabsTrigger value="comparative" className="rounded-xl px-6 py-2 text-xs font-bold uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-black">Comparative Benchmarks</TabsTrigger>
         </TabsList>
 
-        {/* --- CORE VECTORS --- */}
         <TabsContent value="primary" className="grid grid-cols-1 lg:grid-cols-2 gap-8 outline-none">
           <Card className={chartCardClass}>
             <CardHeader className="pb-4 space-y-4">
@@ -195,7 +194,6 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
           </Card>
         </TabsContent>
 
-        {/* --- PROPORTIONS --- */}
         <TabsContent value="proportions" className="grid grid-cols-1 lg:grid-cols-2 gap-8 outline-none">
           <Card className={chartCardClass}>
             <CardHeader className="pb-4 space-y-4">
@@ -265,14 +263,12 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
           </Card>
         </TabsContent>
 
-        {/* --- COMPARATIVE --- */}
         <TabsContent value="comparative" className="grid grid-cols-1 lg:grid-cols-2 gap-8 outline-none">
           <Card className={chartCardClass}>
             <CardHeader className="pb-4">
               <CardTitle className="text-sm font-bold uppercase tracking-tight flex items-center gap-2">
                 <span className="w-1.5 h-4 bg-yellow-500 rounded-full" /> Multivariate Profile
               </CardTitle>
-              <p className="text-[10px] text-muted-foreground uppercase font-bold mt-2">Visualizing first 5 numeric columns</p>
             </CardHeader>
             <CardContent className="h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -291,7 +287,6 @@ export const StatVisuals: React.FC<StatVisualsProps> = ({ data, numericColumns }
               <CardTitle className="text-sm font-bold uppercase tracking-tight flex items-center gap-2">
                 <span className="w-1.5 h-4 bg-lime-500 rounded-full" /> Benchmarked Means
               </CardTitle>
-              <p className="text-[10px] text-muted-foreground uppercase font-bold mt-2">Comparison of top 5 variables</p>
             </CardHeader>
             <CardContent className="h-[320px]">
               <ResponsiveContainer width="100%" height="100%">

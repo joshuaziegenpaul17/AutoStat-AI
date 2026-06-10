@@ -115,7 +115,6 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Control Bar */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-slate-900/90 p-8 rounded-[3rem] border border-white/10 shadow-2xl backdrop-blur-2xl">
               <div className="flex items-center gap-6">
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -174,7 +173,6 @@ export default function Dashboard() {
                   </TabsContent>
                 </Tabs>
 
-                {/* Audit Section */}
                 <Card className="glass border-primary/20 rounded-[3rem] shadow-2xl overflow-hidden relative group">
                   <CardHeader className="pb-8 pt-10 px-10">
                     <CardTitle className="text-2xl flex items-center gap-4 text-white font-black">
@@ -217,7 +215,6 @@ export default function Dashboard() {
                 </Card>
               </div>
 
-              {/* Sidebar / Forecast */}
               <div className="2xl:col-span-4 space-y-10">
                 <Card className="glass border-none rounded-[3rem] shadow-2xl p-10">
                   <CardHeader className="p-0 mb-10">

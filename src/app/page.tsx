@@ -1,9 +1,7 @@
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { BarChart3, ArrowRight, ShieldCheck, Database, LineChart, FileText, PieChart, Zap } from 'lucide-react';
+import { BarChart3, ArrowRight, ShieldCheck, Zap, BarChart3 as BarChartIcon, LineChart, PieChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function LandingPage() {
   const statusItems = [
@@ -15,8 +13,6 @@ export default function LandingPage() {
     "PRIVACY PROTOCOLS: ACTIVE",
     "DATA INTEGRITY: VERIFIED"
   ];
-
-  const heroImage = PlaceHolderImages.find(img => img.id === 'dashboard-hero');
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 text-white selection:bg-indigo-500/30 overflow-x-hidden">
@@ -95,7 +91,7 @@ export default function LandingPage() {
                 desc: 'Automatic detection of feature distributions, types, and structural health upon ingestion.' 
               },
               { 
-                icon: BarChart3, 
+                icon: BarChartIcon, 
                 title: 'Statistical Modeling', 
                 desc: 'Deep descriptive statistics including variance, kurtosis, and correlation mapping.' 
               },
@@ -123,49 +119,35 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Feature Highlights */}
+        {/* Feature Highlights - Single Column Centered */}
         <section className="py-32 bg-white/[0.01] border-y border-white/5">
-          <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-              <div className="space-y-10">
-                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9]">AI-Powered <br /><span className="text-indigo-500">Insights</span></h2>
-                <p className="text-lg text-white/50 leading-relaxed font-medium">
-                  Our advanced analytical engine synthesizes statistical data into high-fidelity executive reports. Gain clarity on business opportunities, risk vectors, and strategic recommendations without manual data crunching.
-                </p>
-                <div className="space-y-6">
-                  {[
-                    "Automated Executive Summaries",
-                    "Anomaly and Outlier Detection",
-                    "Feature Relationship Analysis",
-                    "Actionable Growth Recommendations"
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-indigo-400">
-                      <ShieldCheck className="h-4 w-4" />
-                      {item}
-                    </div>
-                  ))}
-                </div>
+          <div className="container mx-auto px-6 max-w-4xl text-center">
+            <div className="space-y-12">
+              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9]">
+                AI-Powered <br /><span className="text-indigo-500">Insights</span>
+              </h2>
+              <p className="text-lg text-white/50 leading-relaxed font-medium">
+                Our advanced analytical engine synthesizes statistical data into high-fidelity executive reports. Gain clarity on business opportunities, risk vectors, and strategic recommendations without manual data crunching.
+              </p>
+              <div className="flex flex-wrap justify-center gap-8">
+                {[
+                  "Automated Executive Summaries",
+                  "Anomaly and Outlier Detection",
+                  "Feature Relationship Analysis",
+                  "Actionable Growth Recommendations"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-indigo-400">
+                    <ShieldCheck className="h-4 w-4" />
+                    {item}
+                  </div>
+                ))}
               </div>
-              <div className="relative group">
-                <div className="absolute -inset-10 bg-indigo-600/20 blur-[100px] rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
-                <div className="relative rounded-[3rem] border border-white/10 bg-zinc-900 overflow-hidden shadow-2xl">
-                  {heroImage ? (
-                    <div className="aspect-video relative">
-                      <Image 
-                        src={heroImage.imageUrl} 
-                        alt={heroImage.description} 
-                        fill 
-                        className="object-cover"
-                        data-ai-hint={heroImage.imageHint}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent" />
-                    </div>
-                  ) : (
-                    <div className="aspect-video bg-indigo-600/10 rounded-2xl flex items-center justify-center border border-indigo-600/20">
-                      <BarChart3 className="h-24 w-24 text-indigo-500/40" />
-                    </div>
-                  )}
-                </div>
+              <div className="pt-8">
+                <Link href="/dashboard">
+                  <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-12 h-16 text-xs uppercase tracking-widest font-bold shadow-xl shadow-indigo-600/20">
+                    Explore Analysis Tools
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

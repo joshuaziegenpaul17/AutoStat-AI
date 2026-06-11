@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
@@ -6,7 +7,8 @@ import {
   AlertTriangle, Target, Activity, Database, 
   Presentation, Download, FileText, ChevronRight,
   ClipboardList, TrendingUp, Search, Info, ShieldAlert,
-  BarChart as BarChartIcon, LineChart, PieChart, Scale
+  BarChart as BarChartIcon, LineChart, PieChart, Scale,
+  Table as TableIcon, Layers, TrendingUp as TrendingIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -73,7 +75,7 @@ export default function Dashboard() {
     setCurrentDataset(data);
     setInsights(null);
     setAnalysisError(null);
-    toast({ title: "Dataset Ingested", description: `Local processing complete. Synthesizing AI insights...` });
+    toast({ title: "Dataset Ingested", description: `Local processing complete. Synthesizing suggested insights...` });
   };
 
   const handleExportPDF = () => {
@@ -298,9 +300,38 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* Page 4: Strategic Roadmap */}
+          {/* Page 4: Descriptive Statistics */}
           <section className="report-section p-12 min-h-[27cm]">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">03 Strategic Insights</h2>
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">03 Descriptive Profile</h2>
+            <div className="grid grid-cols-2 gap-8">
+              {numericColumns.slice(0, 8).map(col => (
+                <div key={col} className="p-6 border border-zinc-100 rounded-2xl">
+                  <h4 className="text-sm font-black uppercase text-indigo-600 mb-4">{col}</h4>
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div className="flex justify-between"><span>Mean</span><span className="font-bold">{descriptiveResults[col]?.mean.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span>Median</span><span className="font-bold">{descriptiveResults[col]?.median.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span>Std Dev</span><span className="font-bold">{descriptiveResults[col]?.stdDev.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span>Outliers</span><span className="font-bold">{descriptiveResults[col]?.outliers.length}</span></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Page 5: Visual Analytics Dashboard */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">04 Visual Matrix</h2>
+            <div className="space-y-12">
+              <div className="report-figure h-[400px]">
+                <h4 className="text-xs font-black uppercase mb-4 text-zinc-400">Primary Distribution (Histogram)</h4>
+                <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} categoricalColumns={categoricalColumns} />
+              </div>
+            </div>
+          </section>
+
+          {/* Page 6: Strategic Recommendations */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">05 Strategic Insights</h2>
             {insights ? (
               <div className="space-y-12">
                 <div className="grid grid-cols-1 gap-8">
@@ -330,9 +361,9 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* Page 5: Methodology & Disclaimer */}
+          {/* Page 7: Methodology & Disclaimer */}
           <section className="report-section p-12 min-h-[27cm] flex flex-col">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">04 Disclaimer & Limitations</h2>
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">06 Disclaimer & Limitations</h2>
             
             <div className="space-y-12 flex-grow">
               <div className="space-y-6">

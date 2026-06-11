@@ -1,27 +1,16 @@
-
 'use server';
 /**
- * @fileOverview Strategic Analysis AI agent with optimized retries for Server Action safety.
+ * @fileOverview Strategic Interpreter AI agent. Receives ONLY pre-computed statistics.
  */
 
 import { ai } from '@/ai/genkit';
-import { aiInsightsPrompt, InsightsOutputSchema } from '../prompts/insights-prompt';
+import { aiInsightsPrompt, InsightsInputSchema, InsightsOutputSchema } from '../prompts/insights-prompt';
 import { z } from 'genkit';
 
-const InsightsFlowInputSchema = z.object({
-  datasetPreview: z.string(),
-  statsSummary: z.string(),
-  columnNames: z.array(z.string()),
-});
-
-/**
- * Executes AI prompt with safe backoff to avoid Server Action timeouts (Next.js limits).
- * Optimized for Gemini 2.0 Flash.
- */
 async function generateWithRetry(input: any, retries = 3, delay = 5000) {
   try {
     const { output } = await aiInsightsPrompt(input);
-    if (!output) throw new Error("Analytical engine produced no insights.");
+    if (!output) throw new Error("Analytical engine failed to interpret statistics.");
     return output;
   } catch (error: any) {
     const msg = error?.message || "";
@@ -29,13 +18,11 @@ async function generateWithRetry(input: any, retries = 3, delay = 5000) {
       msg.includes("429") || 
       msg.includes("503") || 
       msg.toLowerCase().includes("limit") || 
-      msg.toLowerCase().includes("busy") ||
       msg.toLowerCase().includes("quota");
 
     if (retries > 0 && isRetryable) {
       const jitter = Math.random() * 2000;
       const finalDelay = delay + jitter;
-      console.warn(`[Analysis Flow] Capacity detected. Retrying in ${Math.round(finalDelay)}ms... (${retries} retries left)`);
       await new Promise(res => setTimeout(res, finalDelay));
       return generateWithRetry(input, retries - 1, delay * 2);
     }
@@ -46,20 +33,14 @@ async function generateWithRetry(input: any, retries = 3, delay = 5000) {
 export const aiInsightsGeneratorFlow = ai.defineFlow(
   {
     name: 'aiInsightsGeneratorFlow',
-    inputSchema: InsightsFlowInputSchema,
+    inputSchema: InsightsInputSchema,
     outputSchema: InsightsOutputSchema,
   },
   async (input) => {
-    const promptInput = {
-      datasetPreview: input.datasetPreview,
-      statsSummary: input.statsSummary,
-      columnNamesString: input.columnNames.join(", ")
-    };
-
-    return await generateWithRetry(promptInput);
+    return await generateWithRetry(input);
   }
 );
 
-export async function generateAiInsights(input: z.infer<typeof InsightsFlowInputSchema>) {
+export async function generateAiInsights(input: z.infer<typeof InsightsInputSchema>) {
   return aiInsightsGeneratorFlow(input);
 }

@@ -61,12 +61,18 @@
   animation-play-state: paused;
 }
 
-/* Print Styles */
+/* Professional Print Styles - Consulting Grade */
 @media print {
+  @page {
+    size: A4;
+    margin: 2cm;
+  }
+
   body {
-    background-color: white !important;
+    background: white !important;
     color: black !important;
-    font-size: 12pt;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 11pt;
   }
 
   .print\:hidden {
@@ -77,32 +83,86 @@
     display: block !important;
   }
 
+  /* Reset layout for print */
   main {
     padding: 0 !important;
+    margin: 0 !important;
     max-width: 100% !important;
+    background: white !important;
   }
 
-  section {
-    page-break-inside: avoid;
-    margin-bottom: 2rem !important;
-  }
-
-  .card, div[class*="card"] {
-    border: 1px solid #e2e8f0 !important;
+  /* Force white background and black text on all common elements */
+  div, section, header, footer, h1, h2, h3, h4, h5, p, span, li, td, th {
     background: white !important;
     color: black !important;
+    border-color: #eee !important;
     box-shadow: none !important;
+    text-shadow: none !important;
   }
 
-  h1, h2, h3, h4, p, span {
-    color: black !important;
+  /* Section breaks */
+  .report-section {
+    page-break-before: always;
+    padding-top: 1cm;
   }
 
+  .report-section:first-child {
+    page-break-before: avoid;
+  }
+
+  /* Figure and table styling */
+  .report-figure {
+    break-inside: avoid;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border: 1px solid #f0f0f0;
+    background: #fafafa !important;
+  }
+
+  .report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+
+  .report-table th, .report-table td {
+    border: 1px solid #eee;
+    padding: 8pt;
+    text-align: left;
+  }
+
+  .report-table th {
+    background-color: #f8f9fa !important;
+    font-weight: bold;
+  }
+
+  /* Page numbers (approximate) */
+  footer.report-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #eee;
+    padding-top: 10pt;
+    font-size: 9pt;
+    color: #666 !important;
+  }
+
+  /* Chart handling */
   .recharts-surface {
     filter: none !important;
   }
+  
+  .recharts-cartesian-grid-horizontal line,
+  .recharts-cartesian-grid-vertical line {
+    stroke: #eee !important;
+  }
 
-  /* Force charts to render colors if possible */
+  .recharts-text {
+    fill: #333 !important;
+    font-size: 8pt !important;
+  }
+
+  /* Force colors for charts */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;

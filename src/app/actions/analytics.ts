@@ -4,7 +4,7 @@ import { generateExecutiveInsights } from "@/lib/ai-insights";
 
 /**
  * Server Action: runInsightsAction
- * Migrated to Groq Infrastructure.
+ * Exclusive Groq-powered analytical interpretation.
  */
 export async function runInsightsAction(input: any) {
   try {
@@ -12,7 +12,7 @@ export async function runInsightsAction(input: any) {
     if (!apiKey) {
       return { 
         success: false, 
-        error: "AI configuration missing. Please ensure GROQ_API_KEY is set." 
+        error: "Analytical configuration missing. AI insights require GROQ_API_KEY." 
       };
     }
 
@@ -27,7 +27,7 @@ export async function runInsightsAction(input: any) {
     
     let errorMessage = "AI insights are temporarily unavailable. Statistical metrics remain active.";
     if (error?.message?.includes('429')) {
-      errorMessage = "AI engine is currently at capacity. Please try again in a few moments.";
+      errorMessage = "Analytical engine is currently at capacity. Please try again in a moment.";
     }
     
     return { success: false, error: errorMessage };

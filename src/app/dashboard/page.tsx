@@ -26,6 +26,12 @@ import { runInsightsAction } from '@/app/actions/analytics';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
+/**
+ * Professional Analytics Dashboard.
+ * - Single-column layout for focused ingestion.
+ * - Strict conditional rendering (no empty chart containers).
+ * - Groq-powered AI Strategic Synthesis.
+ */
 export default function Dashboard() {
   const [currentDataset, setCurrentDataset] = useState<ParsedData | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -75,7 +81,7 @@ export default function Dashboard() {
     setIsAnalyzing(true);
     setAnalysisError(null);
 
-    // Local prep for AI summary - only take top 5 correlations to save tokens
+    // AI Payload Preparation (Reduced to minimize token usage)
     const topCorrelations: string[] = [];
     if (numericColumns.length >= 2) {
       for (let i = 0; i < Math.min(numericColumns.length, 5); i++) {
@@ -93,7 +99,7 @@ export default function Dashboard() {
     }
 
     const outlierCounts: Record<string, number> = {};
-    numericColumns.slice(0, 10).forEach(col => {
+    numericColumns.slice(0, 5).forEach(col => {
       outlierCounts[col] = descriptiveResults[col]?.outliers.length || 0;
     });
 
@@ -103,10 +109,10 @@ export default function Dashboard() {
       const series = currentDataset.rows.map(r => r[firstNumCol]).filter(v => typeof v === 'number');
       const projection = projectLocalTrend(series, 5);
       const delta = ((projection[4] - projection[0]) / (Math.abs(projection[0]) || 1)) * 100;
-      forecastSummary = `${delta > 0 ? 'Up' : 'Down'} ~${Math.abs(delta).toFixed(1)}%`;
+      forecastSummary = `${delta > 0 ? 'Upward' : 'Downward'} trend ~${Math.abs(delta).toFixed(1)}%`;
     }
 
-    const statsMetricsStr = Object.entries(descriptiveResults).slice(0, 5).map(([col, stats]) => {
+    const statsMetricsStr = Object.entries(descriptiveResults).slice(0, 3).map(([col, stats]) => {
       return `${col}: μ=${stats.mean.toFixed(1)}, Range=[${stats.min}-${stats.max}]`;
     }).join('; ');
 
@@ -120,7 +126,7 @@ export default function Dashboard() {
           qualityScore: dataAudit.qualityScore
         },
         statsMetrics: statsMetricsStr,
-        topCorrelations: topCorrelations.slice(0, 5),
+        topCorrelations: topCorrelations.slice(0, 3),
         outlierCounts,
         forecastTrajectory: forecastSummary
       });
@@ -172,11 +178,9 @@ export default function Dashboard() {
             
             {/* 1. Dataset Overview */}
             <section className="space-y-10">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div>
-                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Automated Data Profiling</h2>
-                  <p className="text-white/40 font-medium italic">Instant local calculation of structural and mathematical health metrics.</p>
-                </div>
+              <div className="text-center">
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Automated Data Profiling</h2>
+                <p className="text-white/40 font-medium italic">Instant local calculation of structural and mathematical health metrics.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -203,17 +207,19 @@ export default function Dashboard() {
 
             {/* 2. Exploratory Analytics */}
             <section className="space-y-10">
-              <div>
+              <div className="text-center">
                 <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Exploratory Analytics</h2>
                 <p className="text-white/40 font-medium italic">Interactive visualization and distribution analysis calculated in-browser.</p>
               </div>
 
               <Tabs defaultValue="visuals" className="w-full">
-                <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl mb-10 h-auto flex flex-wrap gap-2">
-                  <TabsTrigger value="visuals" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Visualizations</TabsTrigger>
-                  <TabsTrigger value="stats" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Statistical Summary</TabsTrigger>
-                  <TabsTrigger value="table" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Dataset Preview</TabsTrigger>
-                </TabsList>
+                <div className="flex justify-center mb-10">
+                  <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl h-auto">
+                    <TabsTrigger value="visuals" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Visualizations</TabsTrigger>
+                    <TabsTrigger value="stats" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Statistical Summary</TabsTrigger>
+                    <TabsTrigger value="table" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Dataset Preview</TabsTrigger>
+                  </TabsList>
+                </div>
                 
                 <TabsContent value="visuals" className="mt-0 outline-none">
                   <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} categoricalColumns={categoricalColumns} />
@@ -247,7 +253,7 @@ export default function Dashboard() {
                           <tr>{currentDataset.headers.map(h => <th key={h} className="px-8 py-6">{h}</th>)}</tr>
                         </thead>
                         <tbody className="divide-y divide-white/5 text-white/60">
-                          {currentDataset.rows.slice(0, 30).map((row, i) => (
+                          {currentDataset.rows.slice(0, 50).map((row, i) => (
                             <tr key={i} className="hover:bg-white/[0.02]">
                               {currentDataset.headers.map(h => <td key={h} className="px-8 py-4 font-mono text-xs">{row[h]}</td>)}
                             </tr>
@@ -264,29 +270,18 @@ export default function Dashboard() {
 
             {/* 3. AI Executive Analysis */}
             <section id="ai-insights" className="space-y-10">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Executive Analysis</h2>
-                  <p className="text-white/40 font-medium italic">High-fidelity interpretation of local statistics synthesized into strategic business insights.</p>
-                </div>
-                {!insights && !isAnalyzing && (
-                   <Button 
-                    onClick={runAiAnalysis} 
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-10 font-bold uppercase tracking-widest text-xs shadow-lg shadow-indigo-600/20"
-                  >
-                    <Target className="mr-2 h-4 w-4" />
-                    Generate AI Insights
-                  </Button>
-                )}
+              <div className="text-center space-y-4">
+                <h2 className="text-3xl font-black uppercase tracking-tighter">Executive Analysis</h2>
+                <p className="text-white/40 font-medium italic max-w-2xl mx-auto">High-fidelity interpretation of local statistics synthesized into strategic business insights by our analytical engine.</p>
               </div>
 
-              <div className="relative group">
+              <div className="relative group max-w-6xl mx-auto">
                 <Card className="relative bg-zinc-950/50 border-white/10 backdrop-blur-xl rounded-[2.5rem] min-h-[400px] flex flex-col justify-center">
                   <CardContent className="p-10">
                     {isAnalyzing ? (
                       <div className="space-y-10 py-10 text-center flex flex-col items-center">
                         <Loader2 className="h-12 w-12 text-indigo-500 animate-spin mb-6" />
-                        <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">Interpreting statistical summaries...</p>
+                        <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">Synthesizing Statistical Narrative...</p>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-12">
                           <Skeleton className="h-48 rounded-2xl bg-white/5" />
                           <Skeleton className="h-48 rounded-2xl bg-white/5" />
@@ -348,7 +343,7 @@ export default function Dashboard() {
                           <div className="space-y-6">
                             <AlertTriangle className="h-16 w-16 text-yellow-500 mx-auto" />
                             <div className="space-y-2">
-                              <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">AI Insights Unavailable</p>
+                              <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Analytical Logic Paused</p>
                               <p className="text-white/40 font-medium max-w-md mx-auto">{analysisError}</p>
                             </div>
                             <Button 
@@ -366,11 +361,11 @@ export default function Dashboard() {
                             </div>
                             <div className="space-y-2">
                               <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Interpretation Required</p>
-                              <p className="text-white/40 font-medium max-w-md mx-auto">Send locally calculated statistics to the AI engine for strategic executive analysis.</p>
+                              <p className="text-white/40 font-medium max-w-md mx-auto">Click below to send locally calculated summaries to the AI engine for executive synthesis.</p>
                             </div>
                             <Button 
                               onClick={runAiAnalysis} 
-                              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-12 font-bold uppercase tracking-widest text-xs"
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-16 px-12 font-bold uppercase tracking-widest text-xs shadow-xl shadow-indigo-600/20"
                             >
                               Generate AI Insights
                             </Button>
@@ -389,8 +384,8 @@ export default function Dashboard() {
             <section className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 flex items-center justify-between group hover:bg-white/[0.08] transition-all">
                 <div className="space-y-2">
-                  <h4 className="text-xl font-black uppercase tracking-tighter">Automated Analytics Report</h4>
-                  <p className="text-white/30 text-xs font-medium">Download a complete PDF report of all statistics, forecasts, and AI insights.</p>
+                  <h4 className="text-xl font-black uppercase tracking-tighter">Analytics Report</h4>
+                  <p className="text-white/30 text-xs font-medium">Export a full analytical summary of statistical metrics and forecasts.</p>
                 </div>
                 <Button variant="outline" className="border-white/10 group-hover:bg-white/10 rounded-xl h-12 px-8 font-bold text-[10px] uppercase tracking-widest">
                   <Download className="mr-2 h-4 w-4" /> Export Report
@@ -398,7 +393,7 @@ export default function Dashboard() {
               </Card>
               <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 flex items-center justify-between group hover:bg-white/[0.08] transition-all">
                 <div className="space-y-2">
-                  <h4 className="text-xl font-black uppercase tracking-tighter">Share Analytics</h4>
+                  <h4 className="text-xl font-black uppercase tracking-tighter">Share Analysis</h4>
                   <p className="text-white/30 text-xs font-medium">Create a secure link to share this workspace with stakeholders.</p>
                 </div>
                 <Button variant="outline" className="border-white/10 group-hover:bg-white/10 rounded-xl h-12 px-8 font-bold text-[10px] uppercase tracking-widest">
@@ -418,7 +413,7 @@ export default function Dashboard() {
               <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
             </div>
             <p className="text-[10px] text-white/20 max-w-sm leading-relaxed">
-              AutoStat AI is a professional data analytics platform for statistical profiling, forecasting, and AI-assisted reporting.
+              AutoStat AI is a professional data analytics platform for statistical profiling, forecasting, and automated business reporting.
             </p>
           </div>
           <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
@@ -431,7 +426,7 @@ export default function Dashboard() {
             <div className="flex flex-col gap-4">
               <p className="text-indigo-500 opacity-60">Platform</p>
               <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
-              <Link href="/resources" className="hover:text-white">Documentation</Link>
+              <Link href="/resources" className="hover:text-white">Resources</Link>
             </div>
           </div>
           <div className="md:text-right space-y-2">

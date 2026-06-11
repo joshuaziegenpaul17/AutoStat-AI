@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { callGroq } from './groq';
 
 /**
- * @fileOverview AI Insights Engine.
+ * @fileOverview AI Insights Engine (Groq Implementation).
  * Validates and processes statistical summaries into strategic business narratives.
  */
 

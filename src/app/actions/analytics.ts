@@ -1,37 +1,33 @@
-
 'use server';
 
-import { generateAiInsights } from "@/ai/flows/ai-insights-generator";
+import { generateExecutiveInsights } from "@/lib/ai-insights";
 
 /**
- * Generates an executive summary based on pre-computed local statistics.
- * Migrated to Groq for enhanced reliability and performance.
+ * Server Action: runInsightsAction
+ * Migrated to Groq Infrastructure.
  */
 export async function runInsightsAction(input: any) {
   try {
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return { success: false, error: "AI services are temporarily unavailable (API Key missing)." };
+      return { 
+        success: false, 
+        error: "AI configuration missing. Please ensure GROQ_API_KEY is set." 
+      };
     }
 
-    const analyticalResult = await generateAiInsights(input);
+    const analyticalResult = await generateExecutiveInsights(input);
     
-    if (!analyticalResult) {
-      throw new Error("Analytical engine returned no data.");
-    }
-
     return { 
       success: true, 
       data: analyticalResult
     };
   } catch (error: any) {
-    console.error("[Action:ExecutiveAnalysis] Error:", error);
+    console.error("[Groq:ExecutiveAnalysis] Error:", error);
     
-    let errorMessage = "AI insights are temporarily unavailable. Please try again later.";
-    const errorMsg = error?.message?.toLowerCase() || "";
-    
-    if (errorMsg.includes("429") || errorMsg.includes("quota") || errorMsg.includes("limit")) {
-      errorMessage = "AI analysis engine is currently at capacity. Standard statistics are still functional.";
+    let errorMessage = "AI insights are temporarily unavailable. Statistical metrics remain active.";
+    if (error?.message?.includes('429')) {
+      errorMessage = "AI engine is currently at capacity. Please try again in a few moments.";
     }
     
     return { success: false, error: errorMessage };

@@ -10,7 +10,7 @@
 - **Statistical Profiling**: Instant calculation of descriptive statistics (Mean, Median, Std Dev, Skewness, Kurtosis).
 - **Interactive Visualizations**: High-fidelity charts including histograms, correlation heatmaps, treemaps, and density plots.
 - **Predictive Forecasting**: Temporal trend modeling to identify trajectories and sequential patterns.
-- **AI Executive Analysis**: McKinsey-style strategic summaries and actionable recommendations powered by Gemini 2.0 Flash.
+- **AI Executive Analysis**: McKinsey-style strategic summaries and actionable recommendations powered by Groq (Llama 3.3).
 - **Data Quality Audit**: Automated health checks and anomaly detection for structural integrity.
 
 ---
@@ -22,7 +22,7 @@
 - **Styling**: Tailwind CSS & Framer Motion
 - **UI Components**: ShadCN UI (Radix UI)
 - **Charts**: Recharts
-- **AI Engine**: Genkit + Gemini 2.0 Flash
+- **AI Engine**: Groq (Llama 3.3 70B)
 - **Data Parsing**: XLSX & Custom CSV Parser
 
 ---
@@ -43,9 +43,9 @@ To run AutoStat AI locally:
    ```
 
 3. **Set up environment variables**:
-   Create a `.env.local` file and add your Google AI (Gemini) API Key:
+   Create a `.env.local` file and add your Groq API Key:
    ```env
-   GEMINI_API_KEY=your_api_key_here
+   GROQ_API_KEY=your_api_key_here
    ```
 
 4. **Run the development server**:
@@ -53,12 +53,6 @@ To run AutoStat AI locally:
    npm run dev
    ```
    Open [http://localhost:9002](http://localhost:9002) in your browser.
-
----
-
-## 📄 Documentation
-
-For detailed guides on data preparation, forecasting logic, and AI insights, please visit our [Resources](http://localhost:9002/resources) page within the application.
 
 ---
 

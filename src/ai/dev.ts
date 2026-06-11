@@ -1,5 +1,4 @@
-
 /**
- * @fileOverview This file is no longer in use. AI infrastructure has migrated to Groq.
+ * @deprecated This file is no longer in use.
  */
 export const dev = null;

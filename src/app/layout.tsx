@@ -3,19 +3,29 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AutoStat AI – Professional Statistical Analysis & Forecasting',
-  description: 'Automated statistical profiling, predictive forecasting, and AI-powered executive insights for enterprise datasets. Transform raw data into strategic intelligence.',
+  metadataBase: new URL('https://autostat-ai.vercel.app'),
+  applicationName: 'AutoStat AI',
+  title: 'AutoStat AI',
+  description: 'AI-Powered Statistical Analytics, Forecasting & Data Intelligence Platform',
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
+  themeColor: '#050507',
+  colorScheme: 'dark',
   openGraph: {
-    title: 'AutoStat AI – Professional Statistical Analysis',
-    description: 'Enterprise-grade automated data analytics and forecasting platform.',
+    title: 'AutoStat AI',
+    description: 'AI-Powered Statistical Analytics, Forecasting & Data Intelligence Platform',
     type: 'website',
     url: 'https://autostat-ai.vercel.app',
     siteName: 'AutoStat AI',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AutoStat AI – Professional Statistical Analysis',
-    description: 'Automated statistical profiling and AI-powered executive insights.',
+    title: 'AutoStat AI',
+    description: 'AI-Powered Statistical Analytics, Forecasting & Data Intelligence Platform',
   },
 };
 

@@ -35,46 +35,59 @@ export default function PrivacyPolicyPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-3"><Database className="text-indigo-500 h-6 w-6" /> Data Collection</h2>
             <p className="text-white/60 leading-relaxed">
-              AutoStat AI processes data that you explicitly provide. This includes dataset files (CSV, Excel) and any configuration parameters you set for analysis. We may also collect basic usage analytics to improve platform performance and user experience.
+              We may collect limited technical and usage information necessary for platform functionality, performance monitoring, error diagnostics, and service improvement. No uploaded dataset content is used for AI model training unless explicitly stated.
             </p>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-3"><Lock className="text-indigo-500 h-6 w-6" /> Data Processing</h2>
             <p className="text-white/60 leading-relaxed">
-              All uploaded datasets are processed within a temporary environment. Data is used exclusively to generate statistical reports, forecasting models, and AI-assisted insights as requested by the user. We do not use your data for model training or unauthorized third-party sharing.
+              Uploaded datasets are processed solely for the purpose of generating statistical analyses, visualizations, forecasts, and AI-assisted insights requested by the user. AutoStat AI does not intentionally sell, rent, or share uploaded dataset content with third parties for marketing purposes.
             </p>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-3"><Clock className="text-indigo-500 h-6 w-6" /> Data Retention</h2>
             <p className="text-white/60 leading-relaxed">
-              As a temporary analytical workspace, AutoStat AI does not provide long-term storage for uploaded datasets. Files are processed for the duration of your active session. Users are responsible for clearing their session data if they wish to remove traces of analysis immediately.
+              AutoStat AI is designed as a temporary analytical workspace. Uploaded datasets are processed during active sessions and are not intended for permanent storage. Users are responsible for maintaining their own backups and for removing data they no longer wish to process through the platform.
             </p>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-3"><Shield className="text-indigo-500 h-6 w-6" /> Security Measures</h2>
             <p className="text-white/60 leading-relaxed">
-              We employ professional security measures, including HTTPS/TLS encryption for all data transfers and secure cloud processing environments. While we strive to protect your information, no method of transmission over the internet is 100% secure.
+              AutoStat AI utilizes industry-standard security practices, including encrypted HTTPS/TLS communication and secure cloud infrastructure provided by third-party hosting providers. While reasonable measures are taken to protect information, no electronic storage or transmission method can be guaranteed to be completely secure.
             </p>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-3"><Eye className="text-indigo-500 h-6 w-6" /> User Controls</h2>
             <p className="text-white/60 leading-relaxed">
-              You maintain full control over your data. You may choose to stop using the service at any time and clear your browser session to remove local traces of your datasets and generated insights.
+              Users maintain control over the data they choose to upload. Users may discontinue use of the platform at any time and are encouraged to avoid uploading confidential, regulated, or highly sensitive information unless appropriate safeguards and permissions are in place.
             </p>
           </div>
         </section>
 
         <Separator className="bg-white/5" />
 
+        <section className="rounded-3xl border border-white/5 bg-white/[0.03] p-6 shadow-2xl shadow-black/20 space-y-4">
+          <h2 className="text-xl font-black uppercase tracking-[0.35em] text-white/90">Disclaimer</h2>
+          <p className="text-white/70 leading-relaxed text-sm">
+            AutoStat AI provides statistical analysis, forecasting, visualization, and AI-assisted insights for informational purposes only. Results may contain inaccuracies, estimation errors, or AI-generated interpretations that should be independently verified before being used for financial, legal, medical, business, academic, or operational decision-making.
+          </p>
+        </section>
+
         <footer className="text-xs text-white/20 leading-relaxed space-y-4">
           <p>If you have questions regarding this Privacy Policy or the platform, please contact the project developer through the available contact channels.</p>
           <div className="space-y-4 pt-8">
             <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
               © 2026 AutoStat AI • Built by Joshua Ziegen Paul
+            </p>
+            <p className="text-[9px] text-white/20 font-bold uppercase tracking-[0.2em]">
+              All Rights Reserved
+            </p>
+            <p className="text-[9px] text-white/20 font-bold uppercase tracking-[0.2em]">
+              For Educational, Research, and Informational Use
             </p>
             <p className="text-[9px] text-white/20 font-bold uppercase tracking-[0.2em]">
               Statistical Analysis • Forecasting • AI-Assisted Insights

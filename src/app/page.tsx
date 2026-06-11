@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { BarChart3, ArrowRight, ShieldCheck, Zap, BarChart3 as BarChartIcon, LineChart, PieChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';

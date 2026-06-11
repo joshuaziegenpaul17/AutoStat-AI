@@ -1,3 +1,4 @@
+
 # AutoStat AI – Automated Analytics & Forecasting
 
 **AutoStat AI** is a professional-grade data analytics platform designed to bridge the gap between raw datasets and executive decision-making. By combining standard statistical profiling with advanced AI-powered narrative synthesis, it provides a streamlined workflow for modern data exploration and reporting.
@@ -33,7 +34,7 @@ To run AutoStat AI locally:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/autostat-ai.git
+   git clone https://github.com/joshuaziegenpaul17/AutoStat-AI.git
    cd autostat-ai
    ```
 
@@ -66,7 +67,7 @@ AutoStat AI is designed as a professional demonstration platform. Data processed
 
 - **Version**: 2.5.0 (Stable)
 - **Audit**: Production Ready
-- **Author**: Analytics Engineering Team
+- **Author**: Joshua Ziegen Paul
 
 ---
 

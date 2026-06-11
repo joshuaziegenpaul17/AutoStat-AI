@@ -1,3 +1,4 @@
+
 export type DescriptiveStats = {
   mean: number;
   median: number;
@@ -129,7 +130,7 @@ export const calculateLocalDataQuality = (rows: any[], headers: string[]) => {
   }
   
   return {
-    qualityScore: Math.max(0, Math.round(score)),
+    qualityScore: Math.max(0, Math.min(95, Math.round(score))),
     issuesIdentified: issues,
     missingValues: missingCount
   };

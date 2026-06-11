@@ -1,13 +1,14 @@
 'use server';
 /**
  * @fileOverview Strategic Interpreter AI agent. Receives ONLY pre-computed statistics.
+ * Implements exponential backoff with a max retry window of 30 seconds.
  */
 
 import { ai } from '@/ai/genkit';
 import { aiInsightsPrompt, InsightsInputSchema, InsightsOutputSchema } from '../prompts/insights-prompt';
 import { z } from 'genkit';
 
-async function generateWithRetry(input: any, retries = 3, delay = 5000) {
+async function generateWithRetry(input: any, retries = 2, delay = 3000) {
   try {
     const { output } = await aiInsightsPrompt(input);
     if (!output) throw new Error("Analytical engine failed to interpret statistics.");
@@ -21,8 +22,8 @@ async function generateWithRetry(input: any, retries = 3, delay = 5000) {
       msg.toLowerCase().includes("quota");
 
     if (retries > 0 && isRetryable) {
-      const jitter = Math.random() * 2000;
-      const finalDelay = delay + jitter;
+      // Exponential backoff with jitter
+      const finalDelay = delay + (Math.random() * 1000);
       await new Promise(res => setTimeout(res, finalDelay));
       return generateWithRetry(input, retries - 1, delay * 2);
     }

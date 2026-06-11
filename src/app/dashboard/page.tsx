@@ -2,15 +2,14 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { 
-  BarChart3, LayoutDashboard, Sparkles, ShieldCheck, 
-  Zap, BrainCircuit, Loader2, RefreshCw,
+  BarChart3, ShieldCheck, Zap, Loader2, RefreshCw,
   AlertTriangle, Target, Activity, Database, 
-  Presentation, HelpCircle, ArrowDown
+  Presentation, Download, Share2
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { DatasetUpload } from '@/components/dashboard/DatasetUpload';
 import { StatVisuals } from '@/components/dashboard/StatVisuals';
 import { 
@@ -25,7 +24,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { runInsightsAction } from '@/app/actions/analytics';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
 export default function Dashboard() {
@@ -47,7 +45,6 @@ export default function Dashboard() {
   const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
   const categoricalColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'string') : [];
 
-  // LOCAL COMPUTATION: Descriptive Statistics
   const descriptiveResults = useMemo(() => {
     if (!currentDataset) return {};
     const results: Record<string, DescriptiveStats> = {};
@@ -60,27 +57,25 @@ export default function Dashboard() {
     return results;
   }, [currentDataset, numericColumns]);
 
-  // LOCAL COMPUTATION: Data Quality
   const dataAudit = useMemo(() => {
     if (!currentDataset) return { qualityScore: 0, issuesIdentified: [], missingValues: 0 };
     return calculateLocalDataQuality(currentDataset.rows, currentDataset.headers);
   }, [currentDataset]);
 
-  // LOCAL COMPUTATION: Correlations & Trends
   const runAiAnalysis = async () => {
     if (!currentDataset || isAnalyzing) return;
 
     const cacheKey = `${currentDataset.rows.length}-${currentDataset.headers.join('-')}`;
     if (insightsCache.current[cacheKey]) {
       setInsights(insightsCache.current[cacheKey]);
-      toast({ title: "Insights Retrieved", description: "Loaded results from local cache." });
+      setAnalysisError(null);
       return;
     }
     
     setIsAnalyzing(true);
     setAnalysisError(null);
-    console.log("[AI Engine] Initiating 1 Gemini request with summarized statistical payload.");
 
+    // Local prep for AI summary - only take top 5 correlations to save tokens
     const topCorrelations: string[] = [];
     if (numericColumns.length >= 2) {
       for (let i = 0; i < Math.min(numericColumns.length, 5); i++) {
@@ -91,31 +86,28 @@ export default function Dashboard() {
           const y = currentDataset.rows.map(r => r[c2]).filter(v => typeof v === 'number');
           const r = calculatePearsonCorrelation(x, y);
           if (Math.abs(r) > 0.4) {
-            topCorrelations.push(`${c1} vs ${c2}: ${r.toFixed(2)} correlation`);
+            topCorrelations.push(`${c1} vs ${c2}: ${r.toFixed(2)}`);
           }
         }
       }
     }
 
     const outlierCounts: Record<string, number> = {};
-    numericColumns.forEach(col => {
+    numericColumns.slice(0, 10).forEach(col => {
       outlierCounts[col] = descriptiveResults[col]?.outliers.length || 0;
     });
 
-    // Local Forecast for AI summary
     const firstNumCol = numericColumns[0];
     let forecastSummary = "Stable";
     if (firstNumCol) {
       const series = currentDataset.rows.map(r => r[firstNumCol]).filter(v => typeof v === 'number');
       const projection = projectLocalTrend(series, 5);
-      const start = projection[0];
-      const end = projection[projection.length - 1];
-      const delta = ((end - start) / (Math.abs(start) || 1)) * 100;
-      forecastSummary = `${delta > 0 ? 'Upward' : 'Downward'} trajectory with ~${Math.abs(delta).toFixed(1)}% variance projection.`;
+      const delta = ((projection[4] - projection[0]) / (Math.abs(projection[0]) || 1)) * 100;
+      forecastSummary = `${delta > 0 ? 'Up' : 'Down'} ~${Math.abs(delta).toFixed(1)}%`;
     }
 
-    const statsMetricsStr = Object.entries(descriptiveResults).map(([col, stats]) => {
-      return `${col}: Mean=${stats.mean.toFixed(1)}, Median=${stats.median.toFixed(1)}, Range=[${stats.min}-${stats.max}]`;
+    const statsMetricsStr = Object.entries(descriptiveResults).slice(0, 5).map(([col, stats]) => {
+      return `${col}: μ=${stats.mean.toFixed(1)}, Range=[${stats.min}-${stats.max}]`;
     }).join('; ');
 
     try {
@@ -123,7 +115,7 @@ export default function Dashboard() {
         datasetSummary: {
           rowCount: currentDataset.rows.length,
           columnCount: currentDataset.headers.length,
-          columnNames: currentDataset.headers,
+          columnNames: currentDataset.headers.slice(0, 10),
           missingValues: dataAudit.missingValues,
           qualityScore: dataAudit.qualityScore
         },
@@ -137,10 +129,10 @@ export default function Dashboard() {
         setInsights(res.data);
         insightsCache.current[cacheKey] = res.data;
       } else {
-        setAnalysisError(res.error || "AI interpretation is temporarily unavailable.");
+        setAnalysisError(res.error);
       }
     } catch (err: any) {
-      setAnalysisError("An error occurred during statistical interpretation.");
+      setAnalysisError("Analytical engine encountered a communication error.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -158,14 +150,14 @@ export default function Dashboard() {
           </Link>
           <div className="h-6 w-px bg-white/10" />
           <nav className="flex items-center gap-8 text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
-            <Link href="/dashboard" className="text-indigo-500">Workspace</Link>
+            <Link href="/dashboard" className="text-indigo-500">Dashboard</Link>
             <Link href="/security" className="hover:text-white">Security</Link>
             <Link href="/resources" className="hover:text-white">Resources</Link>
           </nav>
         </div>
         <div className="flex items-center gap-6">
           <Badge variant="outline" className="border-emerald-500/20 text-emerald-400 bg-emerald-500/5 text-[10px] font-bold px-4 py-1.5 uppercase tracking-widest">
-            LOCAL ENGINE: ACTIVE
+            Local Engine: Active
           </Badge>
         </div>
       </header>
@@ -183,12 +175,8 @@ export default function Dashboard() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div>
                   <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Automated Data Profiling</h2>
-                  <p className="text-white/40 font-medium italic">Instant local calculation of key structural and mathematical health metrics.</p>
+                  <p className="text-white/40 font-medium italic">Instant local calculation of structural and mathematical health metrics.</p>
                 </div>
-                <Badge className="bg-white/5 border-white/10 text-white font-mono text-xs px-4 py-2 rounded-lg">
-                  <Database className="h-3.5 w-3.5 mr-2 text-indigo-500" />
-                  ID: {Math.random().toString(36).substring(7).toUpperCase()}
-                </Badge>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -216,15 +204,15 @@ export default function Dashboard() {
             {/* 2. Exploratory Analytics */}
             <section className="space-y-10">
               <div>
-                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Statistical Exploration</h2>
-                <p className="text-white/40 font-medium italic">Real-time local visualization and deep distribution analysis.</p>
+                <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Exploratory Analytics</h2>
+                <p className="text-white/40 font-medium italic">Interactive visualization and distribution analysis calculated in-browser.</p>
               </div>
 
               <Tabs defaultValue="visuals" className="w-full">
                 <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl mb-10 h-auto flex flex-wrap gap-2">
                   <TabsTrigger value="visuals" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Visualizations</TabsTrigger>
-                  <TabsTrigger value="stats" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Descriptive Summary</TabsTrigger>
-                  <TabsTrigger value="table" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Raw Data</TabsTrigger>
+                  <TabsTrigger value="stats" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Statistical Summary</TabsTrigger>
+                  <TabsTrigger value="table" className="rounded-xl px-10 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Dataset Preview</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="visuals" className="mt-0 outline-none">
@@ -278,15 +266,15 @@ export default function Dashboard() {
             <section id="ai-insights" className="space-y-10">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Executive Interpretation</h2>
-                  <p className="text-white/40 font-medium italic">Summarized statistical findings synthesized into strategic business insights.</p>
+                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Executive Analysis</h2>
+                  <p className="text-white/40 font-medium italic">High-fidelity interpretation of local statistics synthesized into strategic business insights.</p>
                 </div>
                 {!insights && !isAnalyzing && (
                    <Button 
                     onClick={runAiAnalysis} 
                     className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-10 font-bold uppercase tracking-widest text-xs shadow-lg shadow-indigo-600/20"
                   >
-                    <Sparkles className="mr-2 h-4 w-4" />
+                    <Target className="mr-2 h-4 w-4" />
                     Generate AI Insights
                   </Button>
                 )}
@@ -298,7 +286,7 @@ export default function Dashboard() {
                     {isAnalyzing ? (
                       <div className="space-y-10 py-10 text-center flex flex-col items-center">
                         <Loader2 className="h-12 w-12 text-indigo-500 animate-spin mb-6" />
-                        <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">AI Engine interpreting statistical summaries...</p>
+                        <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">Interpreting statistical summaries...</p>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-12">
                           <Skeleton className="h-48 rounded-2xl bg-white/5" />
                           <Skeleton className="h-48 rounded-2xl bg-white/5" />
@@ -315,7 +303,7 @@ export default function Dashboard() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                               <Card className="bg-white/5 border-white/10 rounded-2xl p-8">
-                                <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-indigo-500" /> Key Findings</h5>
+                                <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Activity className="h-4 w-4 text-indigo-500" /> Key Findings</h5>
                                 <ul className="space-y-4">
                                   {insights.keyFindings.map((f: string, i: number) => (
                                     <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -326,7 +314,7 @@ export default function Dashboard() {
                                 </ul>
                               </Card>
                               <Card className="bg-white/5 border-white/10 rounded-2xl p-8">
-                                <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Opportunities</h5>
+                                <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Business Opportunities</h5>
                                 <ul className="space-y-4">
                                   {insights.businessOpportunities.map((o: string, i: number) => (
                                     <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -360,10 +348,16 @@ export default function Dashboard() {
                           <div className="space-y-6">
                             <AlertTriangle className="h-16 w-16 text-yellow-500 mx-auto" />
                             <div className="space-y-2">
-                              <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">AI Engine Paused</p>
+                              <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">AI Insights Unavailable</p>
                               <p className="text-white/40 font-medium max-w-md mx-auto">{analysisError}</p>
                             </div>
-                            <Button variant="link" onClick={runAiAnalysis} className="text-indigo-400 font-bold underline">Attempt Retry</Button>
+                            <Button 
+                              variant="outline" 
+                              onClick={runAiAnalysis} 
+                              className="border-indigo-500 text-indigo-400 font-bold uppercase tracking-widest text-xs px-8 h-12 rounded-xl"
+                            >
+                              Retry Analysis
+                            </Button>
                           </div>
                         ) : (
                           <>
@@ -371,14 +365,14 @@ export default function Dashboard() {
                               <Presentation className="h-16 w-16 text-white/20" />
                             </div>
                             <div className="space-y-2">
-                              <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Synthesis Required</p>
-                              <p className="text-white/40 font-medium max-w-md mx-auto">Click below to send local statistical summaries to the AI engine for strategic interpretation.</p>
+                              <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Interpretation Required</p>
+                              <p className="text-white/40 font-medium max-w-md mx-auto">Send locally calculated statistics to the AI engine for strategic executive analysis.</p>
                             </div>
                             <Button 
                               onClick={runAiAnalysis} 
                               className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-14 px-12 font-bold uppercase tracking-widest text-xs"
                             >
-                              Generate Executive Insights
+                              Generate AI Insights
                             </Button>
                           </>
                         )}
@@ -387,6 +381,30 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
+            </section>
+
+            <Separator className="bg-white/5" />
+
+            {/* 4. Export & Share */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 flex items-center justify-between group hover:bg-white/[0.08] transition-all">
+                <div className="space-y-2">
+                  <h4 className="text-xl font-black uppercase tracking-tighter">Automated Analytics Report</h4>
+                  <p className="text-white/30 text-xs font-medium">Download a complete PDF report of all statistics, forecasts, and AI insights.</p>
+                </div>
+                <Button variant="outline" className="border-white/10 group-hover:bg-white/10 rounded-xl h-12 px-8 font-bold text-[10px] uppercase tracking-widest">
+                  <Download className="mr-2 h-4 w-4" /> Export Report
+                </Button>
+              </Card>
+              <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 flex items-center justify-between group hover:bg-white/[0.08] transition-all">
+                <div className="space-y-2">
+                  <h4 className="text-xl font-black uppercase tracking-tighter">Share Analytics</h4>
+                  <p className="text-white/30 text-xs font-medium">Create a secure link to share this workspace with stakeholders.</p>
+                </div>
+                <Button variant="outline" className="border-white/10 group-hover:bg-white/10 rounded-xl h-12 px-8 font-bold text-[10px] uppercase tracking-widest">
+                  <Share2 className="mr-2 h-4 w-4" /> Copy Share Link
+                </Button>
+              </Card>
             </section>
           </div>
         )}
@@ -400,8 +418,21 @@ export default function Dashboard() {
               <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
             </div>
             <p className="text-[10px] text-white/20 max-w-sm leading-relaxed">
-              Professional statistical analysis platform with local computation and AI-assisted interpretation.
+              AutoStat AI is a professional data analytics platform for statistical profiling, forecasting, and AI-assisted reporting.
             </p>
+          </div>
+          <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Legal</p>
+              <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-white">Terms of Use</Link>
+              <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="text-indigo-500 opacity-60">Platform</p>
+              <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
+              <Link href="/resources" className="hover:text-white">Documentation</Link>
+            </div>
           </div>
           <div className="md:text-right space-y-2">
             <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">

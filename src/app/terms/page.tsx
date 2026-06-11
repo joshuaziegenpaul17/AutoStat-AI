@@ -71,8 +71,9 @@ export default function TermsOfUsePage() {
 
         <Separator className="bg-white/5" />
 
-        <footer className="text-xs text-white/20 leading-relaxed">
+        <footer className="text-xs text-white/20 leading-relaxed space-y-4">
           <p>By using AutoStat AI, you acknowledge that you have read and agree to these Terms of Use.</p>
+          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">© 2026 AutoStat AI • Built by Joshua Ziegen Paul</p>
         </footer>
       </main>
     </div>

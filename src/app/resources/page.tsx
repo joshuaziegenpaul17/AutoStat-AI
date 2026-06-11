@@ -208,7 +208,7 @@ export default function ResourcesPage() {
           </div>
           <div className="md:text-right space-y-2">
             <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-              © 2025 AUTOSTAT ANALYTICS
+              © 2026 AutoStat AI • Built by Joshua Ziegen Paul
             </p>
             <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
               v2.5.0 STABLE • SECURE PROCESSING

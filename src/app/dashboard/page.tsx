@@ -205,11 +205,12 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="mt-32 px-20">
+            <div className="mt-32 px-20 text-center">
               <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-4">Professional Disclosure</p>
-              <p className="text-[8px] text-zinc-400 leading-relaxed italic">
+              <p className="text-[8px] text-zinc-400 leading-relaxed italic mb-4">
                 AutoStat AI provides automated statistical analysis for informational purposes only. Results should not be interpreted as professional financial, legal, or investment advice.
               </p>
+              <p className="text-[10px] font-bold text-zinc-900 uppercase tracking-widest">© 2026 AutoStat AI • Built by Joshua Ziegen Paul</p>
             </div>
           </section>
 
@@ -356,7 +357,7 @@ export default function Dashboard() {
             </div>
 
             <footer className="mt-32 pt-8 border-t border-zinc-100 flex justify-between items-center text-zinc-400">
-              <span className="font-bold text-xs uppercase tracking-[0.2em]">© 2025 AutoStat Analytics Group</span>
+              <span className="font-bold text-xs uppercase tracking-[0.2em]">© 2026 AutoStat AI • Built by Joshua Ziegen Paul</span>
               <span className="font-mono text-xs uppercase">{reportMetadata.id} • END OF REPORT</span>
             </footer>
           </section>
@@ -644,7 +645,7 @@ export default function Dashboard() {
             </div>
             <div className="md:text-right space-y-2">
               <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-                © 2025 AUTOSTAT ANALYTICS
+                © 2026 AutoStat AI • Built by Joshua Ziegen Paul
               </p>
               <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
                 PROFESSIONAL DISCLOSURE ATTACHED

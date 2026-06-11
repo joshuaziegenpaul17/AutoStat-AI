@@ -79,6 +79,10 @@ export default function DisclaimerPage() {
         </section>
 
         <Separator className="bg-white/5" />
+        
+        <footer className="py-8">
+           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">© 2026 AutoStat AI • Built by Joshua Ziegen Paul</p>
+        </footer>
       </main>
     </div>
   );

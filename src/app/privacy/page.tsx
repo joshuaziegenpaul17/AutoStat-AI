@@ -71,8 +71,9 @@ export default function PrivacyPolicyPage() {
 
         <Separator className="bg-white/5" />
 
-        <footer className="text-xs text-white/20 leading-relaxed">
+        <footer className="text-xs text-white/20 leading-relaxed space-y-4">
           <p>If you have questions about our privacy practices, please contact our support team through the official documentation channels.</p>
+          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">© 2026 AutoStat AI • Built by Joshua Ziegen Paul</p>
         </footer>
       </main>
     </div>

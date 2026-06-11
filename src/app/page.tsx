@@ -183,7 +183,7 @@ export default function LandingPage() {
           </div>
           <div className="space-y-2 md:text-right">
             <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
-              © 2025 AUTOSTAT ANALYTICS
+              © 2026 AutoStat AI • Built by Joshua Ziegen Paul
             </p>
             <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
               v2.5.0 STABLE • LOCAL PROCESSING

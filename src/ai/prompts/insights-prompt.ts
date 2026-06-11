@@ -1,5 +1,5 @@
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+
+import { z } from 'zod';
 
 export const InsightsInputSchema = z.object({
   datasetSummary: z.object({
@@ -9,44 +9,48 @@ export const InsightsInputSchema = z.object({
     missingValues: z.number(),
     qualityScore: z.number(),
   }),
-  statsMetrics: z.string().describe('Condensed statistical summary strings.'),
+  statsMetrics: z.string(),
   topCorrelations: z.array(z.string()),
   outlierCounts: z.record(z.number()),
-  forecastTrajectory: z.string().describe('Description of the local linear forecast trend.'),
+  forecastTrajectory: z.string(),
 });
 
 export const InsightsOutputSchema = z.object({
-  executiveSummary: z.string().describe('A high-level strategic overview.'),
-  keyFindings: z.array(z.string()).describe('Top critical patterns identified.'),
-  businessOpportunities: z.array(z.string()).describe('Actionable growth areas.'),
-  recommendations: z.array(z.string()).describe('Strategic advice.'),
-  confidenceScore: z.number().min(0).max(100),
+  executiveSummary: z.string(),
+  keyFindings: z.array(z.string()),
+  businessOpportunities: z.array(z.string()),
+  recommendations: z.array(z.string()),
+  confidenceScore: z.number(),
 });
 
-export const aiInsightsPrompt = ai.definePrompt({
-  name: 'aiInsightsPrompt',
-  model: 'googleai/gemini-2.0-flash',
-  input: { schema: InsightsInputSchema },
-  output: { schema: InsightsOutputSchema },
-  prompt: `You are an elite enterprise data analyst. You have been provided with a pre-computed statistical summary of a dataset.
+export function getInsightsMessages(input: z.infer<typeof InsightsInputSchema>) {
+  const system = `You are an elite enterprise data analyst. You have been provided with a pre-computed statistical summary of a dataset.
+DO NOT hallucinate raw data. Only interpret the statistical summary provided.
+Output MUST be valid JSON matching the schema.`;
 
-### DATA METADATA:
-Rows: {{datasetSummary.rowCount}}
-Columns: {{datasetSummary.columnCount}} ({{datasetSummary.columnNames}})
-Data Quality Score: {{datasetSummary.qualityScore}}/100
-Missing Values: {{datasetSummary.missingValues}}
+  const user = `### DATA METADATA:
+Rows: ${input.datasetSummary.rowCount}
+Columns: ${input.datasetSummary.columnCount} (${input.datasetSummary.columnNames.join(', ')})
+Data Quality Score: ${input.datasetSummary.qualityScore}/100
+Missing Values: ${input.datasetSummary.missingValues}
 
 ### STATISTICAL EVIDENCE:
-Metrics: {{{statsMetrics}}}
-Top Correlations: {{#each topCorrelations}}- {{this}}
-{{/each}}
-Outlier Profile: {{#each outlierCounts}}{{@key}}: {{this}} outliers{{/each}}
-Local Forecast Trend: {{forecastTrajectory}}
+Metrics: ${input.statsMetrics}
+Top Correlations:
+${input.topCorrelations.map(c => `- ${c}`).join('\n')}
+
+Outlier Profile:
+${Object.entries(input.outlierCounts).map(([k, v]) => `- ${k}: ${v} outliers`).join('\n')}
+
+Local Forecast Trend: ${input.forecastTrajectory}
 
 ### ANALYTICAL PROTOCOL:
-1. **Executive Synthesis**: Provide an authoritative strategic summary based ON THE NUMBERS provided.
-2. **Opportunity Mapping**: Translate these statistical findings into actionable business growth areas.
-3. **Strategic Recommendations**: Provide high-level advice for stakeholders.
+1. Executive Synthesis: Provide an authoritative strategic summary based ON THE NUMBERS provided.
+2. Opportunity Mapping: Translate these statistical findings into actionable business growth areas.
+3. Strategic Recommendations: Provide high-level advice for stakeholders.`;
 
-DO NOT hallucinate raw data. Only interpret the statistical summary provided.`,
-});
+  return [
+    { role: 'system', content: system },
+    { role: 'user', content: user }
+  ];
+}

@@ -1,5 +1,5 @@
-import { config } from 'dotenv';
-config();
 
-import '@/ai/flows/data-quality-suggester.ts';
-import '@/ai/flows/ai-insights-generator.ts';
+/**
+ * @fileOverview This file is no longer in use. AI infrastructure has migrated to Groq.
+ */
+export const dev = null;

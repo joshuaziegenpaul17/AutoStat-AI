@@ -1,5 +1,5 @@
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+
+import { z } from 'zod';
 
 export const ForecastInputSchema = z.object({
   timeSeriesData: z.string(),
@@ -17,26 +17,27 @@ export const ForecastOutputSchema = z.object({
   recommendations: z.array(z.string()),
 });
 
-export const predictiveForecastPrompt = ai.definePrompt({
-  name: 'predictiveForecastPrompt',
-  model: 'googleai/gemini-2.0-flash',
-  input: { schema: ForecastInputSchema },
-  output: { schema: ForecastOutputSchema },
-  prompt: `You are an expert econometric modeler. Analyze the historical sequence and project future state.
+export function getForecastMessages(input: z.infer<typeof ForecastInputSchema>) {
+  const system = `You are an expert econometric modeler. Analyze the historical sequence and project future state. Output MUST be valid JSON.`;
 
-### INSTRUCTIONS:
-1. Inspect the historical sequence for "{{targetColumn}}".
+  const user = `### INSTRUCTIONS:
+1. Inspect the historical sequence for "${input.targetColumn}".
 2. Analyze trend architecture and mathematical velocity.
-3. Generate exactly {{horizon}} sequential numerical forecast points.
+3. Generate exactly ${input.horizon} sequential numerical forecast points.
 4. Identify risk vectors and drift boundaries.
 
 ### RESTRICTIONS:
 * 'trajectoryTrend' must be: upward, downward, or stable.
-* 'predictedMetrics' must have exactly {{horizon}} points.
+* 'predictedMetrics' must have exactly ${input.horizon} points.
 
 INPUT:
-Target: {{targetColumn}}
-Horizon: {{horizon}}
+Target: ${input.targetColumn}
+Horizon: ${input.horizon}
 Snapshot:
-{{timeSeriesData}}`,
-});
+${input.timeSeriesData}`;
+
+  return [
+    { role: 'system', content: system },
+    { role: 'user', content: user }
+  ];
+}

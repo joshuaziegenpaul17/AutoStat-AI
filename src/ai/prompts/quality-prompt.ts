@@ -1,5 +1,5 @@
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+
+import { z } from 'zod';
 
 export const QualityInputSchema = z.object({
   datasetPreview: z.string(),
@@ -7,39 +7,32 @@ export const QualityInputSchema = z.object({
 });
 
 export const QualityOutputSchema = z.object({
-  summary: z.string().describe('A high-level diagnostic summary.'),
+  summary: z.string(),
   suggestions: z.array(z.object({
     issueType: z.string(),
     description: z.string(),
     suggestion: z.string(),
     affectedColumns: z.array(z.string()),
   })),
-  qualityScore: z.number().min(0).max(100),
+  qualityScore: z.number(),
   issuesIdentified: z.array(z.string()),
 });
 
-export const dataQualityPrompt = ai.definePrompt({
-  name: 'dataQualityPrompt',
-  model: 'googleai/gemini-2.0-flash',
-  input: { schema: QualityInputSchema },
-  output: { schema: QualityOutputSchema },
-  prompt: `You are a senior data engineer and expert statistical auditor. Analyze the structural integrity of this dataset.
+export function getQualityMessages(input: z.infer<typeof QualityInputSchema>) {
+  const system = `You are a senior data engineer and expert statistical auditor. Analyze the structural integrity of this dataset. Output MUST be valid JSON.`;
 
-### CRITICAL INSPECTION:
-1. Data Types & Layouts: Inspect preview for discrepancies in {{{columnNamesString}}}.
+  const user = `### CRITICAL INSPECTION:
+1. Data Types & Layouts: Inspect preview for discrepancies in ${input.columnNamesString}.
 2. Statistical Vulnerabilities: Flag high sparsity or unhandled missing values.
 3. Anomaly Risks: Mixed types or timestamp inconsistencies.
 
-### EVALUATION:
-* Deduct 10-15 points for major structural debt.
-* Deduct 5 points for maintenance suggestions (casing, indexing).
-
-### RULES:
-* No conversational filler. Match schema exactly.
-* Suggestions must be actionable.
-
 INPUT:
-Columns: {{{columnNamesString}}}
+Columns: ${input.columnNamesString}
 Preview:
-{{{datasetPreview}}}`,
-});
+${input.datasetPreview}`;
+
+  return [
+    { role: 'system', content: system },
+    { role: 'user', content: user }
+  ];
+}

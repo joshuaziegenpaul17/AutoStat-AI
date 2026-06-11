@@ -4,6 +4,7 @@ import { callGroq } from './groq';
 /**
  * @fileOverview AI Insights Engine (Groq Implementation).
  * Validates and processes statistical summaries into strategic business narratives.
+ * PRESENTED AS SUGGESTED INSIGHTS FOR INFORMATIONAL PURPOSES.
  */
 
 export const InsightsOutputSchema = z.object({
@@ -23,17 +24,17 @@ export async function generateExecutiveInsights(input: any): Promise<InsightsOut
   const systemPrompt = `You are an elite enterprise data analyst and management consultant. Your task is to interpret statistical summaries and provide deep strategic business insights.
 DO NOT hallucinate data. Only use the numbers provided.
 Your response MUST be a valid JSON object matching this schema.
-Provide significant depth (3-5 paragraphs total across summary and interpretation fields).
+Present all findings as "suggested insights" or "analytical observations" to avoid implying professional advisory services.
 
 Required Schema:
 {
   "executiveSummary": "A concise high-level strategic overview.",
-  "businessSummary": "A deep 2-paragraph narrative summary of the dataset's implications for business strategy.",
-  "keyFindings": ["4-6 core statistical observations with specific mentions of provided metrics."],
-  "businessOpportunities": ["3-4 actionable areas for growth or optimization."],
+  "businessSummary": "A deep 2-paragraph narrative summary of the dataset's analytical implications.",
+  "keyFindings": ["4-6 core statistical observations with specific mentions of metrics."],
+  "businessOpportunities": ["3-4 suggested areas for growth or optimization based on patterns."],
   "riskAnalysis": "A detailed paragraph identifying potential statistical risks, bias, or volatility in the current data trends.",
-  "recommendations": ["4-5 high-level actionable pieces of advice for stakeholders."],
-  "forecastInterpretation": "A dedicated paragraph explaining the trajectory and what it implies for next quarter.",
+  "recommendations": ["4-5 suggested strategic insights for further stakeholder consideration."],
+  "forecastInterpretation": "A dedicated paragraph explaining the statistical trajectory and its probabilistic implications.",
   "confidenceScore": number (0-95 based on data quality and sample size)
 }`;
 
@@ -41,7 +42,7 @@ Required Schema:
 ${JSON.stringify(input, null, 2)}
 
 ### ANALYTICAL REQUEST:
-Provide a comprehensive consulting report interpretation. Focus on trajectories, correlations, and anomalies. Be authoritative and professional.`;
+Provide a comprehensive consulting-style interpretation. Focus on trajectories, correlations, and anomalies. Present all recommendations as suggested insights.`;
 
   const messages = [
     { role: 'system', content: systemPrompt },

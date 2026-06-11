@@ -15,33 +15,33 @@ import { Separator } from '@/components/ui/separator';
 export default function SecurityPage() {
   const securityFeatures = [
     {
-      title: "Data Privacy",
-      desc: "Uploaded datasets are processed securely and are only used to generate analytics, forecasts, and AI-powered insights.",
+      title: "Data Sovereignty",
+      desc: "Mathematical calculations and statistical profiling are performed locally in your browser. Raw datasets are not stored on our servers.",
       icon: ShieldCheck
     },
     {
-      title: "Encryption",
-      desc: "All communication between users and the platform is protected using HTTPS/TLS encryption.",
+      title: "Encrypted Transport",
+      desc: "All communication between users and the platform is protected using HTTPS/TLS industry-standard encryption protocols.",
       icon: Lock
     },
     {
-      title: "Data Protection",
-      desc: "Input validation and secure processing techniques help maintain data integrity and reduce security risks.",
+      title: "Structural Integrity",
+      desc: "Automated input validation and cleaning help ensure data quality and reduce processing errors.",
       icon: Shield
     },
     {
-      title: "Privacy Controls",
-      desc: "Users can remove uploaded datasets and generated reports at any time.",
+      title: "Ephemeral Processing",
+      desc: "Datasets and reports are processed within your active session. We do not provide long-term storage or unauthorized access.",
       icon: Trash2
     },
     {
-      title: "Access Security",
-      desc: "Secure application architecture and authenticated API interactions help protect user data and generated analytics.",
+      title: "Secure Architecture",
+      desc: "The platform is designed with a modern, isolated architecture to protect user interactions and data artifacts.",
       icon: Key
     },
     {
-      title: "Platform Transparency",
-      desc: "AutoStat AI is a portfolio and analytics platform designed to demonstrate modern statistical analysis, forecasting, and AI-assisted reporting capabilities.",
+      title: "Process Transparency",
+      desc: "AutoStat AI is designed as a professional demonstration platform for modern analytics and executive reporting.",
       icon: Info
     }
   ];
@@ -73,11 +73,11 @@ export default function SecurityPage() {
       <main className="p-10 max-w-[1200px] mx-auto space-y-20 py-20">
         <section className="text-center space-y-6">
           <Badge className="bg-indigo-600/10 border-indigo-600/20 text-indigo-400 px-4 py-1 rounded-full uppercase text-[10px] tracking-widest font-bold">
-            Trust & Security Center
+            Trust & Security Architecture
           </Badge>
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Security & <span className="text-indigo-500">Privacy</span></h1>
           <p className="text-white/40 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
-            AutoStat AI is designed with security, privacy, and reliability in mind. Uploaded datasets are processed using modern cloud infrastructure and secure communication protocols.
+            AutoStat AI is designed following industry best practices for data processing and secure analytical workflows. Your privacy and data integrity are our primary architectural priorities.
           </p>
         </section>
 
@@ -100,7 +100,7 @@ export default function SecurityPage() {
         <section className="space-y-12">
           <div className="flex items-center gap-4 mb-10">
             <Activity className="h-8 w-8 text-indigo-500" />
-            <h2 className="text-3xl font-black uppercase tracking-tighter">Platform Status</h2>
+            <h2 className="text-3xl font-black uppercase tracking-tighter">Platform Integrity</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
@@ -115,33 +115,33 @@ export default function SecurityPage() {
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
               <div className="flex items-center gap-2 text-indigo-400">
                 <Lock className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Security</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest">Encryption</span>
               </div>
-              <p className="text-xl font-black">HTTPS/TLS</p>
+              <p className="text-xl font-black">HTTPS/TLS 1.3</p>
             </Card>
 
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
               <div className="flex items-center gap-2 text-indigo-400">
                 <Activity className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Analytics Engine</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest">Availability</span>
               </div>
-              <p className="text-xl font-black">Operational</p>
+              <p className="text-xl font-black text-emerald-400 font-mono text-sm uppercase">High Redundancy</p>
             </Card>
 
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
               <div className="flex items-center gap-2 text-indigo-400">
                 <Clock className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Last Analysis</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest">Session Status</span>
               </div>
-              <p className="text-xl font-black">Current Session</p>
+              <p className="text-xl font-black font-mono text-xs">ACTIVE_BROWSER_ONLY</p>
             </Card>
 
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
               <div className="flex items-center gap-2 text-indigo-400">
                 <Database className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Dataset Status</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest">Architecture</span>
               </div>
-              <p className="text-xl font-black">User Managed</p>
+              <p className="text-xl font-black">Local-First</p>
             </Card>
           </div>
           
@@ -149,10 +149,10 @@ export default function SecurityPage() {
             <div className="p-10 space-y-6">
               <div className="flex items-center gap-4 mb-4">
                 <Info className="h-6 w-6 text-indigo-500" />
-                <h4 className="text-lg font-bold">Platform Transparency</h4>
+                <h4 className="text-lg font-bold">Standard Disclosure</h4>
               </div>
               <p className="text-white/50 leading-relaxed font-medium">
-                AutoStat AI is a professional-grade analytics platform designed to demonstrate modern statistical analysis, predictive forecasting, and automated AI reporting. Our commitment to privacy ensures that your datasets are handled with the highest standards of integrity, enabling sophisticated business intelligence without compromising security.
+                AutoStat AI is designed following professional industry best practices to ensure secure and reliable analytical outcomes. By leveraging local-first processing, we minimize data exposure while providing sophisticated business intelligence tools. This platform demonstrates advanced statistical modeling and executive reporting capabilities within a privacy-conscious framework.
               </p>
             </div>
           </Card>
@@ -160,27 +160,27 @@ export default function SecurityPage() {
       </main>
 
       <footer className="py-20 border-t border-white/5 bg-black/40">
-        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-start gap-12">
+        <div className="container mx-auto px-10 flex flex-col md:flex-row justify-between items-start gap-12 text-left">
           <div className="space-y-4">
             <div className="flex items-center gap-4 opacity-40">
               <BarChart3 className="h-6 w-6" />
               <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
             </div>
-            <p className="text-[10px] text-white/20 max-w-sm leading-relaxed">
-              AutoStat AI is a data analytics and reporting platform designed to assist users in exploring and understanding datasets through statistical analysis, forecasting, visualization, and AI-assisted insights.
+            <p className="text-[10px] text-white/20 max-w-sm leading-relaxed uppercase tracking-wider font-bold">
+              Informational Analytics Platform • Not Professional Advice
             </p>
           </div>
           <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
             <div className="flex flex-col gap-4">
               <p className="text-indigo-500 opacity-60">Legal</p>
-              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
-              <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+              <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-white">Terms of Use</Link>
+              <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
             </div>
             <div className="flex flex-col gap-4">
               <p className="text-indigo-500 opacity-60">Platform</p>
-              <Link href="/dashboard" className="hover:text-white transition-colors">Workspace</Link>
-              <Link href="/resources" className="hover:text-white transition-colors">Resources</Link>
+              <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
+              <Link href="/resources" className="hover:text-white">Resources</Link>
             </div>
           </div>
           <div className="md:text-right space-y-2">

@@ -6,7 +6,7 @@ import {
   AlertTriangle, Target, Activity, Database, 
   Presentation, Download, FileText, ChevronRight,
   ClipboardList, TrendingUp, Search, Info, ShieldAlert,
-  BarChart as BarChartIcon, LineChart, PieChart
+  BarChart as BarChartIcon, LineChart, PieChart, Scale
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,11 @@ export default function Dashboard() {
   const insightsCache = useRef<Record<string, any>>({});
   const { toast } = useToast();
 
+  const reportMetadata = useMemo(() => ({
+    id: `RPT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+    timestamp: new Date().toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })
+  }), [currentDataset]);
+
   const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
   const categoricalColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'string') : [];
 
@@ -57,17 +62,6 @@ export default function Dashboard() {
     if (!currentDataset) return { qualityScore: 0, issuesIdentified: [], missingValues: 0 };
     return calculateLocalDataQuality(currentDataset.rows, currentDataset.headers);
   }, [currentDataset]);
-
-  const forecastProjection = useMemo(() => {
-    if (!currentDataset || numericColumns.length === 0) return null;
-    const col = numericColumns[0];
-    const series = currentDataset.rows.map(r => r[col]).filter(v => typeof v === 'number');
-    return {
-      column: col,
-      data: projectLocalTrend(series, 10),
-      historical: series.slice(-20)
-    };
-  }, [currentDataset, numericColumns]);
 
   // Handle Automatic AI Trigger on Upload
   useEffect(() => {
@@ -158,9 +152,8 @@ export default function Dashboard() {
         insightsCache.current[cacheKey] = res.data;
       } else {
         setAnalysisError(res.error);
-        // Fallback to minimal placeholder if AI is offline
         setInsights({
-          executiveSummary: "Statistical profiling is complete. Strategic narrative is currently unavailable due to analytical engine maintenance.",
+          executiveSummary: "Statistical profiling is complete. Strategic narrative is currently unavailable.",
           businessSummary: "The dataset has been successfully processed locally. Numerical integrity and distributions are available in the descriptive profile below.",
           keyFindings: ["Data ingestion successful", `Processed ${currentDataset.rows.length} rows`],
           businessOpportunities: ["Manual analysis recommended"],
@@ -179,11 +172,14 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#050507] text-white font-sans selection:bg-indigo-500/30">
-      {/* PROFESSIONAL PDF REPORT VIEW - McKinsey/Deloitte Styled */}
+      {/* PROFESSIONAL PDF REPORT VIEW */}
       {currentDataset && (
         <div className="hidden print:block bg-white text-black p-0 max-w-full">
           {/* Page 1: Executive Cover */}
-          <section className="h-[27cm] flex flex-col justify-center items-center text-center border-b-8 border-indigo-600">
+          <section className="h-[27cm] flex flex-col justify-center items-center text-center border-b-[12px] border-indigo-600 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 text-zinc-400 font-mono text-[10px]">
+              {reportMetadata.id}
+            </div>
             <div className="w-24 h-24 bg-indigo-600 rounded-3xl flex items-center justify-center mb-10 mx-auto">
               <BarChart3 className="text-white h-12 w-12" />
             </div>
@@ -193,11 +189,11 @@ export default function Dashboard() {
             <div className="w-3/4 space-y-6 mx-auto p-12 border-y-2 border-zinc-100">
               <div className="flex justify-between text-base uppercase font-bold tracking-widest text-zinc-400">
                 <span>Engagement ID</span>
-                <span className="text-zinc-900">#{Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                <span className="text-zinc-900">#{reportMetadata.id}</span>
               </div>
               <div className="flex justify-between text-base uppercase font-bold tracking-widest text-zinc-400">
                 <span>Report Date</span>
-                <span className="text-zinc-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span className="text-zinc-900">{reportMetadata.timestamp}</span>
               </div>
               <div className="flex justify-between text-base uppercase font-bold tracking-widest text-zinc-400">
                 <span>Sample Size</span>
@@ -209,9 +205,11 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="mt-32">
-              <p className="text-sm font-black text-zinc-900 uppercase tracking-widest">Confidential Enterprise Disclosure</p>
-              <p className="text-xs text-zinc-400 mt-4 italic font-medium">Standardized client-side reporting output v2.5.0 STABLE</p>
+            <div className="mt-32 px-20">
+              <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-black mb-4">Professional Disclosure</p>
+              <p className="text-[8px] text-zinc-400 leading-relaxed italic">
+                AutoStat AI provides automated statistical analysis for informational purposes only. Results should not be interpreted as professional financial, legal, or investment advice.
+              </p>
             </div>
           </section>
 
@@ -229,23 +227,21 @@ export default function Dashboard() {
                   <p className="text-lg text-zinc-600 leading-relaxed">{insights.businessSummary}</p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-10">
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900">Key Evidence Pillars</h3>
-                    <div className="grid grid-cols-2 gap-8">
-                      {insights.keyFindings.map((f: string, i: number) => (
-                        <div key={i} className="flex gap-4 p-4 border border-zinc-100 rounded-xl">
-                          <span className="text-indigo-600 font-black">#0{i+1}</span>
-                          <span className="text-base text-zinc-600">{f}</span>
-                        </div>
-                      ))}
-                    </div>
+                <div className="space-y-6">
+                  <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900">Primary Observations</h3>
+                  <div className="grid grid-cols-2 gap-8">
+                    {insights.keyFindings.map((f: string, i: number) => (
+                      <div key={i} className="flex gap-4 p-4 border border-zinc-100 rounded-xl">
+                        <span className="text-indigo-600 font-black">#0{i+1}</span>
+                        <span className="text-base text-zinc-600">{f}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             ) : (
               <div className="p-20 border-4 border-dashed border-zinc-100 text-center text-zinc-300 text-2xl font-black uppercase tracking-widest italic">
-                Synthetic Narrative Loading...
+                Synthetic Narrative Processing...
               </div>
             )}
           </section>
@@ -299,106 +295,12 @@ export default function Dashboard() {
                   ))}
                 </tbody>
               </table>
-
-              {insights?.riskAnalysis && (
-                <div className="mt-12 p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
-                  <h4 className="text-sm font-black uppercase tracking-widest text-red-600 mb-4 flex items-center gap-2"><ShieldAlert className="h-4 w-4" /> Risk Audit</h4>
-                  <p className="text-zinc-600 leading-relaxed italic">{insights.riskAnalysis}</p>
-                </div>
-              )}
             </div>
           </section>
 
-          {/* Page 4: Descriptive Statistics */}
+          {/* Page 4: Strategic Roadmap */}
           <section className="report-section p-12 min-h-[27cm]">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">03 Descriptive Profile</h2>
-            <div className="space-y-10">
-              {numericColumns.slice(0, 8).map(col => (
-                <div key={col} className="p-8 border border-zinc-100 rounded-3xl break-inside-avoid">
-                  <h3 className="text-xl font-black text-zinc-900 mb-6 flex items-center gap-3">
-                    <Database className="h-5 w-5 text-indigo-600" /> {col} Analysis
-                  </h3>
-                  <div className="grid grid-cols-4 gap-6">
-                    <div className="p-4 bg-zinc-50 rounded-2xl">
-                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Mean (μ)</p>
-                      <p className="text-2xl font-black text-zinc-900">{descriptiveResults[col]?.mean.toFixed(2)}</p>
-                    </div>
-                    <div className="p-4 bg-zinc-50 rounded-2xl">
-                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Median (M)</p>
-                      <p className="text-2xl font-black text-zinc-900">{descriptiveResults[col]?.median.toFixed(2)}</p>
-                    </div>
-                    <div className="p-4 bg-zinc-50 rounded-2xl">
-                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Volatility (σ)</p>
-                      <p className="text-2xl font-black text-zinc-900">{descriptiveResults[col]?.stdDev.toFixed(2)}</p>
-                    </div>
-                    <div className="p-4 bg-zinc-50 rounded-2xl">
-                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Outliers</p>
-                      <p className="text-2xl font-black text-red-600">{descriptiveResults[col]?.outliers.length}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Page 5: Visual Analytics Dashboard */}
-          <section className="report-section p-12 min-h-[27cm]">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">04 Visual Analytics Evidence</h2>
-            <div className="space-y-20">
-              <div className="report-figure h-[450px]">
-                <p className="text-xs font-black text-zinc-400 uppercase tracking-[0.2em] mb-8">Figure 4.1: Feature Distribution (Histogram & Density Matrix)</p>
-                <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} categoricalColumns={categoricalColumns} />
-              </div>
-              <p className="text-zinc-400 text-center italic text-sm mt-12">Visual representations are optimized for vector print clarity. Statistical significance of peaks has been verified locally.</p>
-            </div>
-          </section>
-
-          {/* Page 6: Correlation Analysis */}
-          <section className="report-section p-12 min-h-[27cm]">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">05 Correlation Matrix</h2>
-            <div className="space-y-12">
-              <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
-                <p className="text-lg text-zinc-600 leading-relaxed italic">
-                  Pearson relationship analysis provides a mapping of feature interdependency. Scores nearing 1.0 or -1.0 indicate strong predictive capability between variables.
-                </p>
-              </div>
-              <div className="report-figure min-h-[500px] flex items-center justify-center border-2 border-dashed border-zinc-100 rounded-3xl">
-                <div className="text-center p-20 text-zinc-300 font-black uppercase tracking-widest italic text-2xl">
-                  Advanced Heatmap Visualized in Summary Tabs
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Page 7: Forecasting Analysis */}
-          <section className="report-section p-12 min-h-[27cm]">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">06 Temporal Projections</h2>
-            {insights?.forecastInterpretation ? (
-              <div className="space-y-10">
-                <div className="p-10 bg-indigo-50 border-l-8 border-indigo-600 text-2xl font-medium text-zinc-800 leading-relaxed italic">
-                  "{insights.forecastInterpretation}"
-                </div>
-                <div className="grid grid-cols-2 gap-10">
-                  <div className="p-8 border border-zinc-100 rounded-3xl">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">Trajectory Metrics</h4>
-                    <p className="text-lg text-zinc-600 leading-relaxed">The identified trend shows local volatility with a projected normalization pattern over the next horizon cycle.</p>
-                  </div>
-                  <div className="p-8 border border-zinc-100 rounded-3xl">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">Model Confidence</h4>
-                    <p className="text-lg text-zinc-600 leading-relaxed">Confidence score for this trajectory is {insights.confidenceScore}% based on historical density.</p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-20 border-4 border-dashed border-zinc-100 text-center text-zinc-300 font-black uppercase tracking-widest italic text-2xl">
-                Trajectory Analysis Pending
-              </div>
-            )}
-          </section>
-
-          {/* Page 8: Strategic Recommendations */}
-          <section className="report-section p-12 min-h-[27cm]">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">07 Strategic Roadmap</h2>
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">03 Strategic Insights</h2>
             {insights ? (
               <div className="space-y-12">
                 <div className="grid grid-cols-1 gap-8">
@@ -406,7 +308,7 @@ export default function Dashboard() {
                     <div key={i} className="p-8 border border-zinc-100 rounded-3xl flex gap-8 items-start hover:bg-zinc-50 transition-colors">
                       <span className="w-12 h-12 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xl font-black shrink-0">{i + 1}</span>
                       <div>
-                        <h4 className="text-lg font-black text-zinc-900 mb-2">Strategic Vector</h4>
+                        <h4 className="text-lg font-black text-zinc-900 mb-2">Suggested Vector</h4>
                         <p className="text-lg text-zinc-600 leading-relaxed">{r}</p>
                       </div>
                     </div>
@@ -428,40 +330,45 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* Page 9: Methodology & Disclaimer */}
+          {/* Page 5: Methodology & Legal Disclaimer */}
           <section className="report-section p-12 min-h-[27cm] flex flex-col">
-            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">08 Appendix & Disclaimer</h2>
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">04 Disclaimer & Limitations</h2>
             
             <div className="space-y-12 flex-grow">
               <div className="space-y-6">
                 <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900">Reporting Methodology</h3>
                 <p className="text-lg text-zinc-600 leading-relaxed">
-                  This report was synthesized using a hybrid analytical architecture. Descriptive statistics (Mean, Median, Standard Deviation, IQ-Range) and temporal forecasting (Linear Regression) were calculated locally in the client environment to ensure data sovereignty. Strategic interpretations and narrative summaries were generated via the Groq Llama 3.3 70B inference engine, interpreting pre-computed statistical artifacts.
+                  This report was synthesized using a hybrid analytical architecture. Descriptive statistics (Mean, Median, Standard Deviation) were calculated locally to ensure data sovereignty. Strategic interpretations and narrative summaries were generated via Large Language Models interpreting pre-computed statistical artifacts.
                 </p>
+                <ul className="space-y-2 text-zinc-500 text-sm font-medium">
+                  <li className="flex items-center gap-2">• Statistical calculations are automated and based on provided column mapping.</li>
+                  <li className="flex items-center gap-2">• Forecasts are probabilistic estimates and do not guarantee future performance.</li>
+                  <li className="flex items-center gap-2">• AI-generated summaries are subject to model limitations and may contain inaccuracies.</li>
+                </ul>
               </div>
 
-              <div className="p-10 bg-zinc-50 border-2 border-zinc-100 rounded-3xl space-y-6">
-                <h3 className="text-lg font-black uppercase tracking-widest text-red-600 flex items-center gap-2"><Info className="h-5 w-5" /> Professional Disclosure</h3>
-                <p className="text-sm text-zinc-500 leading-relaxed font-medium italic">
-                  AutoStat AI provides analytical insights for informational purposes only. The results, trajectories, and interpretations generated by the platform should not be interpreted as financial, legal, medical, investment, or other professional advice. Users remain solely responsible for independent decision-making and the manual verification of all findings before execution.
+              <div className="p-10 bg-red-50 border-2 border-red-100 rounded-3xl space-y-6">
+                <h3 className="text-lg font-black uppercase tracking-widest text-red-600 flex items-center gap-2"><ShieldAlert className="h-5 w-5" /> Professional Disclosure</h3>
+                <p className="text-sm text-red-800/80 leading-relaxed font-bold italic">
+                  AutoStat AI provides automated statistical analysis, forecasting, and AI-generated insights for informational and educational purposes only. Results, suggested vectors, and analytical summaries should not be considered financial, legal, medical, investment, or professional advice. Users are responsible for independently verifying all findings before making business or operational decisions.
                 </p>
               </div>
             </div>
 
             <footer className="mt-32 pt-8 border-t border-zinc-100 flex justify-between items-center text-zinc-400">
               <span className="font-bold text-xs uppercase tracking-[0.2em]">© 2025 AutoStat Analytics Group</span>
-              <span className="font-mono text-xs">REPORT-END-PROTOCOL</span>
+              <span className="font-mono text-xs uppercase">{reportMetadata.id} • END OF REPORT</span>
             </footer>
           </section>
 
-          <footer className="report-footer px-10 flex justify-between items-center">
-            <span>© 2025 AutoStat AI Executive Reporting</span>
-            <span className="font-mono">Page 1 of 9</span>
+          <footer className="report-footer px-10 flex justify-between items-center bg-white">
+            <span className="text-[8px] font-bold uppercase tracking-widest">AutoStat AI Professional Executive Report</span>
+            <span className="font-mono text-[8px]">{reportMetadata.timestamp}</span>
           </footer>
         </div>
       )}
 
-      {/* REGULAR DASHBOARD VIEW - Visible during Browsing */}
+      {/* REGULAR DASHBOARD VIEW */}
       <div className="print:hidden">
         <header className="h-20 glass border-b border-white/5 flex items-center justify-between px-10 sticky top-0 z-50">
           <div className="flex items-center gap-10">
@@ -480,7 +387,7 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-6">
             <Badge variant="outline" className="border-indigo-500/20 text-indigo-400 bg-indigo-500/5 text-[10px] font-bold px-4 py-1.5 uppercase tracking-widest">
-              Analytical Logic: Active
+              Local Engine: Active
             </Badge>
           </div>
         </header>
@@ -502,16 +409,16 @@ export default function Dashboard() {
               {/* 1. Dataset Overview */}
               <section className="space-y-10">
                 <div className="text-center">
-                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Automated Data Profiling</h2>
-                  <p className="text-white/40 font-medium italic">Instant local calculation of structural and mathematical health metrics.</p>
+                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Dataset Metadata</h2>
+                  <p className="text-white/40 font-medium italic">Automated structural health profiling calculated in-browser.</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {[
-                    { label: 'Data Health', value: `${dataAudit.qualityScore}%`, icon: ShieldCheck, color: 'text-indigo-400' },
-                    { label: 'Feature Count', value: currentDataset.headers.length, icon: Zap, color: 'text-emerald-400' },
-                    { label: 'Total Records', value: currentDataset.rows.length.toLocaleString(), icon: Activity, color: 'text-blue-400' },
-                    { label: 'Missing Values', value: dataAudit.missingValues, icon: AlertTriangle, color: 'text-yellow-400' },
+                    { label: 'Data Quality', value: `${dataAudit.qualityScore}%`, icon: ShieldCheck, color: 'text-indigo-400' },
+                    { label: 'Features', value: currentDataset.headers.length, icon: Zap, color: 'text-emerald-400' },
+                    { label: 'Records', value: currentDataset.rows.length.toLocaleString(), icon: Activity, color: 'text-blue-400' },
+                    { label: 'Integrity Gaps', value: dataAudit.missingValues, icon: AlertTriangle, color: 'text-yellow-400' },
                   ].map((stat, i) => (
                     <Card key={i} className="bg-white/5 border-white/10 rounded-[2rem] group hover:border-white/20 transition-all">
                       <CardContent className="p-8 flex items-center justify-between">
@@ -531,16 +438,16 @@ export default function Dashboard() {
               {/* 2. Exploratory Analytics */}
               <section className="space-y-10">
                 <div className="text-center">
-                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Exploratory Analytics</h2>
-                  <p className="text-white/40 font-medium italic">Interactive visualization and distribution analysis calculated in-browser.</p>
+                  <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Statistical Matrix</h2>
+                  <p className="text-white/40 font-medium italic">Interactive visualizations and distributions.</p>
                 </div>
 
                 <Tabs defaultValue="visuals" className="w-full">
                   <div className="flex justify-center mb-10">
                     <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl h-auto">
                       <TabsTrigger value="visuals" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Visualizations</TabsTrigger>
-                      <TabsTrigger value="stats" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Statistical Summary</TabsTrigger>
-                      <TabsTrigger value="table" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Dataset Preview</TabsTrigger>
+                      <TabsTrigger value="stats" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Descriptive Summary</TabsTrigger>
+                      <TabsTrigger value="table" className="rounded-xl px-8 py-3 text-[10px] font-bold uppercase tracking-[0.2em] data-[state=active]:bg-indigo-600">Preview</TabsTrigger>
                     </TabsList>
                   </div>
                   
@@ -594,8 +501,8 @@ export default function Dashboard() {
               {/* 3. AI Executive Analysis */}
               <section id="ai-insights" className="space-y-10">
                 <div className="text-center space-y-4">
-                  <h2 className="text-3xl font-black uppercase tracking-tighter">Executive Analysis</h2>
-                  <p className="text-white/40 font-medium italic max-w-2xl mx-auto">High-fidelity interpretation of local statistics synthesized into strategic business insights by our analytical engine.</p>
+                  <h2 className="text-3xl font-black uppercase tracking-tighter">Strategic Interpretation</h2>
+                  <p className="text-white/40 font-medium italic max-w-2xl mx-auto">Automated narrative synthesis provided for informational purposes only.</p>
                 </div>
 
                 <div className="relative group max-w-6xl mx-auto">
@@ -604,24 +511,19 @@ export default function Dashboard() {
                       {isAnalyzing ? (
                         <div className="space-y-10 py-10 text-center flex flex-col items-center">
                           <Loader2 className="h-12 w-12 text-indigo-500 animate-spin mb-6" />
-                          <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">Synthesizing Strategic Narrative...</p>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-12">
-                            <Skeleton className="h-48 rounded-2xl bg-white/5" />
-                            <Skeleton className="h-48 rounded-2xl bg-white/5" />
-                            <Skeleton className="h-48 rounded-2xl bg-white/5" />
-                          </div>
+                          <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">Synthesizing Narrative...</p>
                         </div>
                       ) : insights ? (
                         <div className="space-y-16 animate-in fade-in duration-1000">
                           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
                             <div className="lg:col-span-2 space-y-10">
                               <div>
-                                <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-6">Strategic Narrative</h4>
+                                <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-6">Executive Summary</h4>
                                 <p className="text-2xl text-white/90 leading-relaxed font-medium italic">"{insights.executiveSummary}"</p>
                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <Card className="bg-white/5 border-white/10 rounded-2xl p-8">
-                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Activity className="h-4 w-4 text-indigo-500" /> Key Findings</h5>
+                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Activity className="h-4 w-4 text-indigo-500" /> Strategic Findings</h5>
                                   <ul className="space-y-4">
                                     {insights.keyFindings.map((f: string, i: number) => (
                                       <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -632,9 +534,9 @@ export default function Dashboard() {
                                   </ul>
                                 </Card>
                                 <Card className="bg-white/5 border-white/10 rounded-2xl p-8">
-                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Opportunities</h5>
+                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Suggested Insights</h5>
                                   <ul className="space-y-4">
-                                    {insights.businessOpportunities.map((o: string, i: number) => (
+                                    {insights.recommendations.map((o: string, i: number) => (
                                       <li key={i} className="text-sm text-white/70 flex items-start gap-4">
                                         <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                                         {o}
@@ -646,9 +548,9 @@ export default function Dashboard() {
                             </div>
                             <div className="space-y-10">
                               <Card className="bg-indigo-600/10 border-indigo-500/20 rounded-[2.5rem] text-center p-10">
-                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">Strategic Confidence</p>
+                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">Analysis Confidence</p>
                                 <div className="text-7xl font-black text-white mb-6 tracking-tighter">{insights.confidenceScore}%</div>
-                                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Model Precision Score</p>
+                                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Statistical Precision Score</p>
                               </Card>
                               <Button 
                                 variant="outline" 
@@ -662,32 +564,11 @@ export default function Dashboard() {
                         </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center py-24 text-center space-y-8">
-                          {analysisError ? (
-                            <div className="space-y-6">
-                              <AlertTriangle className="h-16 w-16 text-yellow-500 mx-auto" />
-                              <div className="space-y-2">
-                                <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Analytical Logic Paused</p>
-                                <p className="text-white/40 font-medium max-w-md mx-auto">{analysisError}</p>
-                              </div>
-                              <Button 
-                                variant="outline" 
-                                onClick={runAiAnalysis} 
-                                className="border-indigo-500 text-indigo-400 font-bold uppercase tracking-widest text-xs px-8 h-12 rounded-xl"
-                              >
-                                Retry Analysis
-                              </Button>
-                            </div>
-                          ) : (
-                            <>
-                              <div className="p-8 rounded-full bg-white/5 border border-white/10">
-                                <Presentation className="h-16 w-16 text-white/20" />
-                              </div>
-                              <div className="space-y-2">
-                                <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Interpretation Engine</p>
-                                <p className="text-white/40 font-medium max-w-md mx-auto">The analytical engine is currently processing your data summaries.</p>
-                              </div>
-                            </>
-                          )}
+                          <AlertTriangle className="h-16 w-16 text-yellow-500 mx-auto" />
+                          <div className="space-y-2">
+                            <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Engine Standby</p>
+                            <p className="text-white/40 font-medium max-w-md mx-auto">Interpretation services are currently offline.</p>
+                          </div>
                         </div>
                       )}
                     </CardContent>
@@ -697,18 +578,39 @@ export default function Dashboard() {
 
               <Separator className="bg-white/5" />
 
-              {/* 4. Export Section */}
-              <section className="max-w-4xl mx-auto">
-                <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-12 flex flex-col md:flex-row items-center justify-between gap-10 group hover:bg-white/[0.08] transition-all">
-                  <div className="space-y-4 text-center md:text-left">
-                    <h4 className="text-3xl font-black uppercase tracking-tighter">Export Analytics Report</h4>
-                    <p className="text-white/30 text-sm font-medium max-w-md">Generate a professional, print-optimized PDF summary of all statistical metrics, visualizations, and AI insights.</p>
+              {/* 4. Methodology & Disclaimer */}
+              <section className="max-w-4xl mx-auto space-y-8">
+                <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 space-y-6">
+                  <div className="flex items-center gap-3 text-indigo-400 mb-2">
+                    <Scale className="h-5 w-5" />
+                    <h4 className="text-xs font-black uppercase tracking-[0.3em]">Methodology & Professional Disclosure</h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Model Limitations</p>
+                      <p className="text-xs text-white/50 leading-relaxed font-medium">
+                        Statistical profiling is automated. Forecasts are probabilistic estimates based on historical sequences. Results depend entirely on the quality and completeness of the input dataset provided.
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">User Responsibility</p>
+                      <p className="text-xs text-white/50 leading-relaxed font-medium">
+                        AutoStat AI provides analysis for informational purposes only. Results should not be considered professional financial, legal, or investment advice. Verify all findings independently.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="bg-indigo-600/10 border-indigo-500/20 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-10">
+                  <div className="space-y-2 text-center md:text-left">
+                    <h4 className="text-2xl font-black uppercase tracking-tighter">Executive PDF Export</h4>
+                    <p className="text-white/40 text-xs font-medium">Generate a formal 9-page consulting report including audit trails and Strategic vectors.</p>
                   </div>
                   <Button 
                     onClick={handleExportPDF}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl h-20 px-12 font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-indigo-600/20 shrink-0"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl h-16 px-10 font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-indigo-600/20 shrink-0"
                   >
-                    <FileText className="mr-4 h-5 w-5" /> Export PDF Report
+                    <FileText className="mr-3 h-5 w-5" /> Export Report
                   </Button>
                 </Card>
               </section>
@@ -723,8 +625,8 @@ export default function Dashboard() {
                 <BarChart3 className="h-6 w-6" />
                 <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
               </div>
-              <p className="text-[10px] text-white/20 max-w-sm leading-relaxed">
-                AutoStat AI is a data analytics and reporting platform designed to assist users in exploring and understanding datasets through statistical analysis, forecasting, visualization, and AI-assisted insights.
+              <p className="text-[10px] text-white/20 max-w-sm leading-relaxed uppercase tracking-wider font-bold">
+                Informational Analytics Platform • Not Professional Advice
               </p>
             </div>
             <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
@@ -737,7 +639,7 @@ export default function Dashboard() {
               <div className="flex flex-col gap-4">
                 <p className="text-indigo-500 opacity-60">Platform</p>
                 <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
-                <Link href="/resources" className="hover:text-white">Resources</Link>
+                <Link href="/security" className="hover:text-white">Security Center</Link>
               </div>
             </div>
             <div className="md:text-right space-y-2">
@@ -745,7 +647,7 @@ export default function Dashboard() {
                 © 2025 AUTOSTAT ANALYTICS
               </p>
               <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
-                v2.5.0 STABLE • LOCAL PROCESSING
+                PROFESSIONAL DISCLOSURE ATTACHED
               </p>
             </div>
           </div>

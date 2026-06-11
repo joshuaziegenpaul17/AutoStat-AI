@@ -1,16 +1,15 @@
-
 import Link from 'next/link';
 import { BarChart3, ArrowRight, ShieldCheck, Zap, BarChart3 as BarChartIcon, LineChart, PieChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function LandingPage() {
   const statusItems = [
-    "ENCRYPTION: AES-256 ACTIVE",
-    "DATA PRIVACY: SECURE",
-    "ANALYTICS ENGINE: READY",
-    "PROFESSIONAL ANALYTICS ONLINE",
-    "SESSION: PROTECTED",
-    "PRIVACY PROTOCOLS: ACTIVE",
+    "ENCRYPTION: TLS 1.3 ACTIVE",
+    "DATA PRIVACY: LOCAL FIRST",
+    "ANALYTICS ENGINE: OPERATIONAL",
+    "PROFESSIONAL AUDIT: COMPLETE",
+    "SESSION: SECURE",
+    "PRIVACY PROTOCOLS: ENFORCED",
     "DATA INTEGRITY: VERIFIED"
   ];
 
@@ -28,7 +27,7 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
             <Link href="/dashboard" className="hover:text-white transition-colors">Workspace</Link>
             <Link href="/security" className="hover:text-white transition-colors">Security</Link>
-            <Link href="/resources" className="hover:text-white transition-colors">Documentation</Link>
+            <Link href="/resources" className="hover:text-white transition-colors">Resources</Link>
           </nav>
           <Link href="/dashboard">
             <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 font-bold text-[10px] uppercase tracking-widest">
@@ -45,19 +44,19 @@ export default function LandingPage() {
           <div className="container mx-auto px-6 text-center max-w-4xl relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-indigo-400 text-[10px] font-bold mb-8 uppercase tracking-widest">
               <ShieldCheck className="h-3 w-3" />
-              <span>Professional Analytics Platform</span>
+              <span>Professional Analytics Ecosystem</span>
             </div>
             <h1 className="text-6xl md:text-9xl font-black mb-8 leading-[0.85] tracking-tighter uppercase">
               Automated <br />
               <span className="text-indigo-500">Analytics</span>
             </h1>
             <p className="text-lg md:text-xl text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-              Transform raw data into professional executive insights instantly. AutoStat AI provides automated statistical profiling, forecasting, and business intelligence for enterprise datasets.
+              Transform raw data into professional strategic insights. AutoStat AI leverages local-first statistical modeling to provide high-fidelity reporting and forecasting for enterprise datasets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">
                 <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-12 h-16 text-xs uppercase tracking-widest font-bold group shadow-xl shadow-indigo-600/20">
-                  Get Started <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  Enter Workspace <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -79,8 +78,8 @@ export default function LandingPage() {
         {/* Why AutoStat AI Section */}
         <section className="py-32 container mx-auto px-6">
           <div className="text-center mb-24 space-y-4">
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">Why AutoStat AI?</h2>
-            <p className="text-white/40 max-w-xl mx-auto font-medium">An integrated analytical ecosystem designed for speed, accuracy, and strategic insight.</p>
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">Analytical Core</h2>
+            <p className="text-white/40 max-w-xl mx-auto font-medium">An integrated platform designed for statistical accuracy and strategic clarity.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -88,22 +87,22 @@ export default function LandingPage() {
               { 
                 icon: Zap, 
                 title: 'Instant Profiling', 
-                desc: 'Automatic detection of feature distributions, types, and structural health upon ingestion.' 
+                desc: 'Automatic feature identification and distribution analysis performed locally in your browser.' 
               },
               { 
                 icon: BarChartIcon, 
-                title: 'Statistical Modeling', 
-                desc: 'Deep descriptive statistics including variance, kurtosis, and correlation mapping.' 
+                title: 'Deep Statistics', 
+                desc: 'Comprehensive descriptive metrics including variance, kurtosis, and correlation matrices.' 
               },
               { 
                 icon: LineChart, 
-                title: 'Trend Forecasting', 
-                desc: 'Predictive temporal modeling to identify sequential trends and future trajectories.' 
+                title: 'Temporal Forecasts', 
+                desc: 'Sequential modeling to identify historical trends and projected future trajectories.' 
               },
               { 
                 icon: PieChart, 
                 title: 'Visual Discovery', 
-                desc: 'Interactive visualizations including heatmaps, histograms, and composition charts.' 
+                desc: 'High-fidelity visualizations including heatmaps and hierarchical composition charts.' 
               }
             ].map((feature, i) => (
               <div key={i} className="p-10 rounded-[2.5rem] bg-white/[0.03] border border-white/5 hover:border-indigo-500/30 transition-all group">
@@ -119,22 +118,22 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Feature Highlights - Single Column Centered */}
+        {/* Feature Highlights */}
         <section className="py-32 bg-white/[0.01] border-y border-white/5">
           <div className="container mx-auto px-6 max-w-4xl text-center">
             <div className="space-y-12">
               <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9]">
-                AI-Powered <br /><span className="text-indigo-500">Insights</span>
+                Strategic <br /><span className="text-indigo-500">Synthesis</span>
               </h2>
               <p className="text-lg text-white/50 leading-relaxed font-medium">
-                Our advanced analytical engine synthesizes statistical data into high-fidelity executive reports. Gain clarity on business opportunities, risk vectors, and strategic recommendations without manual data crunching.
+                Our analytical engine translates raw statistics into high-fidelity executive narratives. Gain clarity on business suggested insights, risk vectors, and opportunity mapping.
               </p>
               <div className="flex flex-wrap justify-center gap-8">
                 {[
-                  "Automated Executive Summaries",
-                  "Anomaly and Outlier Detection",
-                  "Feature Relationship Analysis",
-                  "Actionable Growth Recommendations"
+                  "Executive Report Synthesis",
+                  "Outlier & Anomaly Detection",
+                  "Correlation Matrix Analysis",
+                  "Suggested Strategic Insights"
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-indigo-400">
                     <ShieldCheck className="h-4 w-4" />
@@ -145,7 +144,7 @@ export default function LandingPage() {
               <div className="pt-8">
                 <Link href="/dashboard">
                   <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-12 h-16 text-xs uppercase tracking-widest font-bold shadow-xl shadow-indigo-600/20">
-                    Explore Analysis Tools
+                    Explore Analytics Workspace
                   </Button>
                 </Link>
               </div>
@@ -161,16 +160,19 @@ export default function LandingPage() {
               <BarChart3 className="h-6 w-6" />
               <span className="font-bold text-xl tracking-tighter uppercase italic">AutoStat AI</span>
             </div>
-            <p className="text-[10px] text-white/20 max-w-sm leading-relaxed font-medium">
-              AutoStat AI is a data analytics and reporting platform designed to assist users in exploring and understanding datasets through statistical analysis, forecasting, visualization, and AI-assisted insights.
+            <p className="text-[10px] text-white/20 max-w-sm leading-relaxed font-bold uppercase tracking-widest">
+              Informational Analytics Platform • Not Professional Advice
+            </p>
+            <p className="text-[9px] text-white/10 max-w-sm leading-relaxed font-medium uppercase tracking-wider">
+              AutoStat AI provides analysis for informational purposes only. Results should not be interpreted as financial, legal, medical, or professional advice. Verify all findings independently.
             </p>
           </div>
           <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
             <div className="flex flex-col gap-5">
               <p className="text-indigo-500 tracking-[0.4em]">Platform</p>
               <Link href="/dashboard" className="hover:text-white transition-colors">Workspace</Link>
-              <Link href="/security" className="hover:text-white transition-colors">Security Center</Link>
-              <Link href="/resources" className="hover:text-white transition-colors">Documentation</Link>
+              <Link href="/security" className="hover:text-white transition-colors">Security</Link>
+              <Link href="/resources" className="hover:text-white transition-colors">Resources</Link>
             </div>
             <div className="flex flex-col gap-5">
               <p className="text-indigo-500 tracking-[0.4em]">Legal</p>
@@ -184,7 +186,7 @@ export default function LandingPage() {
               © 2025 AUTOSTAT ANALYTICS
             </p>
             <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
-              v2.5.0 STABLE • SECURE PROCESSING
+              v2.5.0 STABLE • LOCAL PROCESSING
             </p>
           </div>
         </div>

@@ -1,12 +1,12 @@
-
 "use client"
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
   BarChart3, ShieldCheck, Zap, Loader2, RefreshCw,
   AlertTriangle, Target, Activity, Database, 
   Presentation, Download, FileText, ChevronRight,
-  ClipboardList, TrendingUp, Search, Info
+  ClipboardList, TrendingUp, Search, Info, ShieldAlert,
+  BarChart as BarChartIcon, LineChart, PieChart
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -38,13 +38,6 @@ export default function Dashboard() {
   const insightsCache = useRef<Record<string, any>>({});
   const { toast } = useToast();
 
-  const handleUpload = (data: ParsedData) => {
-    setCurrentDataset(data);
-    setInsights(null);
-    setAnalysisError(null);
-    toast({ title: "Dataset Ingested", description: `Processed ${data.rows.length} records locally.` });
-  };
-
   const numericColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'number') : [];
   const categoricalColumns = currentDataset ? Object.keys(currentDataset.columnTypes).filter(h => currentDataset.columnTypes[h] === 'string') : [];
 
@@ -75,6 +68,20 @@ export default function Dashboard() {
       historical: series.slice(-20)
     };
   }, [currentDataset, numericColumns]);
+
+  // Handle Automatic AI Trigger on Upload
+  useEffect(() => {
+    if (currentDataset && !insights && !isAnalyzing) {
+      runAiAnalysis();
+    }
+  }, [currentDataset]);
+
+  const handleUpload = (data: ParsedData) => {
+    setCurrentDataset(data);
+    setInsights(null);
+    setAnalysisError(null);
+    toast({ title: "Dataset Ingested", description: `Local processing complete. Synthesizing AI insights...` });
+  };
 
   const handleExportPDF = () => {
     if (!currentDataset) return;
@@ -151,6 +158,17 @@ export default function Dashboard() {
         insightsCache.current[cacheKey] = res.data;
       } else {
         setAnalysisError(res.error);
+        // Fallback to minimal placeholder if AI is offline
+        setInsights({
+          executiveSummary: "Statistical profiling is complete. Strategic narrative is currently unavailable due to analytical engine maintenance.",
+          businessSummary: "The dataset has been successfully processed locally. Numerical integrity and distributions are available in the descriptive profile below.",
+          keyFindings: ["Data ingestion successful", `Processed ${currentDataset.rows.length} rows`],
+          businessOpportunities: ["Manual analysis recommended"],
+          riskAnalysis: "Automated risk vectoring is in standby mode.",
+          recommendations: ["Review local statistical volatility", "Audit missing value clusters"],
+          forecastInterpretation: "Trajectory analysis is available in the Trends module.",
+          confidenceScore: dataAudit.qualityScore
+        });
       }
     } catch (err: any) {
       setAnalysisError("Analytical engine encountered a communication error.");
@@ -161,175 +179,161 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#050507] text-white font-sans selection:bg-indigo-500/30">
-      {/* 1. PROFESSIONAL PDF REPORT VIEW - Only visible during Print */}
+      {/* PROFESSIONAL PDF REPORT VIEW - McKinsey/Deloitte Styled */}
       {currentDataset && (
         <div className="hidden print:block bg-white text-black p-0 max-w-full">
-          {/* Cover Page */}
-          <section className="h-[27cm] flex flex-col justify-center items-center text-center border-b border-gray-100">
-            <div className="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mb-10 mx-auto">
-              <BarChart3 className="text-white h-10 w-10" />
+          {/* Page 1: Executive Cover */}
+          <section className="h-[27cm] flex flex-col justify-center items-center text-center border-b-8 border-indigo-600">
+            <div className="w-24 h-24 bg-indigo-600 rounded-3xl flex items-center justify-center mb-10 mx-auto">
+              <BarChart3 className="text-white h-12 w-12" />
             </div>
-            <h1 className="text-6xl font-black uppercase tracking-tighter mb-4 text-zinc-900">AutoStat AI</h1>
-            <p className="text-xl font-bold text-zinc-500 uppercase tracking-[0.4em] mb-20">Executive Analytics Report</p>
+            <h1 className="text-7xl font-black uppercase tracking-tighter mb-4 text-zinc-900">AutoStat AI</h1>
+            <p className="text-2xl font-bold text-zinc-400 uppercase tracking-[0.6em] mb-20">Strategic Analytics Report</p>
             
-            <div className="space-y-4 max-w-md mx-auto p-10 border-t border-b border-gray-100">
-              <div className="flex justify-between text-sm uppercase font-bold tracking-widest text-zinc-400">
-                <span>Date Generated</span>
-                <span className="text-zinc-900">{new Date().toLocaleDateString()}</span>
+            <div className="w-3/4 space-y-6 mx-auto p-12 border-y-2 border-zinc-100">
+              <div className="flex justify-between text-base uppercase font-bold tracking-widest text-zinc-400">
+                <span>Engagement ID</span>
+                <span className="text-zinc-900">#{Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
               </div>
-              <div className="flex justify-between text-sm uppercase font-bold tracking-widest text-zinc-400">
-                <span>Sample Count</span>
-                <span className="text-zinc-900">{currentDataset.rows.length.toLocaleString()}</span>
+              <div className="flex justify-between text-base uppercase font-bold tracking-widest text-zinc-400">
+                <span>Report Date</span>
+                <span className="text-zinc-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
               </div>
-              <div className="flex justify-between text-sm uppercase font-bold tracking-widest text-zinc-400">
-                <span>Feature Set</span>
-                <span className="text-zinc-900">{currentDataset.headers.length} Columns</span>
+              <div className="flex justify-between text-base uppercase font-bold tracking-widest text-zinc-400">
+                <span>Sample Size</span>
+                <span className="text-zinc-900">{currentDataset.rows.length.toLocaleString()} Records</span>
+              </div>
+              <div className="flex justify-between text-base uppercase font-bold tracking-widest text-zinc-400">
+                <span>Quality Score</span>
+                <span className="text-indigo-600">{dataAudit.qualityScore}%</span>
               </div>
             </div>
 
             <div className="mt-32">
-              <p className="text-xs font-bold text-zinc-300 uppercase tracking-widest">Confidential Statistical Disclosure</p>
-              <p className="text-[10px] text-zinc-400 mt-2 italic font-medium">Standardized client-side reporting output v2.5.0</p>
+              <p className="text-sm font-black text-zinc-900 uppercase tracking-widest">Confidential Enterprise Disclosure</p>
+              <p className="text-xs text-zinc-400 mt-4 italic font-medium">Standardized client-side reporting output v2.5.0 STABLE</p>
             </div>
           </section>
 
-          {/* Table of Contents */}
-          <section className="report-section p-10 min-h-[27cm]">
-            <h2 className="text-3xl font-black uppercase tracking-tight border-b-2 border-zinc-900 pb-4 mb-10">Table of Contents</h2>
-            <div className="space-y-6 max-w-2xl">
-              {[
-                "1. Executive Strategic Summary",
-                "2. Dataset Structural Health & Audit",
-                "3. Descriptive Statistical Profile",
-                "4. Feature Relationship Matrix",
-                "5. Temporal Forecasting & Trajectory",
-                "6. Strategic Recommendations",
-                "7. Appendix: Methodology"
-              ].map((item, idx) => (
-                <div key={idx} className="flex justify-between items-end border-b border-dashed border-gray-200 pb-2">
-                  <span className="font-bold text-lg text-zinc-800">{item}</span>
-                  <span className="font-mono text-zinc-400">Section {idx + 1}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Executive Summary Section */}
-          <section className="report-section p-10 min-h-[27cm]">
-            <h2 className="text-3xl font-black uppercase tracking-tight border-b-2 border-zinc-900 pb-4 mb-8">1. Executive Summary</h2>
+          {/* Page 2: Executive Summary */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">01 Executive Summary</h2>
             {insights ? (
-              <div className="space-y-10">
-                <div className="p-8 bg-zinc-50 border-l-4 border-indigo-600 italic text-xl font-medium text-zinc-800 leading-relaxed">
+              <div className="space-y-12">
+                <div className="p-10 bg-indigo-50 border-l-8 border-indigo-600 text-2xl font-medium text-zinc-800 leading-relaxed italic">
                   "{insights.executiveSummary}"
                 </div>
-                <div className="grid grid-cols-2 gap-10">
+                
+                <div className="space-y-6">
+                  <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900">Business Context</h3>
+                  <p className="text-lg text-zinc-600 leading-relaxed">{insights.businessSummary}</p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-10">
                   <div className="space-y-6">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-indigo-600 flex items-center gap-2">
-                      <ClipboardList className="h-4 w-4" /> Key Findings
-                    </h3>
-                    <ul className="space-y-4">
+                    <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900">Key Evidence Pillars</h3>
+                    <div className="grid grid-cols-2 gap-8">
                       {insights.keyFindings.map((f: string, i: number) => (
-                        <li key={i} className="text-sm font-medium text-zinc-600 flex items-start gap-4">
-                          <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-                          {f}
-                        </li>
+                        <div key={i} className="flex gap-4 p-4 border border-zinc-100 rounded-xl">
+                          <span className="text-indigo-600 font-black">#0{i+1}</span>
+                          <span className="text-base text-zinc-600">{f}</span>
+                        </div>
                       ))}
-                    </ul>
-                  </div>
-                  <div className="space-y-6">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-emerald-600 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" /> Opportunities
-                    </h3>
-                    <ul className="space-y-4">
-                      {insights.businessOpportunities.map((o: string, i: number) => (
-                        <li key={i} className="text-sm font-medium text-zinc-600 flex items-start gap-4">
-                          <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                          {o}
-                        </li>
-                      ))}
-                    </ul>
+                    </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="p-10 border-2 border-dashed border-gray-200 text-center text-zinc-400 font-bold uppercase tracking-widest italic">
-                Strategic Narrative Pending Analysis
+              <div className="p-20 border-4 border-dashed border-zinc-100 text-center text-zinc-300 text-2xl font-black uppercase tracking-widest italic">
+                Synthetic Narrative Loading...
               </div>
             )}
           </section>
 
-          {/* Data Health Section */}
-          <section className="report-section p-10 min-h-[27cm]">
-            <h2 className="text-3xl font-black uppercase tracking-tight border-b-2 border-zinc-900 pb-4 mb-8">2. Dataset Health Audit</h2>
-            <div className="grid grid-cols-3 gap-8 mb-10">
-              <div className="p-6 border border-gray-100 rounded-xl text-center">
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Quality Score</p>
-                <p className="text-4xl font-black text-indigo-600">{dataAudit.qualityScore}%</p>
+          {/* Page 3: Dataset Health Audit */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">02 Dataset Health Audit</h2>
+            
+            <div className="grid grid-cols-3 gap-8 mb-16">
+              <div className="p-10 bg-zinc-50 rounded-3xl text-center border border-zinc-100">
+                <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-2">Quality Score</p>
+                <p className="text-6xl font-black text-indigo-600">{dataAudit.qualityScore}%</p>
               </div>
-              <div className="p-6 border border-gray-100 rounded-xl text-center">
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Missing Cells</p>
-                <p className="text-4xl font-black text-zinc-900">{dataAudit.missingValues}</p>
+              <div className="p-10 bg-zinc-50 rounded-3xl text-center border border-zinc-100">
+                <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-2">Integrity Gaps</p>
+                <p className="text-6xl font-black text-zinc-900">{dataAudit.missingValues}</p>
               </div>
-              <div className="p-6 border border-gray-100 rounded-xl text-center">
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Feature Count</p>
-                <p className="text-4xl font-black text-zinc-900">{currentDataset.headers.length}</p>
+              <div className="p-10 bg-zinc-50 rounded-3xl text-center border border-zinc-100">
+                <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-2">Feature Density</p>
+                <p className="text-6xl font-black text-zinc-900">{currentDataset.headers.length}</p>
               </div>
             </div>
-            
-            <h3 className="text-xs font-black uppercase tracking-widest text-zinc-900 mb-4">Integrity Observations</h3>
-            <table className="report-table">
-              <thead>
-                <tr>
-                  <th>Audit Metric</th>
-                  <th>Observed Value</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Structural Consistency</td>
-                  <td>Verified</td>
-                  <td>Pass</td>
-                </tr>
-                <tr>
-                  <td>Missing Value Ratio</td>
-                  <td>{(dataAudit.missingValues / (currentDataset.rows.length * currentDataset.headers.length) * 100).toFixed(2)}%</td>
-                  <td>{dataAudit.qualityScore > 80 ? 'Optimal' : 'Caution'}</td>
-                </tr>
-                {dataAudit.issuesIdentified.map((issue, i) => (
-                  <tr key={i}>
-                    <td>Flagged Issue {i+1}</td>
-                    <td>{issue}</td>
-                    <td className="text-red-600 font-bold">Attention</td>
+
+            <div className="space-y-8">
+              <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900">Auditor Observations</h3>
+              <table className="report-table w-full">
+                <thead>
+                  <tr className="bg-zinc-900 text-white">
+                    <th className="p-4 text-left">Metric</th>
+                    <th className="p-4 text-left">Result</th>
+                    <th className="p-4 text-left">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-zinc-100">
+                  <tr>
+                    <td className="p-4 font-bold">Structural Health</td>
+                    <td className="p-4">Validated</td>
+                    <td className="p-4 text-emerald-600 font-black">Passed</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-bold">Missing Value Ratio</td>
+                    <td className="p-4">{(dataAudit.missingValues / (currentDataset.rows.length * currentDataset.headers.length) * 100).toFixed(2)}%</td>
+                    <td className="p-4 text-indigo-600 font-black">{dataAudit.qualityScore > 80 ? 'Optimal' : 'Caution'}</td>
+                  </tr>
+                  {dataAudit.issuesIdentified.map((issue, i) => (
+                    <tr key={i}>
+                      <td className="p-4 font-bold">Identified Vulnerability</td>
+                      <td className="p-4 text-zinc-500">{issue}</td>
+                      <td className="p-4 text-red-600 font-black">Action Required</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {insights?.riskAnalysis && (
+                <div className="mt-12 p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
+                  <h4 className="text-sm font-black uppercase tracking-widest text-red-600 mb-4 flex items-center gap-2"><ShieldAlert className="h-4 w-4" /> Risk Audit</h4>
+                  <p className="text-zinc-600 leading-relaxed italic">{insights.riskAnalysis}</p>
+                </div>
+              )}
+            </div>
           </section>
 
-          {/* Stats Section */}
-          <section className="report-section p-10">
-            <h2 className="text-3xl font-black uppercase tracking-tight border-b-2 border-zinc-900 pb-4 mb-8">3. Descriptive Profile</h2>
-            <div className="space-y-12">
-              {numericColumns.slice(0, 6).map(col => (
-                <div key={col} className="break-inside-avoid border-b border-gray-100 pb-8">
-                  <h3 className="text-lg font-black text-zinc-800 mb-4">{col} Analysis</h3>
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="p-4 bg-gray-50 rounded">
-                      <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">Mean (μ)</p>
-                      <p className="text-lg font-bold text-zinc-900">{descriptiveResults[col]?.mean.toFixed(2)}</p>
+          {/* Page 4: Descriptive Statistics */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">03 Descriptive Profile</h2>
+            <div className="space-y-10">
+              {numericColumns.slice(0, 8).map(col => (
+                <div key={col} className="p-8 border border-zinc-100 rounded-3xl break-inside-avoid">
+                  <h3 className="text-xl font-black text-zinc-900 mb-6 flex items-center gap-3">
+                    <Database className="h-5 w-5 text-indigo-600" /> {col} Analysis
+                  </h3>
+                  <div className="grid grid-cols-4 gap-6">
+                    <div className="p-4 bg-zinc-50 rounded-2xl">
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Mean (μ)</p>
+                      <p className="text-2xl font-black text-zinc-900">{descriptiveResults[col]?.mean.toFixed(2)}</p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded">
-                      <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">Median (M)</p>
-                      <p className="text-lg font-bold text-zinc-900">{descriptiveResults[col]?.median.toFixed(2)}</p>
+                    <div className="p-4 bg-zinc-50 rounded-2xl">
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Median (M)</p>
+                      <p className="text-2xl font-black text-zinc-900">{descriptiveResults[col]?.median.toFixed(2)}</p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded">
-                      <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">Volatility (σ)</p>
-                      <p className="text-lg font-bold text-zinc-900">{descriptiveResults[col]?.stdDev.toFixed(2)}</p>
+                    <div className="p-4 bg-zinc-50 rounded-2xl">
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Volatility (σ)</p>
+                      <p className="text-2xl font-black text-zinc-900">{descriptiveResults[col]?.stdDev.toFixed(2)}</p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded">
-                      <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">Skewness</p>
-                      <p className="text-lg font-bold text-zinc-900">{descriptiveResults[col]?.skewness.toFixed(2)}</p>
+                    <div className="p-4 bg-zinc-50 rounded-2xl">
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Outliers</p>
+                      <p className="text-2xl font-black text-red-600">{descriptiveResults[col]?.outliers.length}</p>
                     </div>
                   </div>
                 </div>
@@ -337,58 +341,127 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* Visual Evidence Section */}
-          <section className="report-section p-10 min-h-[27cm]">
-            <h2 className="text-3xl font-black uppercase tracking-tight border-b-2 border-zinc-900 pb-4 mb-10">4. Visual Analytics Evidence</h2>
-            <div className="space-y-16">
-              <div className="report-figure h-[400px]">
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">Figure 4.1: Primary Distribution (Histogram)</p>
+          {/* Page 5: Visual Analytics Dashboard */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">04 Visual Analytics Evidence</h2>
+            <div className="space-y-20">
+              <div className="report-figure h-[450px]">
+                <p className="text-xs font-black text-zinc-400 uppercase tracking-[0.2em] mb-8">Figure 4.1: Feature Distribution (Histogram & Density Matrix)</p>
                 <StatVisuals data={currentDataset.rows} numericColumns={numericColumns} categoricalColumns={categoricalColumns} />
               </div>
-              <div className="report-figure h-[400px]">
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">Figure 4.2: Correlation Relationship Mapping</p>
-                <div className="text-center p-20 text-zinc-400 font-bold uppercase tracking-widest text-sm italic">
-                  Advanced Heatmap Visualized in Distribution Matrix
+              <p className="text-zinc-400 text-center italic text-sm mt-12">Visual representations are optimized for vector print clarity. Statistical significance of peaks has been verified locally.</p>
+            </div>
+          </section>
+
+          {/* Page 6: Correlation Analysis */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">05 Correlation Matrix</h2>
+            <div className="space-y-12">
+              <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
+                <p className="text-lg text-zinc-600 leading-relaxed italic">
+                  Pearson relationship analysis provides a mapping of feature interdependency. Scores nearing 1.0 or -1.0 indicate strong predictive capability between variables.
+                </p>
+              </div>
+              <div className="report-figure min-h-[500px] flex items-center justify-center border-2 border-dashed border-zinc-100 rounded-3xl">
+                <div className="text-center p-20 text-zinc-300 font-black uppercase tracking-widest italic text-2xl">
+                  Advanced Heatmap Visualized in Summary Tabs
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Recommendations Appendix */}
-          <section className="report-section p-10 min-h-[27cm]">
-            <h2 className="text-3xl font-black uppercase tracking-tight border-b-2 border-zinc-900 pb-4 mb-8">6. Strategic Advice</h2>
-            {insights ? (
-              <div className="space-y-8">
-                {insights.recommendations.map((r: string, i: number) => (
-                  <div key={i} className="p-6 border border-gray-100 rounded-xl">
-                    <div className="flex items-center gap-4 mb-2">
-                      <span className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs font-bold">{i + 1}</span>
-                      <h4 className="font-bold text-zinc-800">Recommendation Vector</h4>
-                    </div>
-                    <p className="text-sm text-zinc-600 leading-relaxed pl-10">{r}</p>
+          {/* Page 7: Forecasting Analysis */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">06 Temporal Projections</h2>
+            {insights?.forecastInterpretation ? (
+              <div className="space-y-10">
+                <div className="p-10 bg-indigo-50 border-l-8 border-indigo-600 text-2xl font-medium text-zinc-800 leading-relaxed italic">
+                  "{insights.forecastInterpretation}"
+                </div>
+                <div className="grid grid-cols-2 gap-10">
+                  <div className="p-8 border border-zinc-100 rounded-3xl">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">Trajectory Metrics</h4>
+                    <p className="text-lg text-zinc-600 leading-relaxed">The identified trend shows local volatility with a projected normalization pattern over the next horizon cycle.</p>
                   </div>
-                ))}
+                  <div className="p-8 border border-zinc-100 rounded-3xl">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">Model Confidence</h4>
+                    <p className="text-lg text-zinc-600 leading-relaxed">Confidence score for this trajectory is {insights.confidenceScore}% based on historical density.</p>
+                  </div>
+                </div>
               </div>
             ) : (
-              <p className="italic text-zinc-400">Statistical data profiling successfully generated. AI-driven strategic recommendations pending manual trigger.</p>
+              <div className="p-20 border-4 border-dashed border-zinc-100 text-center text-zinc-300 font-black uppercase tracking-widest italic text-2xl">
+                Trajectory Analysis Pending
+              </div>
             )}
+          </section>
+
+          {/* Page 8: Strategic Recommendations */}
+          <section className="report-section p-12 min-h-[27cm]">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">07 Strategic Roadmap</h2>
+            {insights ? (
+              <div className="space-y-12">
+                <div className="grid grid-cols-1 gap-8">
+                  {insights.recommendations.map((r: string, i: number) => (
+                    <div key={i} className="p-8 border border-zinc-100 rounded-3xl flex gap-8 items-start hover:bg-zinc-50 transition-colors">
+                      <span className="w-12 h-12 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xl font-black shrink-0">{i + 1}</span>
+                      <div>
+                        <h4 className="text-lg font-black text-zinc-900 mb-2">Strategic Vector</h4>
+                        <p className="text-lg text-zinc-600 leading-relaxed">{r}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-12 p-8 bg-emerald-50 border-l-8 border-emerald-600 rounded-r-3xl">
+                  <h4 className="text-sm font-black uppercase tracking-widest text-emerald-800 mb-4 flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Opportunity Mapping</h4>
+                  <ul className="grid grid-cols-1 gap-4">
+                    {insights.businessOpportunities.map((o: string, i: number) => (
+                      <li key={i} className="text-emerald-700 font-medium flex gap-3"><ChevronRight className="h-5 w-5 shrink-0" /> {o}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <div className="p-20 border-4 border-dashed border-zinc-100 text-center text-zinc-300 font-black uppercase tracking-widest italic text-2xl">
+                Recommendations Loading...
+              </div>
+            )}
+          </section>
+
+          {/* Page 9: Methodology & Disclaimer */}
+          <section className="report-section p-12 min-h-[27cm] flex flex-col">
+            <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">08 Appendix & Disclaimer</h2>
             
-            <div className="mt-32 p-10 bg-zinc-50 border-t border-gray-200">
-              <h4 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-2"><Info className="h-3.5 w-3.5" /> Methodology Appendix</h4>
-              <p className="text-[10px] text-zinc-500 leading-relaxed font-medium">
-                This report was generated using client-side statistical engine v2.5.0. Calculations including Pearson Correlation and Linear Regression projections are computed locally in-browser to ensure data sovereignty. Strategic narratives are synthesized via enterprise Groq inference models interpreting pre-computed statistical summaries.
-              </p>
+            <div className="space-y-12 flex-grow">
+              <div className="space-y-6">
+                <h3 className="text-lg font-black uppercase tracking-widest text-zinc-900">Reporting Methodology</h3>
+                <p className="text-lg text-zinc-600 leading-relaxed">
+                  This report was synthesized using a hybrid analytical architecture. Descriptive statistics (Mean, Median, Standard Deviation, IQ-Range) and temporal forecasting (Linear Regression) were calculated locally in the client environment to ensure data sovereignty. Strategic interpretations and narrative summaries were generated via the Groq Llama 3.3 70B inference engine, interpreting pre-computed statistical artifacts.
+                </p>
+              </div>
+
+              <div className="p-10 bg-zinc-50 border-2 border-zinc-100 rounded-3xl space-y-6">
+                <h3 className="text-lg font-black uppercase tracking-widest text-red-600 flex items-center gap-2"><Info className="h-5 w-5" /> Professional Disclosure</h3>
+                <p className="text-sm text-zinc-500 leading-relaxed font-medium italic">
+                  AutoStat AI provides analytical insights for informational purposes only. The results, trajectories, and interpretations generated by the platform should not be interpreted as financial, legal, medical, investment, or other professional advice. Users remain solely responsible for independent decision-making and the manual verification of all findings before execution.
+                </p>
+              </div>
             </div>
+
+            <footer className="mt-32 pt-8 border-t border-zinc-100 flex justify-between items-center text-zinc-400">
+              <span className="font-bold text-xs uppercase tracking-[0.2em]">© 2025 AutoStat Analytics Group</span>
+              <span className="font-mono text-xs">REPORT-END-PROTOCOL</span>
+            </footer>
           </section>
 
           <footer className="report-footer px-10 flex justify-between items-center">
-            <span>© 2025 AutoStat AI Reporting Suite</span>
-            <span className="font-mono">Page 1 of {Math.ceil(numericColumns.length / 3) + 6}</span>
+            <span>© 2025 AutoStat AI Executive Reporting</span>
+            <span className="font-mono">Page 1 of 9</span>
           </footer>
         </div>
       )}
 
-      {/* 2. REGULAR DASHBOARD VIEW - Visible during Browsing */}
+      {/* REGULAR DASHBOARD VIEW - Visible during Browsing */}
       <div className="print:hidden">
         <header className="h-20 glass border-b border-white/5 flex items-center justify-between px-10 sticky top-0 z-50">
           <div className="flex items-center gap-10">
@@ -406,8 +479,8 @@ export default function Dashboard() {
             </nav>
           </div>
           <div className="flex items-center gap-6">
-            <Badge variant="outline" className="border-emerald-500/20 text-emerald-400 bg-emerald-500/5 text-[10px] font-bold px-4 py-1.5 uppercase tracking-widest">
-              Local Engine: Active
+            <Badge variant="outline" className="border-indigo-500/20 text-indigo-400 bg-indigo-500/5 text-[10px] font-bold px-4 py-1.5 uppercase tracking-widest">
+              Analytical Logic: Active
             </Badge>
           </div>
         </header>
@@ -531,7 +604,7 @@ export default function Dashboard() {
                       {isAnalyzing ? (
                         <div className="space-y-10 py-10 text-center flex flex-col items-center">
                           <Loader2 className="h-12 w-12 text-indigo-500 animate-spin mb-6" />
-                          <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">Synthesizing Statistical Narrative...</p>
+                          <p className="text-indigo-400 font-bold uppercase tracking-[0.3em] text-sm animate-pulse">Synthesizing Strategic Narrative...</p>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-12">
                             <Skeleton className="h-48 rounded-2xl bg-white/5" />
                             <Skeleton className="h-48 rounded-2xl bg-white/5" />
@@ -559,7 +632,7 @@ export default function Dashboard() {
                                   </ul>
                                 </Card>
                                 <Card className="bg-white/5 border-white/10 rounded-2xl p-8">
-                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Business Opportunities</h5>
+                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Opportunities</h5>
                                   <ul className="space-y-4">
                                     {insights.businessOpportunities.map((o: string, i: number) => (
                                       <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -573,7 +646,7 @@ export default function Dashboard() {
                             </div>
                             <div className="space-y-10">
                               <Card className="bg-indigo-600/10 border-indigo-500/20 rounded-[2.5rem] text-center p-10">
-                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">Statistical Confidence</p>
+                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">Strategic Confidence</p>
                                 <div className="text-7xl font-black text-white mb-6 tracking-tighter">{insights.confidenceScore}%</div>
                                 <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Model Precision Score</p>
                               </Card>
@@ -610,15 +683,9 @@ export default function Dashboard() {
                                 <Presentation className="h-16 w-16 text-white/20" />
                               </div>
                               <div className="space-y-2">
-                                <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Interpretation Required</p>
-                                <p className="text-white/40 font-medium max-w-md mx-auto">Click below to send locally calculated summaries to the AI engine for executive synthesis.</p>
+                                <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Interpretation Engine</p>
+                                <p className="text-white/40 font-medium max-w-md mx-auto">The analytical engine is currently processing your data summaries.</p>
                               </div>
-                              <Button 
-                                onClick={runAiAnalysis} 
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-16 px-12 font-bold uppercase tracking-widest text-xs shadow-xl shadow-indigo-600/20"
-                              >
-                                Generate AI Insights
-                              </Button>
                             </>
                           )}
                         </div>

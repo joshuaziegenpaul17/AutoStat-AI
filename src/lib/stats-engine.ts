@@ -100,9 +100,10 @@ export const projectLocalTrend = (data: number[], horizon: number): number[] => 
 
 /**
  * Audits data quality locally.
+ * Max Score is 95% to reflect professional statistical skepticism.
  */
 export const calculateLocalDataQuality = (rows: any[], headers: string[]) => {
-  let score = 100;
+  let score = 95;
   const issues: string[] = [];
   
   const missingCount = rows.reduce((acc, row) => {
@@ -113,13 +114,18 @@ export const calculateLocalDataQuality = (rows: any[], headers: string[]) => {
   const missingRatio = missingCount / totalCells;
   
   if (missingRatio > 0.05) {
-    score -= Math.min(30, missingRatio * 100);
+    score -= Math.min(40, missingRatio * 100);
     issues.push(`${(missingRatio * 100).toFixed(1)}% of cells contain missing values.`);
   }
   
+  if (rows.length < 50) {
+    score -= 15;
+    issues.push("Sample size is below optimal threshold for broad statistical significance.");
+  }
+
   if (rows.length < 10) {
-    score -= 10;
-    issues.push("Sample size is too small for statistical significance.");
+    score -= 20;
+    issues.push("Critical alert: Extremely small dataset sample.");
   }
   
   return {

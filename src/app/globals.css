@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,7 +64,7 @@
 @media print {
   @page {
     size: A4;
-    margin: 2cm;
+    margin: 1.5cm;
   }
 
   body {
@@ -95,45 +94,50 @@
   div, section, header, footer, h1, h2, h3, h4, h5, p, span, li, td, th {
     background: white !important;
     color: black !important;
-    border-color: #eee !important;
+    border-color: #f0f0f0 !important;
     box-shadow: none !important;
     text-shadow: none !important;
   }
 
-  /* Section breaks */
+  /* Section breaks - Enforce strict 9-page structure */
   .report-section {
     page-break-before: always;
     padding-top: 1cm;
+    min-height: 25cm;
   }
 
   .report-section:first-child {
     page-break-before: avoid;
   }
 
-  /* Figure and table styling */
+  /* High Resolution Chart Optimization */
   .report-figure {
     break-inside: avoid;
-    margin: 1.5rem 0;
-    padding: 1rem;
-    border: 1px solid #f0f0f0;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid #eee;
     background: #fafafa !important;
+    border-radius: 1rem;
   }
 
   .report-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 1rem 0;
+    margin: 1.5rem 0;
   }
 
   .report-table th, .report-table td {
     border: 1px solid #eee;
-    padding: 8pt;
+    padding: 10pt;
     text-align: left;
   }
 
   .report-table th {
     background-color: #f8f9fa !important;
-    font-weight: bold;
+    color: #1a1a1a !important;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 9pt;
   }
 
   /* Page numbers (approximate) */
@@ -144,10 +148,10 @@
     border-top: 1px solid #eee;
     padding-top: 10pt;
     font-size: 9pt;
-    color: #666 !important;
+    color: #999 !important;
   }
 
-  /* Chart handling */
+  /* Recharts Optimization for Print */
   .recharts-surface {
     filter: none !important;
   }
@@ -159,7 +163,7 @@
 
   .recharts-text {
     fill: #333 !important;
-    font-size: 8pt !important;
+    font-weight: 600 !important;
   }
 
   /* Force colors for charts */

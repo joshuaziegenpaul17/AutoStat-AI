@@ -28,12 +28,12 @@ Present all findings as "suggested insights" or "analytical observations" to avo
 
 Required Schema:
 {
-  "executiveSummary": "A concise high-level strategic overview.",
-  "businessSummary": "A deep 2-paragraph narrative summary of the dataset's analytical implications.",
-  "keyFindings": ["4-6 core statistical observations with specific mentions of metrics."],
+  "executiveSummary": "A concise high-level strategic overview (1-2 sentences).",
+  "businessSummary": "A deep 2-3 paragraph narrative summary of the dataset's analytical implications and business context.",
+  "keyFindings": ["4-6 core statistical observations with specific mentions of metrics and values."],
   "businessOpportunities": ["3-4 suggested areas for growth or optimization based on patterns."],
   "riskAnalysis": "A detailed paragraph identifying potential statistical risks, bias, or volatility in the current data trends.",
-  "recommendations": ["4-5 suggested strategic insights for further stakeholder consideration."],
+  "recommendations": ["4-5 suggested strategic vectors for further stakeholder consideration."],
   "forecastInterpretation": "A dedicated paragraph explaining the statistical trajectory and its probabilistic implications.",
   "confidenceScore": number (0-95 based on data quality and sample size)
 }`;

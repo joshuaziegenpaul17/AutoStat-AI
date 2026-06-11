@@ -534,7 +534,7 @@ export default function Dashboard() {
                                   </ul>
                                 </Card>
                                 <Card className="bg-white/5 border-white/10 rounded-2xl p-8">
-                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Suggested Insights</h5>
+                                  <h5 className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2"><Target className="h-4 w-4 text-emerald-500" /> Strategic Vectors</h5>
                                   <ul className="space-y-4">
                                     {insights.recommendations.map((o: string, i: number) => (
                                       <li key={i} className="text-sm text-white/70 flex items-start gap-4">
@@ -569,6 +569,7 @@ export default function Dashboard() {
                             <p className="text-white/80 font-bold uppercase tracking-[0.25em] text-sm">Engine Standby</p>
                             <p className="text-white/40 font-medium max-w-md mx-auto">Interpretation services are currently offline.</p>
                           </div>
+                          <Button onClick={runAiAnalysis} className="bg-indigo-600 rounded-full px-8">Initialize Insights Engine</Button>
                         </div>
                       )}
                     </CardContent>
@@ -593,7 +594,7 @@ export default function Dashboard() {
                 <Card className="bg-indigo-600/10 border-indigo-500/20 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-10">
                   <div className="space-y-2 text-center md:text-left">
                     <h4 className="text-2xl font-black uppercase tracking-tighter">Executive PDF Export</h4>
-                    <p className="text-white/40 text-xs font-medium">Generate a formal 9-page consulting report including audit trails and Strategic vectors.</p>
+                    <p className="text-white/40 text-xs font-medium">Generate a formal 9-page consulting report including audit trails and strategic vectors.</p>
                   </div>
                   <Button 
                     onClick={handleExportPDF}

@@ -104,6 +104,7 @@
     page-break-before: always;
     padding-top: 1cm;
     min-height: 25cm;
+    break-after: page;
   }
 
   .report-section:first-child {

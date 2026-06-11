@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
@@ -75,7 +75,7 @@ export default function SecurityPage() {
           <Badge className="bg-indigo-600/10 border-indigo-600/20 text-indigo-400 px-4 py-1 rounded-full uppercase text-[10px] tracking-widest font-bold">
             Trust & Security Architecture
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Security & <span className="text-indigo-500">Privacy</span></h1>
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white">Security & <span className="text-indigo-500">Privacy</span></h1>
           <p className="text-white/40 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
             AutoStat AI is designed following industry best practices for data processing and secure analytical workflows. Your privacy and data integrity are our primary architectural priorities.
           </p>
@@ -88,7 +88,7 @@ export default function SecurityPage() {
               <div className="w-12 h-12 rounded-xl bg-indigo-600/10 flex items-center justify-center mb-6 text-indigo-500 group-hover:scale-110 transition-transform">
                 <f.icon className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold mb-4">{f.title}</h3>
+              <h3 className="text-xl font-bold mb-4 text-white">{f.title}</h3>
               <p className="text-sm text-white/40 leading-relaxed font-medium">{f.desc}</p>
             </Card>
           ))}
@@ -100,7 +100,7 @@ export default function SecurityPage() {
         <section className="space-y-12">
           <div className="flex items-center gap-4 mb-10">
             <Activity className="h-8 w-8 text-indigo-500" />
-            <h2 className="text-3xl font-black uppercase tracking-tighter">Platform Integrity</h2>
+            <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Platform Integrity</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
@@ -109,7 +109,7 @@ export default function SecurityPage() {
                 <Tag className="h-3.5 w-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Version</span>
               </div>
-              <p className="text-xl font-black">v2.5.0 Stable</p>
+              <p className="text-xl font-black text-white">v2.5.0 Stable</p>
             </Card>
             
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
@@ -117,7 +117,7 @@ export default function SecurityPage() {
                 <Lock className="h-3.5 w-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Encryption</span>
               </div>
-              <p className="text-xl font-black">HTTPS/TLS 1.3</p>
+              <p className="text-xl font-black text-white">HTTPS/TLS 1.3</p>
             </Card>
 
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
@@ -133,7 +133,7 @@ export default function SecurityPage() {
                 <Clock className="h-3.5 w-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Session Status</span>
               </div>
-              <p className="text-xl font-black font-mono text-xs">ACTIVE_BROWSER_ONLY</p>
+              <p className="text-xl font-black font-mono text-xs text-white">ACTIVE_BROWSER_ONLY</p>
             </Card>
 
             <Card className="bg-indigo-600/5 border-indigo-500/20 rounded-2xl p-6 space-y-3">
@@ -141,7 +141,7 @@ export default function SecurityPage() {
                 <Database className="h-3.5 w-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Architecture</span>
               </div>
-              <p className="text-xl font-black">Local-First</p>
+              <p className="text-xl font-black text-white">Local-First</p>
             </Card>
           </div>
           
@@ -149,7 +149,7 @@ export default function SecurityPage() {
             <div className="p-10 space-y-6">
               <div className="flex items-center gap-4 mb-4">
                 <Info className="h-6 w-6 text-indigo-500" />
-                <h4 className="text-lg font-bold">Standard Disclosure</h4>
+                <h4 className="text-lg font-bold text-white">Standard Disclosure</h4>
               </div>
               <p className="text-white/50 leading-relaxed font-medium">
                 AutoStat AI is designed following professional industry best practices to ensure secure and reliable analytical outcomes. By leveraging local-first processing, we minimize data exposure while providing sophisticated business intelligence tools. This platform demonstrates advanced statistical modeling and executive reporting capabilities within a privacy-conscious framework.

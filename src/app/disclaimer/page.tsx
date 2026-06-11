@@ -1,10 +1,10 @@
 "use client"
 
 import React from 'react';
-import { AlertTriangle, ArrowLeft, BarChart3, Info, Scale, ShieldCheck, Zap } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, BarChart3, Info, Scale, ShieldCheck, Zap, BrainCircuit, Layout } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 export default function DisclaimerPage() {
@@ -28,7 +28,7 @@ export default function DisclaimerPage() {
 
       <main className="p-10 max-w-[900px] mx-auto py-20 space-y-16">
         <div className="space-y-4">
-          <h1 className="text-5xl font-black uppercase tracking-tighter">Disclaimer</h1>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-white">Disclaimer</h1>
           <p className="text-white/40 font-medium">Professional Disclosure & Accountability</p>
         </div>
 
@@ -56,6 +56,22 @@ export default function DisclaimerPage() {
               <h3 className="text-xl font-bold flex items-center gap-2"><ShieldCheck className="text-indigo-500 h-5 w-5" /> AI Inaccuracies</h3>
               <p className="text-white/60 leading-relaxed">
                 AI-generated insights and executive summaries are produced by large language models. While highly advanced, these models can produce inaccuracies, hallucinations, or misinterpreted statistical patterns.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold flex items-center gap-2"><BrainCircuit className="text-indigo-500 h-5 w-5" /> AI Interpretation Notice</h3>
+              <p className="text-white/60 leading-relaxed">
+                AI-generated insights, summaries, recommendations, and narrative explanations are intended to assist data interpretation and communication. They should not replace professional judgment, independent statistical validation, or expert review. Users are encouraged to verify important findings before relying on them for operational, financial, legal, medical, academic, or strategic decision-making.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold flex items-center gap-2"><Layout className="text-indigo-500 h-5 w-5" /> Portfolio Project Notice</h3>
+              <p className="text-white/60 leading-relaxed">
+                AutoStat AI is an independent portfolio project developed for educational, research, demonstration, and professional portfolio purposes. The platform is not a licensed financial, legal, medical, accounting, or professional advisory service.
               </p>
             </div>
           </div>

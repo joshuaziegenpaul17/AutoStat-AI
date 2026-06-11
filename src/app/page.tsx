@@ -154,11 +154,11 @@ export default function LandingPage() {
       </main>
 
       <footer className="py-20 border-t border-white/5 bg-black">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-start gap-12">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-start gap-12 text-left">
           <div className="space-y-6">
             <div className="flex items-center gap-3 opacity-60">
               <BarChart3 className="h-6 w-6" />
-              <span className="font-bold text-xl tracking-tighter uppercase italic">AutoStat AI</span>
+              <span className="font-bold text-xl tracking-tighter uppercase italic text-white">AutoStat AI</span>
             </div>
             <p className="text-[10px] text-white/20 max-w-sm leading-relaxed font-bold uppercase tracking-widest">
               Informational Analytics Platform • Not Professional Advice

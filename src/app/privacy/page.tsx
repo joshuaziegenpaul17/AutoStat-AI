@@ -4,7 +4,6 @@ import React from 'react';
 import { Shield, ArrowLeft, BarChart3, Lock, Eye, Database, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 export default function PrivacyPolicyPage() {
@@ -28,8 +27,8 @@ export default function PrivacyPolicyPage() {
 
       <main className="p-10 max-w-[900px] mx-auto py-20 space-y-16">
         <div className="space-y-4">
-          <h1 className="text-5xl font-black uppercase tracking-tighter">Privacy Policy</h1>
-          <p className="text-white/40 font-medium">Last Updated: October 2023</p>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-white">Privacy Policy</h1>
+          <p className="text-white/40 font-medium">Last Updated: 11 June 2026</p>
         </div>
 
         <section className="space-y-8">
@@ -72,7 +71,7 @@ export default function PrivacyPolicyPage() {
         <Separator className="bg-white/5" />
 
         <footer className="text-xs text-white/20 leading-relaxed space-y-4">
-          <p>If you have questions about our privacy practices, please contact our support team through the official documentation channels.</p>
+          <p>If you have questions regarding this Privacy Policy or the platform, please contact the project developer through the available contact channels.</p>
           <div className="space-y-4 pt-8">
             <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
               © 2026 AutoStat AI • Built by Joshua Ziegen Paul

@@ -63,7 +63,6 @@ export default function Dashboard() {
     return calculateLocalDataQuality(currentDataset.rows, currentDataset.headers);
   }, [currentDataset]);
 
-  // Handle Automatic AI Trigger on Upload
   useEffect(() => {
     if (currentDataset && !insights && !isAnalyzing) {
       runAiAnalysis();
@@ -331,7 +330,7 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* Page 5: Methodology & Legal Disclaimer */}
+          {/* Page 5: Methodology & Disclaimer */}
           <section className="report-section p-12 min-h-[27cm] flex flex-col">
             <h2 className="text-4xl font-black uppercase tracking-tight border-b-4 border-indigo-600 pb-4 mb-10 text-zinc-900">04 Disclaimer & Limitations</h2>
             

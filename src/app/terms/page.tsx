@@ -4,7 +4,6 @@ import React from 'react';
 import { FileText, ArrowLeft, BarChart3, Scale, AlertCircle, Info, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 export default function TermsOfUsePage() {
@@ -28,8 +27,8 @@ export default function TermsOfUsePage() {
 
       <main className="p-10 max-w-[900px] mx-auto py-20 space-y-16">
         <div className="space-y-4">
-          <h1 className="text-5xl font-black uppercase tracking-tighter">Terms of Use</h1>
-          <p className="text-white/40 font-medium">Last Updated: October 2023</p>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-white">Terms of Use</h1>
+          <p className="text-white/40 font-medium">Last Updated: 11 June 2026</p>
         </div>
 
         <section className="space-y-8">
@@ -57,14 +56,14 @@ export default function TermsOfUsePage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-3"><AlertCircle className="text-indigo-500 h-6 w-6" /> Intellectual Property</h2>
             <p className="text-white/60 leading-relaxed">
-              The platform, including its design, source code, and logic, is the intellectual property of its creators. Users retain ownership of their uploaded data, but the platform's outputs (reports, insights) are provided for the user's specific informational use.
+              The platform design, source code, original content, and analytical workflows are owned by the project creator. Users retain ownership of their uploaded datasets and analysis inputs.
             </p>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-3"><FileText className="text-indigo-500 h-6 w-6" /> Changes to Service</h2>
             <p className="text-white/60 leading-relaxed">
-              We reserve the right to modify or discontinue the service at any time without prior notice. This includes updates to technical features, AI models, and pricing structures (if applicable).
+              We reserve the right to modify or discontinue the service at any time without prior notice. This includes updates to technical features, analytical models, platform functionality, and user experience.
             </p>
           </div>
         </section>

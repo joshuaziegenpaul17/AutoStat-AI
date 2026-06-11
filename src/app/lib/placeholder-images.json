@@ -3,8 +3,8 @@
   "placeholderImages": [
     {
       "id": "dashboard-hero",
-      "description": "High-fidelity professional analytics dashboard mockup with charts and statistics",
-      "imageUrl": "https://picsum.photos/seed/analytics-preview/1000/1000",
+      "description": "Enterprise-grade analytics dashboard mockup with correlation heatmaps, forecasting charts, and AI strategic insights summary cards in a premium dark theme.",
+      "imageUrl": "https://picsum.photos/seed/enterprise-analytics/1000/1200",
       "imageHint": "data analytics"
     }
   ]

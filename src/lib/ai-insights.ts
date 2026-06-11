@@ -42,13 +42,18 @@ Required Schema:
 ${JSON.stringify(input, null, 2)}
 
 ### ANALYTICAL REQUEST:
-Provide a comprehensive consulting-style interpretation. Focus on trajectories, correlations, and anomalies. Present all recommendations as suggested insights.`;
+Provide a comprehensive consulting-style interpretation. Focus on trajectories, correlations, and anomalies. Present all findings as Suggested Insights.`;
 
   const messages = [
     { role: 'system', content: systemPrompt },
     { role: 'user', content: userPrompt }
   ];
 
-  const result = await callGroq(messages);
-  return InsightsOutputSchema.parse(result);
+  try {
+    const result = await callGroq(messages);
+    return InsightsOutputSchema.parse(result);
+  } catch (error) {
+    console.error("[Groq:Synthesis] Error:", error);
+    throw error;
+  }
 }

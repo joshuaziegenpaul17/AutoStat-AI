@@ -113,18 +113,18 @@ export const calculateLocalDataQuality = (rows: any[], headers: string[]) => {
   const totalCells = rows.length * headers.length;
   const missingRatio = missingCount / totalCells;
   
-  if (missingRatio > 0.05) {
+  if (missingRatio > 0.01) {
     score -= Math.min(40, missingRatio * 100);
     issues.push(`${(missingRatio * 100).toFixed(1)}% of cells contain missing values.`);
   }
   
-  if (rows.length < 50) {
-    score -= 15;
+  if (rows.length < 100) {
+    score -= 10;
     issues.push("Sample size is below optimal threshold for broad statistical significance.");
   }
 
-  if (rows.length < 10) {
-    score -= 20;
+  if (rows.length < 20) {
+    score -= 25;
     issues.push("Critical alert: Extremely small dataset sample.");
   }
   

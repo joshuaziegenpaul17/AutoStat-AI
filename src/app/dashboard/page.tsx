@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
@@ -65,6 +64,7 @@ export default function Dashboard() {
     return calculateLocalDataQuality(currentDataset.rows, currentDataset.headers);
   }, [currentDataset]);
 
+  // Automated AI Insight Synthesis
   useEffect(() => {
     if (currentDataset && !insights && !isAnalyzing) {
       runAiAnalysis();
@@ -173,7 +173,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#050507] text-white font-sans selection:bg-indigo-500/30">
-      {/* PROFESSIONAL PDF REPORT VIEW */}
+      {/* PROFESSIONAL PDF REPORT VIEW (HIDDEN IN UI, VISIBLE IN PRINT) */}
       {currentDataset && (
         <div className="hidden print:block bg-white text-black p-0 max-w-full">
           {/* Page 1: Executive Cover */}
@@ -391,11 +391,6 @@ export default function Dashboard() {
               <span className="font-mono text-xs uppercase">{reportMetadata.id} • END OF REPORT</span>
             </footer>
           </section>
-
-          <footer className="report-footer px-10 flex justify-between items-center bg-white">
-            <span className="text-[8px] font-bold uppercase tracking-widest">AutoStat AI Professional Executive Report</span>
-            <span className="font-mono text-[8px]">{reportMetadata.timestamp}</span>
-          </footer>
         </div>
       )}
 
@@ -650,17 +645,18 @@ export default function Dashboard() {
                 Informational Analytics Platform • Not Professional Advice
               </p>
             </div>
-            <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">
-              <div className="flex flex-col gap-4">
-                <p className="text-indigo-500 opacity-60">Legal</p>
-                <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
-                <Link href="/terms" className="hover:text-white">Terms of Use</Link>
-                <Link href="/disclaimer" className="hover:text-white">Disclaimer</Link>
+            <div className="flex flex-wrap gap-12 text-[10px] font-bold text-white/30 uppercase tracking-[0.4em]">
+              <div className="flex flex-col gap-5">
+                <p className="text-indigo-500 tracking-[0.4em]">Platform</p>
+                <Link href="/dashboard" className="hover:text-white transition-colors">Workspace</Link>
+                <Link href="/security" className="hover:text-white transition-colors">Security</Link>
+                <Link href="/resources" className="hover:text-white transition-colors">Resources</Link>
               </div>
-              <div className="flex flex-col gap-4">
-                <p className="text-indigo-500 opacity-60">Platform</p>
-                <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
-                <Link href="/security" className="hover:text-white">Security Center</Link>
+              <div className="flex flex-col gap-5">
+                <p className="text-indigo-500 tracking-[0.4em]">Legal</p>
+                <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+                <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
               </div>
             </div>
             <div className="md:text-right space-y-4">

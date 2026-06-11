@@ -73,7 +73,21 @@ export default function TermsOfUsePage() {
 
         <footer className="text-xs text-white/20 leading-relaxed space-y-4">
           <p>By using AutoStat AI, you acknowledge that you have read and agree to these Terms of Use.</p>
-          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">© 2026 AutoStat AI • Built by Joshua Ziegen Paul</p>
+          <div className="space-y-4 pt-8">
+            <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
+              © 2026 AutoStat AI • Built by Joshua Ziegen Paul
+            </p>
+            <p className="text-[9px] text-white/20 font-bold uppercase tracking-[0.2em]">
+              Statistical Analysis • Forecasting • AI-Assisted Insights
+            </p>
+            <div className="flex gap-4 text-[9px] font-bold uppercase tracking-widest text-white/30">
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <span className="opacity-20">|</span>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+              <span className="opacity-20">|</span>
+              <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+            </div>
+          </div>
         </footer>
       </main>
     </div>

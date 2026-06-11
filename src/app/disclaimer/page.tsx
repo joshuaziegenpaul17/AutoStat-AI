@@ -80,8 +80,20 @@ export default function DisclaimerPage() {
 
         <Separator className="bg-white/5" />
         
-        <footer className="py-8">
-           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">© 2026 AutoStat AI • Built by Joshua Ziegen Paul</p>
+        <footer className="py-8 space-y-4">
+           <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
+             © 2026 AutoStat AI • Built by Joshua Ziegen Paul
+           </p>
+           <p className="text-[9px] text-white/20 font-bold uppercase tracking-[0.2em]">
+             Statistical Analysis • Forecasting • AI-Assisted Insights
+           </p>
+           <div className="flex gap-4 text-[9px] font-bold uppercase tracking-widest text-white/30">
+             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+             <span className="opacity-20">|</span>
+             <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+             <span className="opacity-20">|</span>
+             <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+           </div>
         </footer>
       </main>
     </div>

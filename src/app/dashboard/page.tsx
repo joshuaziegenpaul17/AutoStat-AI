@@ -581,25 +581,14 @@ export default function Dashboard() {
 
               {/* 4. Methodology & Disclaimer */}
               <section className="max-w-4xl mx-auto space-y-8">
-                <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 space-y-6">
-                  <div className="flex items-center gap-3 text-indigo-400 mb-2">
+                <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 space-y-6 text-center">
+                  <div className="flex items-center justify-center gap-3 text-indigo-400 mb-2">
                     <Scale className="h-5 w-5" />
                     <h4 className="text-xs font-black uppercase tracking-[0.3em]">Methodology & Professional Disclosure</h4>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-3">
-                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Model Limitations</p>
-                      <p className="text-xs text-white/50 leading-relaxed font-medium">
-                        Statistical profiling is automated. Forecasts are probabilistic estimates based on historical sequences. Results depend entirely on the quality and completeness of the input dataset provided.
-                      </p>
-                    </div>
-                    <div className="space-y-3">
-                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">User Responsibility</p>
-                      <p className="text-xs text-white/50 leading-relaxed font-medium">
-                        AutoStat AI provides analysis for informational purposes only. Results should not be considered professional financial, legal, or investment advice. Verify all findings independently.
-                      </p>
-                    </div>
-                  </div>
+                  <p className="text-xs text-white/50 leading-relaxed font-medium max-w-2xl mx-auto">
+                    AutoStat AI provides automated statistical analysis, forecasting, and AI-assisted insights for informational and educational purposes only. Results, forecasts, and recommendations should not be considered financial, legal, medical, investment, or professional advice.
+                  </p>
                 </Card>
 
                 <Card className="bg-indigo-600/10 border-indigo-500/20 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-10">
@@ -643,13 +632,20 @@ export default function Dashboard() {
                 <Link href="/security" className="hover:text-white">Security Center</Link>
               </div>
             </div>
-            <div className="md:text-right space-y-2">
+            <div className="md:text-right space-y-4">
               <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black">
                 © 2026 AutoStat AI • Built by Joshua Ziegen Paul
               </p>
-              <p className="text-[10px] text-white/10 uppercase tracking-[0.2em] font-bold">
-                PROFESSIONAL DISCLOSURE ATTACHED
+              <p className="text-[9px] text-white/20 font-bold uppercase tracking-[0.2em]">
+                Statistical Analysis • Forecasting • AI-Assisted Insights
               </p>
+              <div className="flex md:justify-end gap-4 text-[9px] font-bold uppercase tracking-widest text-white/30">
+                <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                <span className="opacity-20">|</span>
+                <Link href="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+                <span className="opacity-20">|</span>
+                <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+              </div>
             </div>
           </div>
         </footer>

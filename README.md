@@ -1,74 +1,358 @@
+````markdown
+<div align="center">
 
-# AutoStat AI – Automated Analytics & Forecasting
+# 🚀 AutoStat AI
 
-**AutoStat AI** is a professional-grade data analytics platform designed to bridge the gap between raw datasets and executive decision-making. By combining standard statistical profiling with advanced AI-powered narrative synthesis, it provides a streamlined workflow for modern data exploration and reporting.
+### AI-Powered Statistical Analytics, Forecasting & Executive Intelligence Platform
+
+Transform raw datasets into professional analytical reports, predictive forecasts, interactive visualizations, and AI-generated executive insights.
+
+<br>
+
+<a href="https://autostat-ai.vercel.app">
+  <img src="https://img.shields.io/badge/🚀_Launch_AutoStat_AI-Live-success?style=for-the-badge" alt="Launch AutoStat AI"/>
+</a>
+
+<a href="https://github.com/joshuaziegenpaul17/AutoStat-AI">
+  <img src="https://img.shields.io/badge/📂_Source_Code-GitHub-black?style=for-the-badge&logo=github" alt="Source Code"/>
+</a>
+
+<a href="https://www.linkedin.com/in/joshua-ziegen-paul">
+  <img src="https://img.shields.io/badge/💼_LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin" alt="LinkedIn"/>
+</a>
+
+<a href="https://autostat-ai.vercel.app">
+  <img src="https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-6366F1?style=for-the-badge" alt="Live Demo"/>
+</a>
+
+<br><br>
+
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-AI-purple?style=for-the-badge)
+![Vercel](https://img.shields.io/badge/Vercel-Deploy-black?style=for-the-badge&logo=vercel)
+
+<br>
+
+### 🌐 Live Application
+
+https://autostat-ai.vercel.app
+
+### 👨‍💻 Developed By
+
+**Joshua Ziegen Paul**
+
+[LinkedIn](https://www.linkedin.com/in/joshua-ziegen-paul) • [GitHub](https://github.com/joshuaziegenpaul17)
+
+</div>
 
 ---
 
-## 🚀 Features
+## 📌 Overview
 
-- **Automated Data Ingestion**: Secure client-side processing of CSV and Excel (XLSX/XLS) formats.
-- **Statistical Profiling**: Instant calculation of descriptive statistics (Mean, Median, Std Dev, Skewness, Kurtosis).
-- **Interactive Visualizations**: High-fidelity charts including histograms, correlation heatmaps, treemaps, and density plots.
-- **Predictive Forecasting**: Temporal trend modeling to identify trajectories and sequential patterns.
-- **AI Executive Analysis**: McKinsey-style strategic summaries and actionable recommendations powered by Groq (Llama 3.3).
-- **Data Quality Audit**: Automated health checks and anomaly detection for structural integrity.
+AutoStat AI is a modern analytics platform that transforms raw datasets into actionable business intelligence.
+
+The platform combines:
+
+- Statistical Analysis
+- Data Visualization
+- Forecasting
+- Data Quality Assessment
+- AI Executive Insights
+- Professional Report Generation
+
+Users can upload Excel datasets and instantly receive professional analytical outputs suitable for academic, research, and business environments.
 
 ---
 
-## 🛠 Tech Stack
+## 📸 Platform Preview
 
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS & Framer Motion
-- **UI Components**: ShadCN UI (Radix UI)
-- **Charts**: Recharts
-- **AI Engine**: Groq (Llama 3.3 70B)
-- **Data Parsing**: XLSX & Custom CSV Parser
+### Landing Page
+
+![Landing Page](docs/landing-page.png)
+
+---
+
+### Analytics Dashboard
+
+![Dashboard](docs/dashboard.png)
+
+---
+
+## ✨ Core Features
+
+### 📊 Automated Statistical Profiling
+
+Generate:
+
+- Mean
+- Median
+- Mode
+- Variance
+- Standard Deviation
+- Range
+- Skewness
+- Kurtosis
+- Summary Statistics
+
+---
+
+### 📈 Interactive Visualizations
+
+Create dynamic charts including:
+
+- Histograms
+- Pie Charts
+- Distribution Charts
+- Trend Analysis
+- Correlation Visualizations
+- Category Comparisons
+
+---
+
+### 🔍 Data Quality Assessment
+
+Automatically detect:
+
+- Missing Values
+- Outliers
+- Data Inconsistencies
+- Structural Issues
+
+---
+
+### 🤖 AI Executive Intelligence
+
+Powered by Groq + Llama 3.3 70B
+
+Generate:
+
+- Executive Summaries
+- Strategic Recommendations
+- Opportunity Analysis
+- Risk Identification
+- Business Insights
+
+---
+
+### 📉 Predictive Forecasting
+
+Perform:
+
+- Trend Forecasting
+- Growth Projection
+- Sequential Analysis
+- Historical Pattern Recognition
+
+---
+
+### 📄 PDF Report Export
+
+Generate downloadable reports containing:
+
+- Statistical Findings
+- Visualizations
+- Forecast Outputs
+- AI Insights
+- Recommendations
+
+---
+
+### 🔒 Security & Compliance
+
+Includes:
+
+- Privacy Policy
+- Terms of Service
+- Security Information
+- Professional Disclaimer
+
+---
+
+## 🛠 Technology Stack
+
+| Category | Technology |
+|-----------|-----------|
+| Framework | Next.js 15 |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| UI Components | ShadCN UI |
+| Charts | Recharts |
+| AI Provider | Groq |
+| LLM | Llama 3.3 70B |
+| Data Processing | XLSX |
+| Deployment | Vercel |
+| Version Control | GitHub |
 
 ---
 
 ## ⚙️ Installation
 
-To run AutoStat AI locally:
+### Clone Repository
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/joshuaziegenpaul17/AutoStat-AI.git
-   cd autostat-ai
-   ```
+```bash
+git clone https://github.com/joshuaziegenpaul17/AutoStat-AI.git
+cd AutoStat-AI
+````
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+### Install Dependencies
 
-3. **Set up environment variables**:
-   Create a `.env.local` file and add your Groq API Key:
-   ```env
-   GROQ_API_KEY=your_api_key_here
-   ```
+```bash
+npm install
+```
 
-4. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:9002](http://localhost:9002) in your browser.
+### Configure Environment
+
+Create:
+
+```env
+.env.local
+```
+
+Add:
+
+```env
+GROQ_API_KEY=your_api_key_here
+```
+
+### Start Development Server
+
+```bash
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:9002
+```
 
 ---
 
-## ⚖️ Legal & Privacy
+## 🚀 Deployment
 
-AutoStat AI is designed as a professional demonstration platform. Data processed in the workspace is handled temporarily within the browser session and is not used for model training. For full details, see our [Privacy Policy](http://localhost:9002/privacy).
+Deployed on Vercel:
 
----
-
-## 🏆 Project Status
-
-- **Version**: 2.5.0 (Stable)
-- **Audit**: Production Ready
-- **Author**: Joshua Ziegen Paul
+https://autostat-ai.vercel.app
 
 ---
 
-*AutoStat AI – Transform Raw Data into Strategic Intelligence.*
+## 🎯 Use Cases
+
+* Business Analytics
+* Market Research
+* Sales Forecasting
+* Academic Projects
+* Statistical Reporting
+* Exploratory Data Analysis
+* Executive Reporting
+* Predictive Analytics
+
+---
+
+## 🎓 Academic Relevance
+
+Demonstrates practical implementation of:
+
+* Descriptive Statistics
+* Data Visualization
+* Exploratory Data Analysis
+* Forecasting Techniques
+* Business Intelligence
+* AI-Assisted Analytics
+
+Suitable for:
+
+* MSc Statistics
+* Data Science
+* Business Analytics
+* Applied Statistics
+* Data Analytics
+
+---
+
+## 📂 Project Structure
+
+```bash
+AutoStat-AI/
+│
+├── docs/
+│   ├── landing-page.png
+│   └── dashboard.png
+│
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── hooks/
+│   └── lib/
+│
+├── public/
+├── package.json
+├── tailwind.config.ts
+├── next.config.ts
+└── README.md
+```
+
+---
+
+## 👨‍💻 Author
+
+### Joshua Ziegen Paul
+
+MSc Statistics Student
+
+Passionate about:
+
+* Statistics
+* Data Science
+* Machine Learning
+* AI Applications
+* Business Intelligence
+* Forecasting
+
+### Connect With Me
+
+💼 LinkedIn
+https://www.linkedin.com/in/joshua-ziegen-paul
+
+🐙 GitHub
+https://github.com/joshuaziegenpaul17
+
+🌐 Live Project
+https://autostat-ai.vercel.app
+
+---
+
+## ⭐ Support
+
+If you found this project useful:
+
+⭐ Star the repository
+
+🍴 Fork the project
+
+🚀 Share it with others
+
+---
+
+## ⚠ Disclaimer
+
+AutoStat AI is intended for educational, analytical, and informational purposes only.
+
+Forecasts, insights, and recommendations generated by the platform should not be considered legal, financial, medical, or investment advice.
+
+Users are responsible for independently validating results before making strategic decisions.
+
+---
+
+<div align="center">
+
+# ⭐ AutoStat AI
+
+### Transform Raw Data Into Strategic Intelligence
+
+Built with Next.js • TypeScript • Statistics • Forecasting • Artificial Intelligence
+
+</div>
+```
